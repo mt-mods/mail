@@ -13,49 +13,44 @@ mail sending function, can be invoked with one object argument (new api) or
 all 4 parameters (old compat version)
 see: "Mail format" api.md
 --]]
-function mail.send(sender, receiver, subject, body)
+function mail.send(src, dst, subject, body)
 	local m
-	if receiver == nil and subject == nil and body == nil then
+	if dst == nil and subject == nil and body == nil then
 		-- new format (one object param)
-		m = sender
-
+		m = src
 	else
 		-- old format
-		-- create mail from params
-
 		m = {}
-		m.sender = sender
-		m.receiver = receiver
+		m.src = src
+		m.dst = dst
 		m.subject = subject
 		m.body = body
-
-	end
-
-	m.unread = true
-
-	if not m.time then
-		-- add timestamp
-		m.time = os.time()
 	end
 
 
-	minetest.log("action", "[mail] '" .. m.sender .. "' sends mail to '" .. m.receiver ..
+	minetest.log("action", "[mail] '" .. m.src .. "' sends mail to '" .. m.dst ..
 		"' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
-	local messages = mail.getMessages(m.receiver)
+	local messages = mail.getMessages(m.dst)
 
-	table.insert(messages, 1, m)
-	mail.setMessages(m.receiver, messages)
+	table.insert(messages, 1, {
+		unread  = true,
+		sender  = m.src,
+		subject = m.subject,
+		body    = m.body,
+		time    = os.time(),
+	})
+	mail.setMessages(m.dst, messages)
 
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		if name == m.receiver then
+		if name == m.dst then
 			if m.subject == "" then m.subject = "(No subject)" end
 			if string.len(m.subject) > 30 then
 				m.subject = string.sub(m.subject,1,27) .. "..."
 			end
-			minetest.chat_send_player(m.receiver,
-					string.format(mail.receive_mail_message, m.sender, m.subject))
+			minetest.chat_send_player(m.dst,
+					string.format(mail.receive_mail_message, m.src, m.subject))
 		end
 	end
 

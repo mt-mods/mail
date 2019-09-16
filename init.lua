@@ -1,4 +1,11 @@
 mail = {
+
+	-- mark webmail fork for other mods
+	fork = "webmail",
+
+	-- api version
+	apiversion = 1.1,
+
 	-- mail directory
 	maildir = minetest.get_worldpath().."/mails",
 

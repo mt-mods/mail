@@ -1,4 +1,4 @@
-Mail mod for Minetest
+Mail mod for Minetest (ingame mod)
 ======
 
 This is a fork of cheapies mail mod
@@ -32,6 +32,14 @@ Mails can be deleted, marked as read or unread, replied to and forwarded to anot
 # License
 
 See the "LICENSE" file
+
+# Textures
+* textures/email_mail.png (https://github.com/rubenwardy/email.git WTFPL)
+
+# Contributors
+
+* Cheapie (initial idea/project)
+* Rubenwardy (lua/ui improvements)
 
 # Old/Historic stuff
 * Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
