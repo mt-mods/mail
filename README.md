@@ -18,7 +18,7 @@ Install it like any other mod: copy the directory `mail_mod` to your "worldmods"
 
 ## Webmail
 
-See: https://github.com/thomasrudin-mt/mail
+See: https://github.com/minetest-mail/mail
 
 # Commands/Howto
 
@@ -27,7 +27,6 @@ Mails can be deleted, marked as read or unread, replied to and forwarded to anot
 
 # Dependencies
 * None
-
 
 # License
 
