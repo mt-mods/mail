@@ -43,7 +43,7 @@ function mail.show_inbox(name)
 	local messages = mail.getMessages(name)
 
 	if messages[1] then
-		for idx, message in ipairs(messages) do
+		for _, message in ipairs(messages) do
 			if message.unread then
 				formspec[#formspec + 1] = ",#FFD700"
 			else

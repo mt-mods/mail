@@ -65,7 +65,7 @@ local function Channel(http, url, cfg)
 			extra_headers = post_headers,
 			timeout = timeout,
 			post_data = minetest.write_json(data)
-		}, function(res)
+		}, function()
 			-- TODO: error-handling
 		end)
 	end
