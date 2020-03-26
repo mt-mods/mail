@@ -2,11 +2,12 @@
 -- migrate from mail.db to player-file-based mailbox
 
 mail.migrate = function()
+	-- create directory, just in case
+	minetest.mkdir(mail.maildir)
 
 	local file = io.open(minetest.get_worldpath().."/mail.db", "r")
 	if file then
 		print("[mail] migrating to new per-player storage")
-		minetest.mkdir(mail.maildir)
 
 		local data = file:read("*a")
 		local oldmails = minetest.deserialize(data)
