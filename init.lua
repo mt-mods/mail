@@ -36,13 +36,6 @@ dofile(MP .. "/gui.lua")
 dofile(MP .. "/onjoin.lua")
 
 -- optional webmail stuff below
-
---[[ minetest.conf
-secure.http_mods = mail
-webmail.url = http://127.0.0.1:8080
-webmail.key = myserverkey
---]]
-
 local http = minetest.request_http_api()
 
 if http then
@@ -53,8 +46,17 @@ if http then
 	if not webmail_key then error("webmail.key is not defined") end
 
 	print("[mail] loading webmail-component with endpoint: " .. webmail_url)
-	dofile(MP .. "/tan.lua")
-	dofile(MP .. "/webmail.lua")
+
+	mail.handlers = {}
+	dofile(MP .. "/webmail/tan.lua")
+	dofile(MP .. "/webmail/webmail.lua")
+	dofile(MP .. "/webmail/hook.lua")
+	dofile(MP .. "/webmail/handler_auth.lua")
+	dofile(MP .. "/webmail/handler_send.lua")
+	dofile(MP .. "/webmail/handler_messages.lua")
+	dofile(MP .. "/webmail/handler_delete.lua")
+	dofile(MP .. "/webmail/handler_mark_read.lua")
+	dofile(MP .. "/webmail/handler_mark_unread.lua")
 	mail.webmail_init(http, webmail_url, webmail_key)
 end
 
