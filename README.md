@@ -1,6 +1,10 @@
 Mail mod for Minetest (ingame mod)
 ======
 
+![](https://github.com/minetest-mail/mail_mod/workflows/integration-test/badge.svg)
+![](https://github.com/minetest-mail/mail_mod/workflows/luacheck/badge.svg)
+
+
 This is a fork of cheapies mail mod
 
 It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
