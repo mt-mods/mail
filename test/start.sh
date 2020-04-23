@@ -6,4 +6,4 @@ docker run --rm -it \
 	-v $(pwd)/../:/root/.minetest/worlds/world/worldmods/mail_mod \
 	-v mail_world:/root/.minetest/worlds/world/ \
 	--network host \
-	registry.gitlab.com/minetest/minetest/server:5.1.0
+	registry.gitlab.com/minetest/minetest/server:5.2.0
