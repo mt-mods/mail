@@ -12,7 +12,7 @@ function mail.webmail_init(http, url, key)
 			mail.handlers.auth(data.data)
 
 		elseif data.type == "send" then
-			mail.handlers.auth(data.data) -- { src, dst, subject, body }
+			mail.handlers.send(data.data) -- { src, dst, subject, body }
 
 		elseif data.type == "delete-mail" then
 			mail.handlers.delete(data.playername, data.index) -- index 1-based
