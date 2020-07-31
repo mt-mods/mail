@@ -62,7 +62,7 @@ function mail.send(src, dst, subject, body)
 	end
 
 	-- form the actual mail
-	msg = {
+	local msg = {
 		unread  = true,
 		from    = m.from,
 		to      = m.to,
