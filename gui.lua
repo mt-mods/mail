@@ -7,18 +7,33 @@ else
 	theme = ""
 end
 
-mail.inbox_formspec = "size[8,9;]" .. theme .. [[
-		button_exit[7.5,0;0.5,0.5;quit;X]
-		button[6,1;2,0.5;new;New Message]
-		button[6,2;2,0.5;read;Read]
-		button[6,3;2,0.5;reply;Reply]
-		button[6,4;2,0.5;forward;Forward]
-		button[6,5;2,0.5;delete;Delete]
-		button[6,6;2,0.5;markread;Mark Read]
-		button[6,7;2,0.5;markunread;Mark Unread]
-		button[6,8;2,0.5;about;About]
+mail.inbox_formspec = "size[8,10;]" .. theme .. [[
+		button[6,0.00;2,0.5;new;New]
+		button[6,0.75;2,0.5;read;Read]
+		button[6,1.50;2,0.5;reply;Reply]
+		button[6,2.25;2,0.5;forward;Forward]
+		button[6,3.00;2,0.5;delete;Delete]
+		button[6,4.25;2,0.5;markread;Mark Read]
+		button[6,5.00;2,0.5;markunread;Mark Unread]
+		button[6,6.25;2,0.5;contacts;Contacts]
+		button[6,7.00;2,0.5;about;About]
+		button_exit[6,8.25;2,0.5;quit;Close]
 		tablecolumns[color;text;text]
 		table[0,0;5.75,9;messages;#999,From,Subject]]
+
+mail.contacts_formspec = "size[8,10;]" .. theme .. [[
+		button[6,0.00;2,0.5;new;New]
+		button[6,0.75;2,0.5;edit;Edit]
+		button[6,1.50;2,0.5;delete;Delete]
+		button[6,8.25;2,0.5;back;Back]
+		tablecolumns[color;text;text]
+		table[0,0;5.75,9;contacts;#999,Name,Note]]
+
+mail.select_contact_formspec = "size[8,10;]" .. theme .. [[
+		button[6,0.00;2,0.5;select;Select]
+		button[6,8.25;2,0.5;back;Back]
+		tablecolumns[color;text]
+		table[0,0;5.75,9;contacts;#999,Name]]
 
 
 function mail.show_about(name)
@@ -73,6 +88,53 @@ function mail.show_inbox(name)
 		formspec[#formspec + 1] = "]label[2,4.5;No mail]"
 	end
 	minetest.show_formspec(name, "mail:inbox", table.concat(formspec, ""))
+end
+
+function mail.show_contacts(name)
+	local formspec = { mail.contacts_formspec }
+	formspec = mail.compile_contact_list(name, formspec)
+	minetest.show_formspec(name, "mail:contacts", table.concat(formspec, ""))
+end
+
+function mail.show_edit_contact(name, contact_name, note)
+	local formspec = [[
+			size[8,7.2]
+			button[7,0;1,0.5;back;X]
+			label[0,0;Player name: %s]
+			label[0,0.5;Note: %s]
+			button[1,6.7;2,1;reply;Reply]
+			button[3,6.7;2,1;forward;Forward]
+			button[5,6.7;2,1;delete;Delete]
+		]] .. theme
+	minetest.show_formspec(name, "mail:editcontact", table.concat(formspec, ""))
+end
+
+function mail.show_select_contact(name)
+	local formspec = { mail.select_contact_formspec }
+	formspec = mail.compile_contact_list(name, formspec)
+	minetest.show_formspec(name, "mail:selectcontact", table.concat(formspec, ""))
+end
+
+function mail.compile_contact_list(name, formspec)
+	local contacts = mail.getContacts(name)
+
+	if contacts[1] then
+		for _, contact in ipairs(contacts) do
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = minetest.formspec_escape(contact.name)
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = minetest.formspec_escape(contact.note)
+		end
+		if selected_contact_idxs[name] then
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = tostring(selected_contact_idxs[name] + 1)
+		end
+		formspec[#formspec + 1] = "]"
+	else
+		formspec[#formspec + 1] = "]label[2,4.5;No contacts]"
+	end
+	return formspec
 end
 
 function mail.show_message(name, msgnumber)
@@ -230,6 +292,55 @@ function mail.handle_receivefields(player, formname, fields)
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
 		end)
+		return true
+	--[[elseif formname == "mail:contacts" then
+		if fields.back then
+			mail.show_inbox(name)
+		elseif fields.new then
+			mail.show_edit_contact(name, "", "")
+		elseif fields.edit then
+			if contacts[selected_contact_idxs[name]]--[[ then
+				mail.show_edit_contact(name, selected_contact_idxs[name], "")
+		elseif fields.delete then
+			if contacts[selected_contact_idxs[name]]--[[ then
+				table.remove(contacts,selected_contact_idxs[name])
+			end
+			mail.show_contacts(name)
+		end
+
+		mail.setContacts(name, contacts)
+		return true]]--
+
+	elseif formname == "mail:contacts" then
+		local name = player:get_player_name()
+		local contacts = mail.getContacts(name)
+
+		if fields.contacts then
+			local evt = minetest.explode_table_event(fields.contacts)
+			selected_contact_idxs[name] = evt.row - 1
+			if evt.type == "DCL" and contacts[selected_contact_idxs[name]] then
+				mail.show_contact(name, selected_contact_idxs[name])
+			end
+			mail.setContacts(name, contacts)
+			return true
+		end
+		elseif fields.new then
+			mail.show_edit_contact(name,"", "")
+		elseif fields.edit then
+			mail.show_contact(name, selected_contact_idxs[name])
+		elseif fields.delete then
+			if contacts[selected_contact_idxs[name]] then
+				table.remove(contacts, selected_contact_idxs[name])
+			end
+
+			mail.show_inbox(name)
+
+		elseif fields.back then
+			mail.show_inbox(name)
+
+		end
+
+		mail.setMessages(name, messages)
 		return true
 
 	elseif fields.mail then
