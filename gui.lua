@@ -111,7 +111,7 @@ function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc,
 		]] .. theme
 
 	formspec = string.format(formspec,
-		minetest.formspec_escape(defaulttgt),
+		minetest.formspec_escape(defaultto),
 		minetest.formspec_escape(defaultsubj),
 		minetest.formspec_escape(defaultbody),
 		minetest.formspec_escape(defaultcc),
