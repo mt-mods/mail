@@ -14,6 +14,7 @@ all 4 parameters (old compat version)
 see: "Mail format" api.md
 --]]
 function mail.send(src, dst, subject, body)
+	-- figure out format
 	local m
 	if dst == nil and subject == nil and body == nil then
 		-- new format (one object param)
@@ -21,36 +22,75 @@ function mail.send(src, dst, subject, body)
 	else
 		-- old format
 		m = {}
-		m.src = src
-		m.dst = dst
+		m.from = src
+		m.to = dst
 		m.subject = subject
 		m.body = body
 	end
 
+	-- log mail send action
+	if m.cc or m.bcc then
+		if m.cc then
+			cc = "CC: " .. m.cc
+			if m.bcc then
+				cc = cc .. " - "
+			end
+		else
+			cc = ""
+		end
+		if m.bcc then
+			bcc = "BCC: " .. m.bcc
+		else
+			bcc = ""
+		end
+		extra = "(" .. cc .. bcc .. ") "
+	else
+		extra = ""
+	end
+	minetest.log("action", "[mail] '" .. m.from .. "' sends mail to '" .. m.to ..
+		extra .. "' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
-	minetest.log("action", "[mail] '" .. m.src .. "' sends mail to '" .. m.dst ..
-		"' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
-	local messages = mail.getMessages(m.dst)
+	-- normalize to, cc and bcc while compiling a list of all recipients
+	local recipients = {}
+	m.to = normalize_players_and_add_recipients(m.to, recipients)
+	if m.cc then
+		m.cc = normalize_players_and_add_recipients(m.cc, recipients)
+	end
+	if m.bcc then
+		m.bcc = normalize_players_and_add_recipients(m.bcc, recipients)
+	end
 
-	table.insert(messages, 1, {
+	-- form the actual mail
+	msg = {
 		unread  = true,
-		sender  = m.src,
+		from    = m.from,
+		to      = m.to,
 		subject = m.subject,
 		body    = m.body,
 		time    = os.time(),
-	})
-	mail.setMessages(m.dst, messages)
+	}
+	if m.cc then
+		msg.cc  = m.cc
+	end
 
+	-- send the mail to all recipients
+	for _, recipient in pairs(recipients) do
+		local messages = mail.getMessages(recipient)
+		table.insert(messages, 1, msg)
+		mail.setMessages(recipient, messages)
+	end
+
+	-- notify recipients that happen to be online
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		if name == m.dst then
+		if recipients[string.lower(name)] ~= nil then
 			if m.subject == "" then m.subject = "(No subject)" end
 			if string.len(m.subject) > 30 then
 				m.subject = string.sub(m.subject,1,27) .. "..."
 			end
-			minetest.chat_send_player(m.dst,
-					string.format(mail.receive_mail_message, m.src, m.subject))
+			minetest.chat_send_player(name,
+					string.format(mail.receive_mail_message, m.from, m.subject))
 		end
 	end
 

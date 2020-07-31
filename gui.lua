@@ -89,18 +89,20 @@ function mail.show_message(name, msgnumber)
 			button[5,6.7;2,1;delete;Delete]
 		]] .. theme
 
-	local sender = minetest.formspec_escape(message.sender)
+	local from = minetest.formspec_escape(message.from)
 	local subject = minetest.formspec_escape(message.subject)
 	local body = minetest.formspec_escape(message.body)
-	formspec = string.format(formspec, sender, subject, body)
+	formspec = string.format(formspec, from, subject, body)
 
 	minetest.show_formspec(name,"mail:message",formspec)
 end
 
-function mail.show_compose(name, defaulttgt, defaultsubj, defaultbody)
+function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc, defaultbcc)
 	local formspec = [[
 			size[8,7.2]
 			field[0.25,0.5;4,1;to;To:;%s]
+			field[0.25,0.5;4,1;to;CC:;%s]
+			field[0.25,0.5;4,1;to;BCC:;%s]
 			field[0.25,1.7;8,1;subject;Subject:;%s]
 			textarea[0.25,2.4;8,5;body;;%s]
 			button[0.5,6.7;3,1;cancel;Cancel]
@@ -111,7 +113,9 @@ function mail.show_compose(name, defaulttgt, defaultsubj, defaultbody)
 	formspec = string.format(formspec,
 		minetest.formspec_escape(defaulttgt),
 		minetest.formspec_escape(defaultsubj),
-		minetest.formspec_escape(defaultbody))
+		minetest.formspec_escape(defaultbody),
+		minetest.formspec_escape(defaultcc),
+		minetest.formspec_escape(defaultbcc))
 
 	minetest.show_formspec(name, "mail:compose", formspec)
 end
@@ -155,7 +159,7 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.reply and messages[selected_message_idxs[name]] then
 			local message = messages[selected_message_idxs[name]]
 			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
-			mail.show_compose(name, message.sender, "Re: "..message.subject,replyfooter)
+			mail.show_compose(name, message.from, "Re: "..message.subject,replyfooter)
 
 		elseif fields.forward and messages[selected_message_idxs[name]] then
 			local message = messages[selected_message_idxs[name]]
@@ -215,8 +219,10 @@ function mail.handle_receivefields(player, formname, fields)
 	elseif formname == "mail:compose" then
 		if fields.send then
 			mail.send({
-				src = player:get_player_name(),
-				dst = fields.to,
+				from = player:get_player_name(),
+				to = fields.to,
+				cc = "",
+				bcc = ""
 				subject = fields.subject,
 				body = fields.body
 			})

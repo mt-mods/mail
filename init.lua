@@ -26,6 +26,7 @@ mail = {
 
 
 local MP = minetest.get_modpath(minetest.get_current_modname())
+dofile(MP .. "/util/normalize.lua")
 dofile(MP .. "/chatcommands.lua")
 dofile(MP .. "/migrate.lua")
 dofile(MP .. "/attachment.lua")
