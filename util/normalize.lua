@@ -2,7 +2,7 @@
 return the field normalized (comma separated, single space)
 and add individual player names to recipient list
 --]]
-function normalize_players_and_add_recipients(field, recipients)
+function mail.normalize_players_and_add_recipients(field, recipients)
     local separator = ", "
     local pattern = "([^" .. separator .. "]+)"
 

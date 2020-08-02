@@ -99,23 +99,22 @@ end
 
 function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc, defaultbcc)
 	local formspec = [[
-			size[8,7.2]
-			field[0.25,0.5;4,1;to;To:;%s]
-			field[0.25,0.5;4,1;to;CC:;%s]
-			field[0.25,0.5;4,1;to;BCC:;%s]
-			field[0.25,1.7;8,1;subject;Subject:;%s]
-			textarea[0.25,2.4;8,5;body;;%s]
-			button[0.5,6.7;3,1;cancel;Cancel]
-			button[7,0;1,0.5;cancel;X]
-			button[4.5,6.7;3,1;send;Send]
+			size[8,9.2]
+			field[0.25,0.5;8,1;to;To:;%s]
+			field[0.25,1.5;8,1;cc;CC:;%s]
+			field[0.25,2.5;8,1;bcc;BCC:;%s]
+			field[0.25,3.7;8,1;subject;Subject:;%s]
+			textarea[0.25,4.4;8,5;body;;%s]
+			button[0.5,8.7;3,1;cancel;Cancel]
+			button[4.5,8.7;3,1;send;Send]
 		]] .. theme
 
 	formspec = string.format(formspec,
 		minetest.formspec_escape(defaultto),
+		minetest.formspec_escape(defaultcc) or "",
+		minetest.formspec_escape(defaultbcc) or "",
 		minetest.formspec_escape(defaultsubj),
-		minetest.formspec_escape(defaultbody),
-		minetest.formspec_escape(defaultcc),
-		minetest.formspec_escape(defaultbcc))
+		minetest.formspec_escape(defaultbody))
 
 	minetest.show_formspec(name, "mail:compose", formspec)
 end
@@ -221,8 +220,8 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.send({
 				from = player:get_player_name(),
 				to = fields.to,
-				cc = "",
-				bcc = ""
+				cc = fields.cc,
+				bcc = fields.bcc,
 				subject = fields.subject,
 				body = fields.body
 			})
