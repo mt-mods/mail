@@ -1,4 +1,5 @@
 selected_message_idxs = {}
+selected_contact_idxs = {}
 
 local theme
 if minetest.get_modpath("default") then
@@ -23,15 +24,15 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		tablecolumns[color;text;text]
 		table[0,0;5.75,9;messages;#999,From,Subject]]
 
-mail.contacts_formspec = "size[8,10;]" .. theme .. [[
-		button[6,0.00;2,0.5;new;New]
-		button[6,0.75;2,0.5;edit;Edit]
-		button[6,1.50;2,0.5;delete;Delete]
+mail.contacts_formspec = "size[8,9;]" .. theme .. [[
+		button[6,0.10;2,0.5;new;New]
+		button[6,0.85;2,0.5;edit;Edit]
+		button[6,1.60;2,0.5;delete;Delete]
 		button[6,8.25;2,0.5;back;Back]
 		tablecolumns[color;text;text]
 		table[0,0;5.75,9;contacts;#999,Name,Note]]
 
-mail.select_contact_formspec = "size[8,10;]" .. theme .. [[
+mail.select_contact_formspec = "size[8,9;]" .. theme .. [[
 		button[6,0.00;2,0.5;select;Select]
 		button[6,8.25;2,0.5;back;Back]
 		tablecolumns[color;text]
@@ -96,7 +97,7 @@ function mail.show_inbox(name)
 		end
 		formspec[#formspec + 1] = "]"
 	else
-		formspec[#formspec + 1] = "]label[2,4.5;No mail]"
+		formspec[#formspec + 1] = "]label[2.25,4.5;No mail]"
 	end
 	minetest.show_formspec(name, "mail:inbox", table.concat(formspec, ""))
 end
@@ -107,17 +108,32 @@ function mail.show_contacts(name)
 	minetest.show_formspec(name, "mail:contacts", table.concat(formspec, ""))
 end
 
-function mail.show_edit_contact(name, contact_name, note)
+function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 	local formspec = [[
-			size[8,7.2]
-			button[7,0;1,0.5;back;X]
-			label[0,0;Player name: %s]
-			label[0,0.5;Note: %s]
-			button[1,6.7;2,1;reply;Reply]
-			button[3,6.7;2,1;forward;Forward]
-			button[5,6.7;2,1;delete;Delete]
-		]] .. theme
-	minetest.show_formspec(name, "mail:editcontact", table.concat(formspec, ""))
+			size[6,7]
+			button[4,6.25;2,0.5;back;Back]
+			field[0.25,0.5;4,1;name;Player name:;%s]
+			textarea[0.25,1.6;4,6.25;note;Note:;%s]
+			button[4,0.10;2,1;save;Save]
+		]]
+	if illegal_name_hint == "collision" then
+		formspec = formspec .. [[
+				label[4,1;That name]
+				label[4,1.5;is already in]
+				label[4,2;your contacts.]
+			]]
+	elseif illegal_name_hint == "empty" then
+		formspec = formspec .. [[
+				label[4,1;The contact]
+				label[4,1.5;name cannot]
+				label[4,2;be empty.]
+			]]
+	end
+	formspec = formspec .. theme
+	formspec = string.format(formspec,
+		minetest.formspec_escape(contact_name or ""),
+		minetest.formspec_escape(note or ""))
+	minetest.show_formspec(name, "mail:editcontact", formspec)
 end
 
 function mail.show_select_contact(name)
@@ -129,17 +145,29 @@ end
 function mail.compile_contact_list(name, formspec)
 	local contacts = mail.getContacts(name)
 
-	if contacts[1] then
-		for _, contact in ipairs(contacts) do
-			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(contact.name)
-			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(contact.note)
+	local i = 0
+	local selected = nil
+	for k, contact in pairs(contacts) do
+		formspec[#formspec + 1] = ","
+		formspec[#formspec + 1] = ","
+		formspec[#formspec + 1] = minetest.formspec_escape(contact.name)
+		formspec[#formspec + 1] = ","
+		local note = contact.note
+		-- display an ellipsis if the note spans multiple lines
+		local idx = string.find(note, '\n')
+		if idx ~= nil then
+			note = string.sub(note, 1, idx-1) .. ' ...'
 		end
-		if selected_contact_idxs[name] then
+		formspec[#formspec + 1] = minetest.formspec_escape(note)
+		i = i + 1
+		if selected_contact_idxs[name] == k then
+			selected = i
+		end
+	end
+	if i > 0 then
+		if selected then
 			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = tostring(selected_contact_idxs[name] + 1)
+			formspec[#formspec + 1] = tostring(selected + 1)
 		end
 		formspec[#formspec + 1] = "]"
 	else
@@ -171,6 +199,11 @@ function mail.show_message(name, msgnumber)
 	local subject = minetest.formspec_escape(message.subject)
 	local body = minetest.formspec_escape(message.body)
 	formspec = string.format(formspec, from, to, cc, subject, body)
+
+	if message.unread then
+		message.unread = false
+		mail.setMessages(name, messages)
+	end
 
 	minetest.show_formspec(name,"mail:message",formspec)
 end
@@ -252,21 +285,19 @@ function mail.handle_receivefields(player, formname, fields)
 			local evt = minetest.explode_table_event(fields.messages)
 			selected_message_idxs[name] = evt.row - 1
 			if evt.type == "DCL" and messages[selected_message_idxs[name]] then
-				messages[selected_message_idxs[name]].unread = false
 				mail.show_message(name, selected_message_idxs[name])
 			end
-			mail.setMessages(name, messages)
 			return true
 		end
 		if fields.read then
 			if messages[selected_message_idxs[name]] then
-				messages[selected_message_idxs[name]].unread = false
 				mail.show_message(name, selected_message_idxs[name])
 			end
 
 		elseif fields.delete then
 			if messages[selected_message_idxs[name]] then
 				table.remove(messages, selected_message_idxs[name])
+				mail.setMessages(name, messages)
 			end
 
 			mail.show_inbox(name)
@@ -285,23 +316,26 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.markread then
 			if messages[selected_message_idxs[name]] then
 				messages[selected_message_idxs[name]].unread = false
+				-- set messages immediately, so it shows up already when updating the inbox
+				mail.setMessages(name, messages)
 			end
-			-- set messages immediately, so it shows up already when updating the inbox
-			mail.setMessages(name, messages)
 			mail.show_inbox(name)
 			return true
 
 		elseif fields.markunread then
 			if messages[selected_message_idxs[name]] then
 				messages[selected_message_idxs[name]].unread = true
+				-- set messages immediately, so it shows up already when updating the inbox
+				mail.setMessages(name, messages)
 			end
-			-- set messages immediately, so it shows up already when updating the inbox
-			mail.setMessages(name, messages)
 			mail.show_inbox(name)
 			return true
 
 		elseif fields.new then
 			mail.show_compose(name)
+
+		elseif fields.contacts then
+			mail.show_contacts(name)
 
 		elseif fields.quit then
 			if minetest.get_modpath("unified_inventory") then
@@ -313,7 +347,6 @@ function mail.handle_receivefields(player, formname, fields)
 
 		end
 
-		mail.setMessages(name, messages)
 		return true
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
@@ -334,44 +367,43 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.delete then
 			if messages[selected_message_idxs[name]] then
 				table.remove(messages,selected_message_idxs[name])
+				mail.setMessages(name, messages)
 			end
 			mail.show_inbox(name)
 		end
-
-		mail.setMessages(name, messages)
 		return true
+
 	elseif formname == "mail:compose" then
 		if fields.send then
+			local name = player:get_player_name()
 			mail.send({
-				from = player:get_player_name(),
+				from = name,
 				to = fields.to,
 				cc = fields.cc,
 				bcc = fields.bcc,
 				subject = fields.subject,
 				body = fields.body,
 			})
+			local contacts = mail.getContacts(name)
+			local recipients = mail.parse_player_list(fields.to)
+			local changed = false
+			for _,v in pairs(recipients) do
+				if contacts[string.lower(v)] == nil then
+					contacts[string.lower(v)] = {
+						name = v,
+						note = "",
+					}
+					changed = true
+				end
+			end
+			if changed then
+				mail.setContacts(name, contacts)
+			end
 		end
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
 		end)
 		return true
-	--[[elseif formname == "mail:contacts" then
-		if fields.back then
-			mail.show_inbox(name)
-		elseif fields.new then
-			mail.show_edit_contact(name, "", "")
-		elseif fields.edit then
-			if contacts[selected_contact_idxs[name]]--[[ then
-				mail.show_edit_contact(name, selected_contact_idxs[name], "")
-		elseif fields.delete then
-			if contacts[selected_contact_idxs[name]]--[[ then
-				table.remove(contacts,selected_contact_idxs[name])
-			end
-			mail.show_contacts(name)
-		end
-
-		mail.setContacts(name, contacts)
-		return true]]--
 
 	elseif formname == "mail:contacts" then
 		local name = player:get_player_name()
@@ -379,30 +411,72 @@ function mail.handle_receivefields(player, formname, fields)
 
 		if fields.contacts then
 			local evt = minetest.explode_table_event(fields.contacts)
-			selected_contact_idxs[name] = evt.row - 1
-			if evt.type == "DCL" and contacts[selected_contact_idxs[name]] then
-				mail.show_contact(name, selected_contact_idxs[name])
+			--selected_contact_idxs[name] = evt.row - 1
+			local i = 0
+			for k,c in pairs(contacts) do
+				i = i + 1
+				if i == evt.row - 1 then
+					selected_contact_idxs[name] = k
+					break
+				end
 			end
-			mail.setContacts(name, contacts)
+			if evt.type == "DCL" and contacts[selected_contact_idxs[name]] then
+				mail.show_edit_contact(name, contacts[selected_contact_idxs[name]].name, contacts[selected_contact_idxs[name]].note)
+			end
 			return true
 		elseif fields.new then
-			mail.show_edit_contact(name,"", "")
+			selected_contact_idxs[name] = "#NEW#"
+			mail.show_edit_contact(name, "", "")
 		elseif fields.edit then
-			mail.show_contact(name, selected_contact_idxs[name])
+			mail.show_edit_contact(name, contacts[selected_contact_idxs[name]].name, contacts[selected_contact_idxs[name]].note)
 		elseif fields.delete then
 			if contacts[selected_contact_idxs[name]] then
-				table.remove(contacts, selected_contact_idxs[name])
+				contacts[selected_contact_idxs[name]] = nil
+				mail.setContacts(name, contacts)
 			end
 
-			mail.show_inbox(name)
+			mail.show_contacts(name)
 
 		elseif fields.back then
 			mail.show_inbox(name)
 
 		end
+	elseif formname == "mail:editcontact" then
+		local name = player:get_player_name()
+		local contacts = mail.getContacts(name)
 
-		mail.setMessages(name, messages)
-		return true
+		if fields.save then
+			if selected_contact_idxs[name] and selected_contact_idxs[name] ~= "#NEW#" then
+				local contact = contacts[selected_contact_idxs[name]]
+				if selected_contact_idxs[name] ~= string.lower(fields.name) then
+					-- name changed!
+					if #fields.name == 0 then
+						mail.show_edit_contact(name, contact.name, fields.note, "empty")
+						return true
+					elseif contacts[string.lower(fields.name)] ~= nil then
+						mail.show_edit_contact(name, contact.name, fields.note, "collision")
+						return true
+					else
+						contacts[string.lower(fields.name)] = contact
+						contacts[selected_contact_idxs[name]] = nil
+					end
+				end
+				contact.name = fields.name
+				contact.note = fields.note
+			else
+				local contact = {
+					name = fields.name,
+					note = fields.note,
+				}
+				contacts[string.lower(contact.name)] = contact
+			end
+			mail.setContacts(name, contacts)
+			mail.show_contacts(name)
+
+		elseif fields.back then
+			mail.show_contacts(name)
+
+		end
 
 	elseif fields.mail then
 		mail.show_inbox(player:get_player_name())
