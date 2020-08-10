@@ -28,6 +28,9 @@ function mail.send(src, dst, subject, body)
 		m.body = body
 	end
 
+	local cc
+	local bcc
+	local extra
 	-- log mail send action
 	if m.cc or m.bcc then
 		if m.cc then
@@ -43,22 +46,22 @@ function mail.send(src, dst, subject, body)
 		else
 			bcc = ""
 		end
-		extra = "(" .. cc .. bcc .. ") "
+		extra = " (" .. cc .. bcc .. ")"
 	else
 		extra = ""
 	end
-	minetest.log("action", "[mail] '" .. m.from .. "' sends mail to '" .. m.to ..
+	minetest.log("action", "[mail] '" .. m.from .. "' sends mail to '" .. m.to .. "'" ..
 		extra .. "' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
 
 	-- normalize to, cc and bcc while compiling a list of all recipients
 	local recipients = {}
-	m.to = normalize_players_and_add_recipients(m.to, recipients)
+	m.to = mail.normalize_players_and_add_recipients(m.to, recipients)
 	if m.cc then
-		m.cc = normalize_players_and_add_recipients(m.cc, recipients)
+		m.cc = mail.normalize_players_and_add_recipients(m.cc, recipients)
 	end
 	if m.bcc then
-		m.bcc = normalize_players_and_add_recipients(m.bcc, recipients)
+		m.bcc = mail.normalize_players_and_add_recipients(m.bcc, recipients)
 	end
 
 	-- form the actual mail
