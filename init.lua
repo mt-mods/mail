@@ -8,6 +8,7 @@ mail = {
 
 	-- mail directory
 	maildir = minetest.get_worldpath().."/mails",
+	contactsdir = minetest.get_worldpath().."/mails/contacts",
 
 	-- allow item/node attachments
 	allow_attachments = minetest.settings:get("mail.allow_attachments") == "true",
