@@ -155,7 +155,6 @@ function mail.replyall(name, message)
 	if message.from ~= nil then
 		recipients = message.from .. ", " .. recipients
 	end
-	print('parsing recipients:   '..recipients)
 	recipients = mail.parse_player_list(recipients)
 	for k,v in pairs(recipients) do
 		if v == name then
@@ -164,7 +163,6 @@ function mail.replyall(name, message)
 		end
 	end
 	recipients = mail.concat_player_list(recipients)
-	print('resulting recipients: '..recipients)
 	mail.show_compose(name, recipients, "Re: "..message.subject, replyfooter, message.cc)
 end
 
