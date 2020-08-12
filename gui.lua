@@ -94,7 +94,7 @@ function mail.show_inbox(name)
 				end
 			end
 			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(message.from)
+			formspec[#formspec + 1] = minetest.formspec_escape(message.sender)
 			formspec[#formspec + 1] = ","
 			if message.subject ~= "" then
 				if string.len(message.subject) > 30 then
@@ -266,7 +266,7 @@ function mail.show_message(name, msgnumber)
 			button[6,8.5;2,1;delete;Delete]
 		]] .. theme
 
-	local from = minetest.formspec_escape(message.from)
+	local from = minetest.formspec_escape(message.sender)
 	local to = minetest.formspec_escape(message.to)
 	local cc = minetest.formspec_escape(message.cc)
 	local subject = minetest.formspec_escape(message.subject)
@@ -315,7 +315,7 @@ end
 function mail.reply(name, message)
 	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
-	mail.show_compose(name, message.from, "Re: "..message.subject, replyfooter)
+	mail.show_compose(name, message.sender, "Re: "..message.subject, replyfooter)
 end
 
 function mail.replyall(name, message)
@@ -323,8 +323,8 @@ function mail.replyall(name, message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 	-- new recipients are the sender plus the original recipients, minus ourselves
 	local recipients = message.to
-	if message.from ~= nil then
-		recipients = message.from .. ", " .. recipients
+	if message.sender ~= nil then
+		recipients = message.sender .. ", " .. recipients
 	end
 	recipients = mail.parse_player_list(recipients)
 	for k,v in pairs(recipients) do
