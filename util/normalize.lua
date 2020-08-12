@@ -36,6 +36,7 @@ function mail.concat_player_list(order)
 end
 
 function mail.player_in_list(name, list)
+    list = list or {}
     if type(list) == "string" then
         list = mail.parse_player_list(list)
     end

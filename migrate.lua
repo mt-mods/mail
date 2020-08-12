@@ -29,8 +29,7 @@ end
 mail.migrate_contacts = function(playername)
 	local file = io.open(mail.getContactsFile(playername), 'r')
 	if not file then
-		file:close()	-- file doesn't exist! This is a case for Migrate Man!
-
+		-- file doesn't exist! This is a case for Migrate Man!
 		local messages = mail.getMessages(playername)
 		local contacts = {}
 

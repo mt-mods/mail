@@ -322,7 +322,7 @@ function mail.replyall(name, message)
 	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 	-- new recipients are the sender plus the original recipients, minus ourselves
-	local recipients = message.to
+	local recipients = message.to or ""
 	if message.sender ~= nil then
 		recipients = message.sender .. ", " .. recipients
 	end
