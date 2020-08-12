@@ -50,7 +50,6 @@ end
 
 function mail.ensure_new_format(message)
     if message.sender then
-        message.from = message.sender
         message.to = name
     end
 end
