@@ -47,9 +47,9 @@ mail.select_contact_formspec = "size[8,9;]" .. theme .. [[
 		button[3.55,6.00;1.75,0.5;ccadd;→ Add]
 		button[3.55,6.75;1.75,0.5;ccremove;← Remove]
 		tablecolumns[color;text;text]
-		table[5.15,0.0;2.75,4.5;to;#999,Name,Note%s]
+		table[5.15,0.0;2.75,4.5;to;#999,TO:,Note%s]
 		tablecolumns[color;text;text]
-		table[5.15,4.6;2.75,4.5;cc;#999,Name,Note%s]
+		table[5.15,4.6;2.75,4.5;cc;#999,CC:,Note%s]
 		button[3.55,8.25;1.75,0.5;back;Back]
 	]]
 
