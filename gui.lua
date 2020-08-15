@@ -79,7 +79,7 @@ function mail.show_inbox(name)
 
 	if messages[1] then
 		for _, message in ipairs(messages) do
-			mail.ensure_new_format(message)
+			mail.ensure_new_format(message, name)
 			if message.unread then
 				if not mail.player_in_list(name, message.to) then
 					formspec[#formspec + 1] = ",#FFD788"
@@ -320,6 +320,7 @@ end
 function mail.replyall(name, message)
 	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
+	
 	-- new recipients are the sender plus the original recipients, minus ourselves
 	local recipients = message.to or ""
 	if message.sender ~= nil then
@@ -333,7 +334,18 @@ function mail.replyall(name, message)
 		end
 	end
 	recipients = mail.concat_player_list(recipients)
-	mail.show_compose(name, recipients, "Re: "..message.subject, replyfooter, message.cc)
+	
+	-- new CC is old CC minus ourselves
+	local cc = mail.parse_player_list(message.cc)
+	for k,v in pairs(cc) do
+		if v == name then
+			table.remove(cc, k)
+			break
+		end
+	end
+	cc = mail.concat_player_list(cc)
+
+	mail.show_compose(name, recipients, "Re: "..message.subject, replyfooter, cc)
 end
 
 function mail.forward(name, message)
