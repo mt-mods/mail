@@ -181,9 +181,10 @@ function mail.compile_contact_list(name, selected, playernames)
 	local formspec = {}
 	local contacts = mail.getContacts(name)
 
-	local i = 0
 	if playernames == nil then
-		for k, contact in pairs(contacts) do
+		local length = 0
+		for k, contact, i, l in pairsByKeys(contacts) do
+			if i == 1 then length = l end
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = minetest.formspec_escape(contact.name)
@@ -195,15 +196,14 @@ function mail.compile_contact_list(name, selected, playernames)
 				note = string.sub(note, 1, idx-1) .. ' ...'
 			end
 			formspec[#formspec + 1] = minetest.formspec_escape(note)
-			i = i + 1
 			if type(selected) == "string" then
-				if selected == k then
+				if string.lower(selected) == k then
 					selected = i
 				end
 			end
 		end
-		if i > 0 then
-			if selected then
+		if length > 0 then
+			if selected and type(selected) == "number" then
 				formspec[#formspec + 1] = ";"
 				formspec[#formspec + 1] = tostring(selected + 1)
 			end
@@ -215,7 +215,7 @@ function mail.compile_contact_list(name, selected, playernames)
 		if type(playernames) == "string" then
 			playernames = mail.parse_player_list(playernames)
 		end
-		for k,c in pairs(playernames) do
+		for i,c in ipairs(playernames) do
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = minetest.formspec_escape(c)
@@ -231,16 +231,15 @@ function mail.compile_contact_list(name, selected, playernames)
 				end
 				formspec[#formspec + 1] = minetest.formspec_escape(note)
 			end
-			i = i + 1
 			if not selected then
 				if type(selected) == "string" then
-					if k == selected then
+					if string.lower(selected) == string.lower(c) then
 						selected = i
 					end
 				end
 			end
 		end
-		if i > 0 and selected then
+		if #playernames > 0 and selected and type(selected) == "number" then
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = tostring(selected + 1)
 		end
@@ -523,10 +522,8 @@ function mail.handle_receivefields(player, formname, fields)
 			if fields[v.."add"] then
 				update = true
 				if selected_idxs.contacts[name] then
-					local i = 0
-					for k, contact in pairs(contacts) do
-						i = i+1
-						if i == selected_idxs.contacts[name] then
+					for k, contact, i in pairsByKeys(contacts) do
+						if k == selected_idxs.contacts[name] or i == selected_idxs.contacts[name] then
 							local list = mail.parse_player_list(draft[v])
 							list[#list+1] = contact.name
 							selected_idxs[v][name] = #list
@@ -573,10 +570,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 		if fields.contacts then
 			local evt = minetest.explode_table_event(fields.contacts)
-			--selected_idxs.contacts[name] = evt.row - 1
-			local i = 0
-			for k,c in pairs(contacts) do
-				i = i + 1
+			for k,c,i in pairsByKeys(contacts) do
 				if i == evt.row - 1 then
 					selected_idxs.contacts[name] = k
 					break
@@ -593,7 +587,26 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.show_edit_contact(name, contacts[selected_idxs.contacts[name]].name, contacts[selected_idxs.contacts[name]].note)
 		elseif fields.delete then
 			if contacts[selected_idxs.contacts[name]] then
-				contacts[selected_idxs.contacts[name]] = nil
+				-- delete the contact and set the selected to the next in the list, except if it was the last. Then determine the new last
+				local found = false
+				local last = nil
+				for k,v,i in pairsByKeys(contacts) do
+					if found then
+						selected_idxs.contacts[name] = k
+						break
+					elseif k == selected_idxs.contacts[name] then
+						contacts[selected_idxs.contacts[name]] = nil
+						selected_idxs.contacts[name] = nil
+						found = true
+					else
+						last = k
+					end
+				end
+				if found and not selected_idxs.contacts[name] then
+					-- was the last in the list, so take the previous (new last)
+					selected_idxs.contacts[name] = last
+				end
+
 				mail.setContacts(name, contacts)
 			end
 
