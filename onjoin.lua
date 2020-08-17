@@ -16,4 +16,6 @@ minetest.register_on_joinplayer(function(player)
 
 		end
 	end, player:get_player_name())
+
+	mail.migrate_contacts(player:get_player_name())
 end)
