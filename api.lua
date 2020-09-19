@@ -28,6 +28,11 @@ function mail.send(src, dst, subject, body)
 		m.body = body
 	end
 
+	if m.dst and not m.to then
+		-- populate "to" field
+		m.to = m.dst
+	end
+
 	local cc
 	local bcc
 	local extra
