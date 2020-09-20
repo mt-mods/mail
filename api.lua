@@ -12,6 +12,8 @@ mail.read_later_message = "You can read your messages later by using the /mail c
 mail sending function, can be invoked with one object argument (new api) or
 all 4 parameters (old compat version)
 see: "Mail format" api.md
+
+TODO: refactor this garbage code!
 --]]
 function mail.send(src, dst, subject, body)
 	-- figure out format
@@ -32,6 +34,15 @@ function mail.send(src, dst, subject, body)
 		-- populate "to" field
 		m.to = m.dst
 	end
+
+	if m.src and not m.from then
+		-- populate "from" field
+		m.from = m.src
+	end
+
+	-- sane default values
+	m.subject = m.subject or ""
+	m.body = m.body or ""
 
 	local cc
 	local bcc
