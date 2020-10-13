@@ -34,7 +34,7 @@ mail.migrate_contacts = function(playername)
 		local contacts = {}
 
 		if messages and not contacts then
-			for k,message in pairs(messages) do
+			for _, message in pairs(messages) do
 				mail.ensure_new_format(message)
 				if contacts[string.lower(message.from)] == nil then
 					contacts[string.lower(message.from)] = {

@@ -36,7 +36,7 @@ mail.getContacts = function(playername)
 	return mail.read_json_file(mail.getContactsFile(playername))
 end
 
-function pairsByKeys(t, f)
+function mail.pairsByKeys(t, f)
 	-- http://www.lua.org/pil/19.3.html
 	local a = {}
 	for n in pairs(t) do table.insert(a, n) end

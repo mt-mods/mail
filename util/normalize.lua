@@ -4,7 +4,7 @@ and add individual player names to recipient list
 --]]
 function mail.normalize_players_and_add_recipients(field, recipients)
     local order = mail.parse_player_list(field)
-    for i,c in ipairs(order) do
+    for _, c in ipairs(order) do
         if recipients[string.lower(c)] == nil then
             recipients[string.lower(c)] = c
         end
@@ -40,7 +40,7 @@ function mail.player_in_list(name, list)
     if type(list) == "string" then
         list = mail.parse_player_list(list)
     end
-    for k,c in pairs(list) do
+    for _, c in pairs(list) do
         if name == c then
             return true
         end

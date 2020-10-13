@@ -152,7 +152,7 @@ function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 	minetest.show_formspec(name, "mail:editcontact", formspec)
 end
 
-function mail.show_select_contact(name, to, cc, bcc)
+function mail.show_select_contact(name, to, cc)
 	local formspec = mail.select_contact_formspec
 	local contacts = mail.compile_contact_list(name, selected_idxs.contacts[name])
 
@@ -183,7 +183,7 @@ function mail.compile_contact_list(name, selected, playernames)
 
 	if playernames == nil then
 		local length = 0
-		for k, contact, i, l in pairsByKeys(contacts) do
+		for k, contact, i, l in mail.pairsByKeys(contacts) do
 			if i == 1 then length = l end
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
@@ -534,7 +534,7 @@ function mail.handle_receivefields(player, formname, fields)
 			if fields[v.."add"] then
 				update = true
 				if selected_idxs.contacts[name] then
-					for k, contact, i in pairsByKeys(contacts) do
+					for k, contact, i in mail.pairsByKeys(contacts) do
 						if k == selected_idxs.contacts[name] or i == selected_idxs.contacts[name] then
 							local list = mail.parse_player_list(draft[v])
 							list[#list+1] = contact.name
@@ -565,10 +565,6 @@ function mail.handle_receivefields(player, formname, fields)
 			return true
 		end
 
-		if fields.back then
-			-- just do the default stuff below, as ESC will
-		end
-
 		-- delete old idxs
 		for _,v in ipairs({"contacts","to","cc","bcc"}) do
 			selected_idxs[v][name] = nil
@@ -582,27 +578,36 @@ function mail.handle_receivefields(player, formname, fields)
 
 		if fields.contacts then
 			local evt = minetest.explode_table_event(fields.contacts)
-			for k,c,i in pairsByKeys(contacts) do
+			for k, _, i in mail.pairsByKeys(contacts) do
 				if i == evt.row - 1 then
 					selected_idxs.contacts[name] = k
 					break
 				end
 			end
 			if evt.type == "DCL" and contacts[selected_idxs.contacts[name]] then
-				mail.show_edit_contact(name, contacts[selected_idxs.contacts[name]].name, contacts[selected_idxs.contacts[name]].note)
+				mail.show_edit_contact(
+					name,
+					contacts[selected_idxs.contacts[name]].name,
+					contacts[selected_idxs.contacts[name]].note
+				)
 			end
 			return true
 		elseif fields.new then
 			selected_idxs.contacts[name] = "#NEW#"
 			mail.show_edit_contact(name, "", "")
 		elseif fields.edit then
-			mail.show_edit_contact(name, contacts[selected_idxs.contacts[name]].name, contacts[selected_idxs.contacts[name]].note)
+			mail.show_edit_contact(
+				name,
+				contacts[selected_idxs.contacts[name]].name,
+				contacts[selected_idxs.contacts[name]].note
+			)
 		elseif fields.delete then
 			if contacts[selected_idxs.contacts[name]] then
-				-- delete the contact and set the selected to the next in the list, except if it was the last. Then determine the new last
+				-- delete the contact and set the selected to the next in the list,
+				-- except if it was the last. Then determine the new last
 				local found = false
 				local last = nil
-				for k,v,i in pairsByKeys(contacts) do
+				for k in mail.pairsByKeys(contacts) do
 					if found then
 						selected_idxs.contacts[name] = k
 						break
