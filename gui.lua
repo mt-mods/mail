@@ -320,7 +320,7 @@ end
 function mail.replyall(name, message)
 	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
-	
+
 	-- new recipients are the sender plus the original recipients, minus ourselves
 	local recipients = message.to or ""
 	if message.sender ~= nil then
@@ -334,7 +334,7 @@ function mail.replyall(name, message)
 		end
 	end
 	recipients = mail.concat_player_list(recipients)
-	
+
 	-- new CC is old CC minus ourselves
 	local cc = mail.parse_player_list(message.cc)
 	for k,v in pairs(cc) do
@@ -349,8 +349,8 @@ function mail.replyall(name, message)
 end
 
 function mail.forward(name, message)
-	local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
-	mail.show_compose(name, "", "Fw: "..message.subject, fwfooter)
+	local fwfooter = "Type your message here.\n\n--Original message follows--\n" .. (message.body or "")
+	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), fwfooter)
 end
 
 function mail.handle_receivefields(player, formname, fields)
@@ -390,7 +390,7 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.reply and messages[selected_idxs.messages[name]] then
 			local message = messages[selected_idxs.messages[name]]
 			mail.reply(name, message)
-		
+
 		elseif fields.replyall and messages[selected_idxs.messages[name]] then
 			local message = messages[selected_idxs.messages[name]]
 			mail.replyall(name, message)
