@@ -595,7 +595,7 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.new then
 			selected_idxs.contacts[name] = "#NEW#"
 			mail.show_edit_contact(name, "", "")
-		elseif fields.edit then
+		elseif fields.edit and selected_idxs.contacts[name] and contacts[selected_idxs.contacts[name]] then
 			mail.show_edit_contact(
 				name,
 				contacts[selected_idxs.contacts[name]].name,
