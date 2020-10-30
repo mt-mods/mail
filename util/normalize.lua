@@ -14,6 +14,10 @@ end
 
 
 function mail.parse_player_list(field)
+    if not field then
+        return {}
+    end
+
     local separator = ", "
     local pattern = "([^" .. separator .. "]+)"
 
