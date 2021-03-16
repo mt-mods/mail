@@ -12,7 +12,7 @@ minetest.register_on_joinplayer(function(player)
 
 		if unreadcount > 0 then
 			minetest.chat_send_player(name,
-				"(" ..  unreadcount .. ") You have mail! Type /mail to read")
+				minetest.colorize("#00f529", "(" ..  unreadcount .. ") You have mail! Type /mail to read"))
 
 		end
 	end, player:get_player_name())
