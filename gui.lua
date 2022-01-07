@@ -258,7 +258,7 @@ function mail.show_message(name, msgnumber)
 			label[0,0.4;To: %s]
 			label[0,0.8;CC: %s]
 			label[0,1.3;Subject: %s]
-			textarea[0.25,1.8;8,7.8;body;;%s]
+			textarea[0.25,1.8;8,7.8;;;%s]
 			button[0,8.5;2,1;reply;Reply]
 			button[2,8.5;2,1;replyall;Reply All]
 			button[4,8.5;2,1;forward;Forward]
