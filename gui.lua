@@ -265,11 +265,11 @@ function mail.show_message(name, msgnumber)
 			button[6,8.5;2,1;delete;Delete]
 		]] .. theme
 
-	local from = minetest.formspec_escape(message.sender)
-	local to = minetest.formspec_escape(message.to)
-	local cc = minetest.formspec_escape(message.cc)
-	local subject = minetest.formspec_escape(message.subject)
-	local body = minetest.formspec_escape(message.body)
+	local from = minetest.formspec_escape(message.sender) or ""
+	local to = minetest.formspec_escape(message.to) or ""
+	local cc = minetest.formspec_escape(message.cc) or ""
+	local subject = minetest.formspec_escape(message.subject) or ""
+	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, subject, body)
 
 	if message.unread then
