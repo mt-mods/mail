@@ -10,7 +10,7 @@ function mail.getContactsFile(playername)
 end
 
 
-mail.getMessages = function(playername)
+function mail.getMessages(playername)
 	local messages = mail.read_json_file(mail.getMailFile(playername))
 	if messages then
 		-- sort by received date descending
@@ -22,7 +22,7 @@ mail.getMessages = function(playername)
 	return messages
 end
 
-mail.setMessages = function(playername, messages)
+function mail.setMessages(playername, messages)
 	if mail.write_json_file(mail.getMailFile(playername), messages) then
 		mail.hud_update(playername, messages)
 		return true
@@ -33,7 +33,7 @@ mail.setMessages = function(playername, messages)
 end
 
 
-mail.getContacts = function(playername)
+function mail.getContacts(playername)
 	return mail.read_json_file(mail.getContactsFile(playername))
 end
 
@@ -56,7 +56,7 @@ function mail.pairsByKeys(t, f)
 	return iter
 end
 
-mail.setContacts = function(playername, contacts)
+function mail.setContacts(playername, contacts)
 	if mail.write_json_file(mail.getContactsFile(playername), contacts) then
 		return true
 	else

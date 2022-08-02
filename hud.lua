@@ -33,7 +33,7 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 
-mail.hud_update = function(playername, messages)
+function mail.hud_update(playername, messages)
 	local data = huddata[playername]
 	local player = minetest.get_player_by_name(playername)
 

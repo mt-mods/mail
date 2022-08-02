@@ -1,7 +1,7 @@
 
 -- migrate from mail.db to player-file-based mailbox
 
-mail.migrate = function()
+function mail.migrate()
 	-- create directory, just in case
 	minetest.mkdir(mail.maildir)
 	minetest.mkdir(mail.contactsdir)
@@ -26,7 +26,7 @@ mail.migrate = function()
 end
 
 
-mail.migrate_contacts = function(playername)
+function mail.migrate_contacts(playername)
 	local file = io.open(mail.getContactsFile(playername), 'r')
 	if not file then
 		-- file doesn't exist! This is a case for Migrate Man!
