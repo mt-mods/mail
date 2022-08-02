@@ -1,4 +1,0 @@
-User,Password
------------------
-test,enter
-test2,enter

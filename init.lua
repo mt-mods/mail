@@ -64,3 +64,7 @@ end
 
 -- migrate storage
 mail.migrate()
+
+if minetest.get_modpath("mtt") then
+	dofile(MP .. "/mtt.lua")
+end

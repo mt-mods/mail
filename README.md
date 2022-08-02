@@ -1,7 +1,7 @@
 Mail mod for Minetest (ingame mod)
 ======
 
-![](https://github.com/minetest-mail/mail_mod/workflows/integration-test/badge.svg)
+![](https://github.com/minetest-mail/mail_mod/workflows/test/badge.svg)
 ![](https://github.com/minetest-mail/mail_mod/workflows/luacheck/badge.svg)
 
 
