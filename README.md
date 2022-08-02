@@ -1,8 +1,8 @@
 Mail mod for Minetest (ingame mod)
 ======
 
-![](https://github.com/minetest-mail/mail_mod/workflows/test/badge.svg)
-![](https://github.com/minetest-mail/mail_mod/workflows/luacheck/badge.svg)
+![](https://github.com/mt-mods/mail/workflows/test/badge.svg)
+![](https://github.com/mt-mods/mail/workflows/luacheck/badge.svg)
 
 
 This is a fork of cheapies mail mod
