@@ -22,7 +22,7 @@ Install it like any other mod: copy the directory `mail_mod` to your "worldmods"
 
 ## Webmail
 
-See: https://github.com/minetest-mail/mail
+To provide a web-based interface to receive/send mails you can use the [mtui](https://github.com/minetest-go/mtui) project
 
 # Commands/Howto
 

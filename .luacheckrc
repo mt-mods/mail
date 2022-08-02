@@ -18,5 +18,5 @@ read_globals = {
 	"unified_inventory", "default",
 
 	-- optional mods
-	"xban", "QoS", "mtt"
+	"mtt"
 }
