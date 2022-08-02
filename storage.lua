@@ -1,6 +1,4 @@
 
--- TODO: maybe local cache?
-
 function mail.getMailFile(playername)
 	local saneplayername = string.gsub(playername, "[.|/]", "")
 	return mail.maildir .. "/" .. saneplayername .. ".json"
@@ -15,6 +13,9 @@ end
 mail.getMessages = function(playername)
 	local messages = mail.read_json_file(mail.getMailFile(playername))
 	if messages then
+		-- sort by received date descending
+		table.sort(messages, function(a,b) return a.time > b.time end)
+		-- show hud notification
 		mail.hud_update(playername, messages)
 	end
 
