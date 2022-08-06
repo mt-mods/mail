@@ -13,6 +13,13 @@ end
 function mail.getMessages(playername)
 	local messages = mail.read_json_file(mail.getMailFile(playername))
 	if messages then
+		for _, msg in ipairs(messages) do
+			if not msg.time then
+				-- add missing time field if not available (happens with old data)
+				msg.time = 0
+			end
+		end
+
 		-- sort by received date descending
 		table.sort(messages, function(a,b) return a.time > b.time end)
 		-- show hud notification
