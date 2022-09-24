@@ -1,12 +1,16 @@
 -- refactor these to some proper management thing
-selected_idxs = {
+mail.selected_idxs = {
 	messages = {},
 	contacts = {},
 	to = {},
 	cc = {},
 	bcc = {},
 }
-message_drafts = {}
+
+mail.message_drafts = {}
+
+local selected_idxs = mail.selected_idxs
+local message_drafts = mail.message_drafts
 
 local theme
 if minetest.get_modpath("default") then
@@ -72,6 +76,7 @@ function mail.show_about(name)
 end
 
 function mail.show_inbox(name)
+	selected_idxs.messages[name] = nil
 	local formspec = { mail.inbox_formspec }
 	local messages = mail.getMessages(name)
 
@@ -354,14 +359,11 @@ function mail.forward(name, message)
 end
 
 function mail.handle_receivefields(player, formname, fields)
-	if formname == "" and fields and fields.quit and minetest.get_modpath("unified_inventory") then
-		unified_inventory.set_inventory_formspec(player, "craft")
-	end
-
 	if formname == "mail:about" then
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
 		end)
+		return true
 
 	elseif formname == "mail:inbox" then
 		local name = player:get_player_name()
@@ -375,6 +377,7 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 			return true
 		end
+
 		if fields.read then
 			if messages[selected_idxs.messages[name]] then
 				mail.show_message(name, selected_idxs.messages[name])
@@ -387,6 +390,7 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 
 			mail.show_inbox(name)
+
 		elseif fields.reply and messages[selected_idxs.messages[name]] then
 			local message = messages[selected_idxs.messages[name]]
 			mail.reply(name, message)
@@ -406,7 +410,6 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.setMessages(name, messages)
 			end
 			mail.show_inbox(name)
-			return true
 
 		elseif fields.markunread then
 			if messages[selected_idxs.messages[name]] then
@@ -415,7 +418,6 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.setMessages(name, messages)
 			end
 			mail.show_inbox(name)
-			return true
 
 		elseif fields.new then
 			mail.show_compose(name)
@@ -423,17 +425,13 @@ function mail.handle_receivefields(player, formname, fields)
 		elseif fields.contacts then
 			mail.show_contacts(name)
 
-		elseif fields.quit then
-			if minetest.get_modpath("unified_inventory") then
-				unified_inventory.set_inventory_formspec(player, "craft")
-			end
-
 		elseif fields.about then
 			mail.show_about(name)
 
 		end
 
 		return true
+
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
 		local messages = mail.getMessages(name)
@@ -441,15 +439,19 @@ function mail.handle_receivefields(player, formname, fields)
 		if fields.back then
 			mail.show_inbox(name)
 			return true	-- don't uselessly set messages
+
 		elseif fields.reply then
 			local message = messages[selected_idxs.messages[name]]
 			mail.reply(name, message)
+
 		elseif fields.replyall then
 			local message = messages[selected_idxs.messages[name]]
 			mail.replyall(name, message)
+
 		elseif fields.forward then
 			local message = messages[selected_idxs.messages[name]]
 			mail.forward(name, message.subject)
+
 		elseif fields.delete then
 			if messages[selected_idxs.messages[name]] then
 				table.remove(messages,selected_idxs.messages[name])
@@ -457,6 +459,7 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 			mail.show_inbox(name)
 		end
+
 		return true
 
 	elseif formname == "mail:compose" then
@@ -499,10 +502,12 @@ function mail.handle_receivefields(player, formname, fields)
 				body = fields.body,
 			}
 			mail.show_select_contact(name, fields.to, fields.cc, fields.bcc)
+
 		elseif fields.cancel then
 			message_drafts[name] = nil
 			mail.show_inbox(name)
 		end
+
 		return true
 
 	elseif formname == "mail:selectcontact" then
@@ -560,6 +565,7 @@ function mail.handle_receivefields(player, formname, fields)
 				end
 			end
 		end
+
 		if update then
 			mail.show_select_contact(name, draft.to, draft.cc, draft.bcc)
 			return true
@@ -569,7 +575,9 @@ function mail.handle_receivefields(player, formname, fields)
 		for _,v in ipairs({"contacts","to","cc","bcc"}) do
 			selected_idxs[v][name] = nil
 		end
+
 		mail.show_compose(name, draft.to, draft.subject, draft.body, draft.cc, draft.bcc)
+
 		return true
 
 	elseif formname == "mail:contacts" then
@@ -591,16 +599,18 @@ function mail.handle_receivefields(player, formname, fields)
 					contacts[selected_idxs.contacts[name]].note
 				)
 			end
-			return true
+
 		elseif fields.new then
 			selected_idxs.contacts[name] = "#NEW#"
 			mail.show_edit_contact(name, "", "")
+
 		elseif fields.edit and selected_idxs.contacts[name] and contacts[selected_idxs.contacts[name]] then
 			mail.show_edit_contact(
 				name,
 				contacts[selected_idxs.contacts[name]].name,
 				contacts[selected_idxs.contacts[name]].note
 			)
+
 		elseif fields.delete then
 			if contacts[selected_idxs.contacts[name]] then
 				-- delete the contact and set the selected to the next in the list,
@@ -631,8 +641,10 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.back then
 			mail.show_inbox(name)
-
 		end
+
+		return true
+
 	elseif formname == "mail:editcontact" then
 		local name = player:get_player_name()
 		local contacts = mail.getContacts(name)
@@ -645,9 +657,11 @@ function mail.handle_receivefields(player, formname, fields)
 					if #fields.name == 0 then
 						mail.show_edit_contact(name, contact.name, fields.note, "empty")
 						return true
+
 					elseif contacts[string.lower(fields.name)] ~= nil then
 						mail.show_edit_contact(name, contact.name, fields.note, "collision")
 						return true
+
 					else
 						contacts[string.lower(fields.name)] = contact
 						contacts[selected_idxs.contacts[name]] = nil
@@ -655,6 +669,7 @@ function mail.handle_receivefields(player, formname, fields)
 				end
 				contact.name = fields.name
 				contact.note = fields.note
+
 			else
 				local contact = {
 					name = fields.name,
@@ -662,18 +677,19 @@ function mail.handle_receivefields(player, formname, fields)
 				}
 				contacts[string.lower(contact.name)] = contact
 			end
+
 			mail.setContacts(name, contacts)
 			mail.show_contacts(name)
 
 		elseif fields.back then
 			mail.show_contacts(name)
-
 		end
+
+		return true
 
 	elseif fields.mail then
 		mail.show_inbox(player:get_player_name())
-	else
-		return false
+		return true
 	end
 end
 
