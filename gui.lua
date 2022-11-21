@@ -76,7 +76,6 @@ function mail.show_about(name)
 end
 
 function mail.show_inbox(name)
-	selected_idxs.messages[name] = nil
 	local formspec = { mail.inbox_formspec }
 	local messages = mail.getMessages(name)
 
