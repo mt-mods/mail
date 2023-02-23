@@ -18,5 +18,5 @@ read_globals = {
 	"unified_inventory", "default",
 
 	-- optional mods
-	"mtt"
+	"mtt", "canonical_name"
 }
