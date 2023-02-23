@@ -261,6 +261,7 @@ function mail.show_message(name, msgnumber)
 			label[0,0;From: %s]
 			label[0,0.4;To: %s]
 			label[0,0.8;CC: %s]
+			label[4,0;Date: %s]
 			label[0,1.3;Subject: %s]
 			textarea[0.25,1.8;8,7.8;;;%s]
 			button[0,8.5;2,1;reply;Reply]
@@ -272,9 +273,10 @@ function mail.show_message(name, msgnumber)
 	local from = minetest.formspec_escape(message.sender) or ""
 	local to = minetest.formspec_escape(message.to) or ""
 	local cc = minetest.formspec_escape(message.cc) or ""
+	local date = minetest.formspec_escape(os.date("%Y-%m-%d %X", message.time)) or ""
 	local subject = minetest.formspec_escape(message.subject) or ""
 	local body = minetest.formspec_escape(message.body) or ""
-	formspec = string.format(formspec, from, to, cc, subject, body)
+	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
 	if message.unread then
 		message.unread = false
