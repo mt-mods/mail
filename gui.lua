@@ -19,7 +19,9 @@ else
 	theme = ""
 end
 
-mail.inbox_formspec = "size[8,9;]" .. theme .. [[		
+mail.inbox_formspec = "size[8,9;]" .. theme .. [[
+		tabheader[0.3,1;boxtab;Inbox,Sent messages;1;false;false]
+		
 		button[6,0.10;2,0.5;new;New]
 		button[6,0.95;2,0.5;read;Read]
 		button[6,1.70;2,0.5;reply;Reply]
@@ -32,12 +34,12 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		button[6,7.40;2,0.5;about;About]
 		button_exit[6,8.45;2,0.5;quit;Close]
 		
-		tabheader[0.3,1;boxtab;Inbox,Sent messages;1;false;false]
-		
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,8;messages;#999,From,Subject]]
 
 mail.sent_formspec = "size[8,9;]" .. theme .. [[		
+		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
+		
 		button[6,0.10;2,0.5;new;New]
 		button[6,0.95;2,0.5;read;Read]
 		button[6,1.70;2,0.5;reply;Reply]
@@ -47,8 +49,6 @@ mail.sent_formspec = "size[8,9;]" .. theme .. [[
 		button[6,6.55;2,0.5;contacts;Contacts]
 		button[6,7.40;2,0.5;about;About]
 		button_exit[6,8.45;2,0.5;quit;Close]
-		
-		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
 		
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,8;messages;#999,To,Subject]]
@@ -139,6 +139,50 @@ function mail.show_inbox(name)
 		formspec[#formspec + 1] = "]label[2.25,4.5;No mail]"
 	end
 	minetest.show_formspec(name, "mail:inbox", table.concat(formspec, ""))
+end
+
+function mail.show_sent(name)
+	local formspec = { mail.sent_formspec }
+	local playerContacts = mail.getContacts(name)
+	local nbMails = 0
+	for k, contact, i, l in mail.pairsByKeys(playerContacts) do
+		local contactMessages = mail.getMessages(contact.name)
+
+		message_drafts[name] = nil
+
+		if contactMessages[1] then
+			for _, message in ipairs(contactMessages) do
+				mail.ensure_new_format(message, name)
+				if message.sender == name then
+					nbMails = nbMails + 1
+					formspec[#formspec + 1] = ","
+					formspec[#formspec + 1] = ","
+					formspec[#formspec + 1] = minetest.formspec_escape(message.to)
+					formspec[#formspec + 1] = ","
+					if message.subject ~= "" then
+						if string.len(message.subject) > 30 then
+							formspec[#formspec + 1] =
+									minetest.formspec_escape(string.sub(message.subject, 1, 27))
+							formspec[#formspec + 1] = "..."
+						else
+							formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
+						end
+					else
+						formspec[#formspec + 1] = "(No subject)"
+					end
+				end
+			end
+			--if selected_idxs.messages[name] then
+			--	formspec[#formspec + 1] = ";"
+			--	formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
+			--end
+			formspec[#formspec + 1] = "]"
+		end
+	end
+	if nbMails == 0 then
+		formspec[#formspec + 1] = "]label[2.25,4.5;No mail]"
+	end
+	minetest.show_formspec(name, "mail:sent", table.concat(formspec, ""))
 end
 
 function mail.show_contacts(name)
@@ -376,13 +420,14 @@ function mail.forward(name, message)
 end
 
 function mail.handle_receivefields(player, formname, fields)
+	
 	if formname == "mail:about" then
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
 		end)
 		return true
 
-	elseif formname == "mail:inbox" then
+	elseif formname == "mail:inbox" or formname == "mail:sent" then
 		local name = player:get_player_name()
 		local messages = mail.getMessages(name)
 
@@ -394,8 +439,14 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 			return true
 		end
+		
+		if fields.boxtab == "1" then
+			mail.show_inbox(name)
+			
+		elseif fields.boxtab == "2" then
+			mail.show_sent(name)
 
-		if fields.read then
+		elseif fields.read then
 			if messages[selected_idxs.messages[name]] then
 				mail.show_message(name, selected_idxs.messages[name])
 			end
