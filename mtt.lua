@@ -1,11 +1,11 @@
 
 mtt.register("send mail", function(callback)
     local auth_handler = minetest.get_auth_handler()
-    if not auth_handler:get_auth("player1") then
-        auth_handler:create_auth("player1", "test")
+    if not auth_handler.get_auth("player1") then
+        auth_handler.create_auth("player1", "test")
     end
-    if not auth_handler:get_auth("player2") then
-        auth_handler:create_auth("player2", "test")
+    if not auth_handler.get_auth("player2") then
+        auth_handler.create_auth("player2", "test")
     end
 
     -- send a mail
