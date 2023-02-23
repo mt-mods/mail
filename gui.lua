@@ -172,10 +172,10 @@ function mail.show_sent(name)
 					end
 				end
 			end
-			--if selected_idxs.messages[name] then
-			--	formspec[#formspec + 1] = ";"
-			--	formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
-			--end
+			if selected_idxs.messages[name] then
+				formspec[#formspec + 1] = ";"
+				formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
+			end
 			formspec[#formspec + 1] = "]"
 		end
 	end
