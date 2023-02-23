@@ -19,7 +19,7 @@ else
 	theme = ""
 end
 
-mail.inbox_formspec = "size[8,9;]" .. theme .. [[
+mail.inbox_formspec = "size[8,9;]" .. theme .. [[		
 		button[6,0.10;2,0.5;new;New]
 		button[6,0.95;2,0.5;read;Read]
 		button[6,1.70;2,0.5;reply;Reply]
@@ -31,9 +31,27 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		button[6,6.55;2,0.5;contacts;Contacts]
 		button[6,7.40;2,0.5;about;About]
 		button_exit[6,8.45;2,0.5;quit;Close]
-
+		
+		tabheader[0.3,1;boxtab;Inbox,Sent messages;1;false;false]
+		
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;messages;#999,From,Subject]]
+		table[0,0.7;5.75,8;messages;#999,From,Subject]]
+
+mail.sent_formspec = "size[8,9;]" .. theme .. [[		
+		button[6,0.10;2,0.5;new;New]
+		button[6,0.95;2,0.5;read;Read]
+		button[6,1.70;2,0.5;reply;Reply]
+		button[6,2.45;2,0.5;replyall;Reply All]
+		button[6,3.20;2,0.5;forward;Forward]
+		button[6,3.95;2,0.5;delete;Delete]
+		button[6,6.55;2,0.5;contacts;Contacts]
+		button[6,7.40;2,0.5;about;About]
+		button_exit[6,8.45;2,0.5;quit;Close]
+		
+		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
+		
+		tablecolumns[color;text;text]
+		table[0,0.7;5.75,8;messages;#999,To,Subject]]
 
 mail.contacts_formspec = "size[8,9;]" .. theme .. [[
 		button[6,0.10;2,0.5;new;New]
