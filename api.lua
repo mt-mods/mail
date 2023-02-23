@@ -1,5 +1,7 @@
 -- see: mail.md
 
+local f = string.format
+
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
 	mail.registered_on_receives[#mail.registered_on_receives + 1] = func
@@ -15,101 +17,96 @@ see: "Mail format" api.md
 
 TODO: refactor this garbage code!
 --]]
-function mail.send(src, dst, subject, body)
+function mail.send(...)
 	-- figure out format
 	local m
-	if dst == nil and subject == nil and body == nil then
-		-- new format (one object param)
-		m = src
+	if #{...} == 1 then
+		-- new format (one table param)
+		m = ...
+		-- populate "to" field
+		m.to = m.to or m.dst
+		-- populate "from" field
+		m.from = m.from or m.src
 	else
 		-- old format
 		m = {}
-		m.from = src
-		m.to = dst
-		m.subject = subject
-		m.body = body
-	end
-
-	if m.dst and not m.to then
-		-- populate "to" field
-		m.to = m.dst
-	end
-
-	if m.src and not m.from then
-		-- populate "from" field
-		m.from = m.src
+		m.from, m.to, m.subject, m.body = ...
 	end
 
 	-- sane default values
 	m.subject = m.subject or ""
 	m.body = m.body or ""
 
-	local cc
-	local bcc
-	local extra
-	-- log mail send action
-	if m.cc or m.bcc then
-		if m.cc then
-			cc = "CC: " .. m.cc
-			if m.bcc then
-				cc = cc .. " - "
-			end
-		else
-			cc = ""
-		end
-		if m.bcc then
-			bcc = "BCC: " .. m.bcc
-		else
-			bcc = ""
-		end
-		extra = " (" .. cc .. bcc .. ")"
-	else
-		extra = ""
+	if m.subject == "" then
+		m.subject = "(No subject)"
 	end
-	minetest.log("action", "[mail] '" .. m.from .. "' sends mail to '" .. m.to .. "'" ..
-		extra .. "' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
-
+	if string.len(m.subject) > 30 then
+		m.subject = string.sub(m.subject,1,27) .. "..."
+	end
 
 	-- normalize to, cc and bcc while compiling a list of all recipients
 	local recipients = {}
-	m.to = mail.normalize_players_and_add_recipients(m.to, recipients)
+	local undeliverable = {}
+	m.to = mail.normalize_players_and_add_recipients(m.to, recipients, undeliverable)
 	if m.cc then
-		m.cc = mail.normalize_players_and_add_recipients(m.cc, recipients)
+		m.cc = mail.normalize_players_and_add_recipients(m.cc, recipients, undeliverable)
 	end
 	if m.bcc then
-		m.bcc = mail.normalize_players_and_add_recipients(m.bcc, recipients)
+		m.bcc = mail.normalize_players_and_add_recipients(m.bcc, recipients, undeliverable)
 	end
+
+	if next(undeliverable) then -- table is not empty
+		local undeliverable_names = {}
+		for name in pairs(undeliverable) do
+			undeliverable_names[#undeliverable_names + 1] = '"' .. name .. '"'
+		end
+		return f("recipients %s don't exist; cannot send mail.",
+			table.concat(undeliverable_names, ", ")
+		)
+	end
+
+	local extra = {}
+	local extra_log
+	if m.cc then
+		table.insert(extra, "CC: " .. m.cc)
+	end
+	if m.bcc then
+		table.insert(extra, "BCC: " .. m.bcc)
+	end
+	if #extra > 0 then
+		extra_log = f(" (%s)", table.concat(extra, " - "))
+	else
+		extra_log = ""
+	end
+
+	minetest.log("action", f("[mail] %q send mail to %q%s with subject %q and body %q",
+		m.from, m.to, extra_log, m.subject, m.body
+	))
 
 	-- form the actual mail
 	local msg = {
 		unread  = true,
 		sender  = m.from,
 		to      = m.to,
+		cc      = m.cc,
 		subject = m.subject,
 		body    = m.body,
 		time    = os.time(),
 	}
-	if m.cc then
-		msg.cc  = m.cc
-	end
 
 	-- send the mail to all recipients
-	for _, recipient in pairs(recipients) do
+	for recipient in pairs(recipients) do
 		local messages = mail.getMessages(recipient)
 		table.insert(messages, 1, msg)
 		mail.setMessages(recipient, messages)
 	end
 
 	-- notify recipients that happen to be online
+	local mail_alert = f(mail.receive_mail_message, m.from, m.subject)
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		if recipients[string.lower(name)] ~= nil then
-			if m.subject == "" then m.subject = "(No subject)" end
-			if string.len(m.subject) > 30 then
-				m.subject = string.sub(m.subject,1,27) .. "..."
-			end
-			minetest.chat_send_player(name,
-					string.format(mail.receive_mail_message, m.from, m.subject))
+		if recipients[name] then
+			minetest.chat_send_player(name, mail_alert)
 		end
 	end
 

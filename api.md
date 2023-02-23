@@ -35,12 +35,13 @@ mail = {
 ## Sending mail
 Old variant (pre-1.1)
 ```lua
-mail.send("source name", "destination name", "subject line", "mail body")
+local error = mail.send("source name", "destination name", "subject line", "mail body")
+-- error will contain an error message if mail couldn't be delivered, otherwise nil
 ```
 
 New variant (1.1+)
 ```lua
-mail.send({
+local error = mail.send({
 	from = "sender name",
 	to = "destination name",
 	cc = "carbon copy",
@@ -48,6 +49,7 @@ mail.send({
 	subject = "subject line",
 	body = "mail body"
 })
+-- error will contain an error message if mail couldn't be delivered, otherwise nil
 ```
 
 # Hooks

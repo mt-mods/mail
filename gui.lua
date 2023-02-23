@@ -464,7 +464,7 @@ function mail.handle_receivefields(player, formname, fields)
 	elseif formname == "mail:compose" then
 		local name = player:get_player_name()
 		if fields.send then
-			mail.send({
+			local error = mail.send({
 				from = name,
 				to = fields.to,
 				cc = fields.cc,
@@ -472,6 +472,11 @@ function mail.handle_receivefields(player, formname, fields)
 				subject = fields.subject,
 				body = fields.body,
 			})
+			if error then
+				minetest.chat_send_player(name, error)
+				return
+			end
+
 			local contacts = mail.getContacts(name)
 			local recipients = mail.parse_player_list(fields.to)
 			local changed = false

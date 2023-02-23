@@ -1,17 +1,20 @@
+local has_canonical_name = minetest.get_modpath("canonical_name")
+
 --[[
 return the field normalized (comma separated, single space)
 and add individual player names to recipient list
 --]]
-function mail.normalize_players_and_add_recipients(field, recipients)
+function mail.normalize_players_and_add_recipients(field, recipients, undeliverable)
     local order = mail.parse_player_list(field)
-    for _, c in ipairs(order) do
-        if recipients[string.lower(c)] == nil then
-            recipients[string.lower(c)] = c
+    for _, player_name in ipairs(order) do
+        if not minetest.player_exists(player_name) then
+            undeliverable[player_name] = true
+        else
+            recipients[player_name] = true
         end
     end
     return mail.concat_player_list(order)
 end
-
 
 function mail.parse_player_list(field)
     if not field then
@@ -24,10 +27,15 @@ function mail.parse_player_list(field)
     -- get individual players
     local player_set = {}
     local order = {}
-    field:gsub(pattern, function(c)
-        if player_set[string.lower(c)] == nil then
-            player_set[string.lower(c)] = c
-            order[#order+1] = c
+    field:gsub(pattern, function(player_name)
+        local lower = string.lower(player_name)
+        if not player_set[lower] then
+            if has_canonical_name then
+                player_name = canonical_name.get(player_name) or player_name
+            end
+
+            player_set[lower] = player_name
+            order[#order+1] = player_name
         end
     end)
 
@@ -44,14 +52,13 @@ function mail.player_in_list(name, list)
     if type(list) == "string" then
         list = mail.parse_player_list(list)
     end
-    for _, c in pairs(list) do
-        if name == c then
+    for _, player_name in pairs(list) do
+        if name == player_name then
             return true
         end
     end
     return false
 end
-
 
 function mail.ensure_new_format(message, name)
     if message.to == nil then
