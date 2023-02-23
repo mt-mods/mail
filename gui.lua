@@ -273,7 +273,8 @@ function mail.show_message(name, msgnumber)
 	local from = minetest.formspec_escape(message.sender) or ""
 	local to = minetest.formspec_escape(message.to) or ""
 	local cc = minetest.formspec_escape(message.cc) or ""
-	local date = minetest.formspec_escape(os.date("%Y-%m-%d %X", message.time)) or ""
+	local date = type(message.time) == "number"
+		and minetest.formspec_escape(os.date("%Y-%m-%d %X", message.time)) or ""
 	local subject = minetest.formspec_escape(message.subject) or ""
 	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
