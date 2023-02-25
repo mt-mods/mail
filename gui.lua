@@ -12,6 +12,8 @@ mail.message_drafts = {}
 local selected_idxs = mail.selected_idxs
 local message_drafts = mail.message_drafts
 
+local boxtab_index = 1
+
 local theme
 if minetest.get_modpath("default") then
 	theme = default.gui_bg .. default.gui_bg_img
@@ -423,7 +425,11 @@ function mail.handle_receivefields(player, formname, fields)
 	
 	if formname == "mail:about" then
 		minetest.after(0.5, function()
-			mail.show_inbox(player:get_player_name())
+			if boxtab_index == 1 then
+				mail.show_inbox(player:get_player_name())
+			elseif boxtab_index == 2 then
+				mail.show_sent(player:get_player_name())
+			end
 		end)
 		return true
 
@@ -441,9 +447,11 @@ function mail.handle_receivefields(player, formname, fields)
 		end
 		
 		if fields.boxtab == "1" then
+			boxtab_index = 1
 			mail.show_inbox(name)
 			
 		elseif fields.boxtab == "2" then
+			boxtab_index = 2
 			mail.show_sent(name)
 
 		elseif fields.read then
@@ -457,7 +465,11 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.setMessages(name, messages)
 			end
 
-			mail.show_inbox(name)
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 
 		elseif fields.reply and messages[selected_idxs.messages[name]] then
 			local message = messages[selected_idxs.messages[name]]
@@ -477,7 +489,12 @@ function mail.handle_receivefields(player, formname, fields)
 				-- set messages immediately, so it shows up already when updating the inbox
 				mail.setMessages(name, messages)
 			end
-			mail.show_inbox(name)
+
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 
 		elseif fields.markunread then
 			if messages[selected_idxs.messages[name]] then
@@ -485,7 +502,12 @@ function mail.handle_receivefields(player, formname, fields)
 				-- set messages immediately, so it shows up already when updating the inbox
 				mail.setMessages(name, messages)
 			end
-			mail.show_inbox(name)
+
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 
 		elseif fields.new then
 			mail.show_compose(name)
@@ -505,7 +527,12 @@ function mail.handle_receivefields(player, formname, fields)
 		local messages = mail.getMessages(name)
 
 		if fields.back then
-			mail.show_inbox(name)
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
+
 			return true	-- don't uselessly set messages
 
 		elseif fields.reply then
@@ -525,7 +552,12 @@ function mail.handle_receivefields(player, formname, fields)
 				table.remove(messages,selected_idxs.messages[name])
 				mail.setMessages(name, messages)
 			end
-			mail.show_inbox(name)
+
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 		end
 
 		return true
@@ -563,7 +595,11 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 
 			minetest.after(0.5, function()
-				mail.show_inbox(name)
+				if boxtab_index == 1 then
+					mail.show_inbox(name)
+				elseif boxtab_index == 2 then
+					mail.show_sent(name)
+				end
 			end)
 
 		elseif fields.tocontacts or fields.cccontacts or fields.bcccontacts then
@@ -578,7 +614,12 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.cancel then
 			message_drafts[name] = nil
-			mail.show_inbox(name)
+
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 		end
 
 		return true
@@ -713,7 +754,12 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.show_contacts(name)
 
 		elseif fields.back then
-			mail.show_inbox(name)
+
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 		end
 
 		return true
@@ -761,7 +807,12 @@ function mail.handle_receivefields(player, formname, fields)
 		return true
 
 	elseif fields.mail then
-		mail.show_inbox(player:get_player_name())
+
+			if boxtab_index == 1 then
+				mail.show_inbox(player:get_player_name())
+			elseif boxtab_index == 2 then
+				mail.show_sent(player:get_player_name())
+			end
 		return true
 	end
 end
