@@ -37,7 +37,7 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		button_exit[6,8.45;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,8;messages;#999,From,Subject]]
+		table[0,0.7;5.75,8.3;messages;#999,From,Subject]]
 
 mail.sent_formspec = "size[8,9;]" .. theme .. [[		
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
@@ -53,7 +53,7 @@ mail.sent_formspec = "size[8,9;]" .. theme .. [[
 		button_exit[6,8.45;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,8;messages;#999,To,Subject]]
+		table[0,0.7;5.75,8.3;messages;#999,To,Subject]]
 
 mail.contacts_formspec = "size[8,9;]" .. theme .. [[
 		button[6,0.10;2,0.5;new;New]
