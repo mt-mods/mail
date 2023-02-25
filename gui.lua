@@ -490,11 +490,7 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.setMessages(name, messages)
 			end
 
-			if boxtab_index == 1 then
-				mail.show_inbox(name)
-			elseif boxtab_index == 2 then
-				mail.show_sent(name)
-			end
+			mail.show_inbox(name)
 
 		elseif fields.markunread then
 			if messages[selected_idxs.messages[name]] then
@@ -503,11 +499,7 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.setMessages(name, messages)
 			end
 
-			if boxtab_index == 1 then
-				mail.show_inbox(name)
-			elseif boxtab_index == 2 then
-				mail.show_sent(name)
-			end
+			mail.show_inbox(name)
 
 		elseif fields.new then
 			mail.show_compose(name)
