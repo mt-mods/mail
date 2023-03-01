@@ -200,7 +200,7 @@ function mail.show_maillists(name)
 		for _, maillist in ipairs(maillists) do
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(maillist.name)
+			formspec[#formspec + 1] = "@" .. minetest.formspec_escape(maillist.name)
 			formspec[#formspec + 1] = ","
 			if maillist.desc ~= "" then
 				if string.len(maillist.desc) > 30 then
