@@ -1,6 +1,6 @@
 minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)
-		local messages = mail.getMessages(name)
+		local messages = mail.getPlayerMessages(name)
 
 		local unreadcount = 0
 

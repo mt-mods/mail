@@ -93,13 +93,9 @@ function mail.send(...)
 		body    = m.body,
 		time    = os.time(),
 	}
-
-	-- send the mail to all recipients
-	for recipient in pairs(recipients) do
-		local messages = mail.getMessages(recipient)
-		table.insert(messages, 1, msg)
-		mail.setMessages(recipient, messages)
-	end
+	
+	-- insert in global storage
+	mail.addMessage(msg)
 
 	-- notify recipients that happen to be online
 	local mail_alert = f(mail.receive_mail_message, m.from, m.subject)

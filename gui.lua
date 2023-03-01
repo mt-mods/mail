@@ -97,7 +97,7 @@ end
 
 function mail.show_inbox(name)
 	local formspec = { mail.inbox_formspec }
-	local messages = mail.getMessages(name)
+	local messages = mail.getPlayerMessages(name)
 
 	message_drafts[name] = nil
 
@@ -148,7 +148,7 @@ function mail.show_sent(name)
 	local playerContacts = mail.getContacts(name)
 	local nbMails = 0
 	for k, contact, i, l in mail.pairsByKeys(playerContacts) do
-		local contactMessages = mail.getMessages(contact.name)
+		local contactMessages = mail.getPlayerMessages(contact.name)
 
 		message_drafts[name] = nil
 
@@ -317,7 +317,7 @@ function mail.compile_contact_list(name, selected, playernames)
 end
 
 function mail.show_message(name, msgnumber)
-	local messages = mail.getMessages(name)
+	local messages = mail.getPlayerMessages(name)
 	local message = messages[msgnumber]
 	local formspec = [[
 			size[8,9]
@@ -444,7 +444,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:inbox" or formname == "mail:sent" then
 		local name = player:get_player_name()
-		local messages = mail.getMessages(name)
+		local messages = mail.getPlayerMessages(name)
 
 		if fields.messages then
 			local evt = minetest.explode_table_event(fields.messages)
@@ -525,7 +525,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
-		local messages = mail.getMessages(name)
+		local messages = mail.getPlayerMessages(name)
 
 		if fields.back then
 			if boxtab_index == 1 then

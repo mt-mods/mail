@@ -1,4 +1,3 @@
-
 function mail.getMailFile(playername)
 	local saneplayername = string.gsub(playername, "[.|/]", "")
 	return mail.maildir .. "/" .. saneplayername .. ".json"
@@ -9,8 +8,24 @@ function mail.getContactsFile(playername)
 	return mail.maildir .. "/contacts/" .. saneplayername .. ".json"
 end
 
+function mail.getMessages()
+	local messages = mail.read_json_file(mail.maildir .. "/mail.messages.json")
+	if messages then
+		for _, msg in ipairs(messages) do
+			if not msg.time then
+				-- add missing time field if not available (happens with old data)
+				msg.time = 0
+			end
+		end
 
-function mail.getMessages(playername)
+		-- sort by received date descending
+		table.sort(messages, function(a,b) return a.time > b.time end)
+	end
+
+	return messages
+end
+
+function mail.getPlayerMessages(playername)
 	local messages = mail.read_json_file(mail.getMailFile(playername))
 	if messages then
 		for _, msg in ipairs(messages) do
@@ -39,6 +54,16 @@ function mail.setMessages(playername, messages)
 	end
 end
 
+function mail.addMessage(message)
+	local messages = mail.getMessages()
+	table.insert(messages, 1, message)
+	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
 
 function mail.getContacts(playername)
 	return mail.read_json_file(mail.getContactsFile(playername))
