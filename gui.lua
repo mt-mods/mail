@@ -847,6 +847,7 @@ function mail.handle_receivefields(player, formname, fields)
 				end
 				contact.name = fields.name
 				contact.note = fields.note
+				mail.setContact(name, contact)
 
 			else
 				local contact = {
