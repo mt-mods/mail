@@ -21,7 +21,7 @@ else
 	theme = ""
 end
 
-mail.inbox_formspec = "size[8,9;]" .. theme .. [[
+mail.inbox_formspec = "size[8,10;]" .. theme .. [[
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;1;false;false]
 		
 		button[6,0.10;2,0.5;new;New]
@@ -32,14 +32,15 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		button[6,3.95;2,0.5;delete;Delete]
 		button[6,4.82;2,0.5;markread;Mark Read]
 		button[6,5.55;2,0.5;markunread;Mark Unread]
-		button[6,6.55;2,0.5;contacts;Contacts]
-		button[6,7.40;2,0.5;about;About]
-		button_exit[6,8.45;2,0.5;quit;Close]
+		button[6,6.8;2,0.5;contacts;Contacts]
+		button[6,7.6;2,0.5;maillists;Mail lists]
+		button[6,8.7;2,0.5;about;About]
+		button_exit[6,9.5;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,8.3;messages;#999,From,Subject]]
+		table[0,0.7;5.75,9.35;messages;#999,From,Subject]]
 
-mail.sent_formspec = "size[8,9;]" .. theme .. [[		
+mail.sent_formspec = "size[8,10;]" .. theme .. [[		
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
 		
 		button[6,0.10;2,0.5;new;New]
@@ -48,12 +49,13 @@ mail.sent_formspec = "size[8,9;]" .. theme .. [[
 		button[6,2.45;2,0.5;replyall;Reply All]
 		button[6,3.20;2,0.5;forward;Forward]
 		button[6,3.95;2,0.5;delete;Delete]
-		button[6,6.55;2,0.5;contacts;Contacts]
-		button[6,7.40;2,0.5;about;About]
-		button_exit[6,8.45;2,0.5;quit;Close]
+		button[6,6.8;2,0.5;contacts;Contacts]
+		button[6,7.6;2,0.5;maillists;Mail lists]
+		button[6,8.7;2,0.5;about;About]
+		button_exit[6,9.5;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,8.3;messages;#999,To,Subject]]
+		table[0,0.7;5.75,9.35;messages;#999,To,Subject]]
 
 mail.contacts_formspec = "size[8,9;]" .. theme .. [[
 		button[6,0.10;2,0.5;new;New]
@@ -76,6 +78,14 @@ mail.select_contact_formspec = "size[8,9;]" .. theme .. [[
 		table[5.15,4.6;2.75,4.5;cc;#999,CC:,Note%s]
 		button[3.55,8.25;1.75,0.5;back;Back]
 	]]
+
+mail.maillists_formspec = "size[8,9;]" .. theme .. [[
+		button[6,0.10;2,0.5;new;New]
+		button[6,0.85;2,0.5;edit;Edit]
+		button[6,1.60;2,0.5;delete;Delete]
+		button[6,8.25;2,0.5;back;Back]
+		tablecolumns[color;text;text]
+		table[0,0;5.75,9;contacts;#999,Name,Players]]
 
 
 function mail.show_about(name)
@@ -179,6 +189,11 @@ end
 function mail.show_contacts(name)
 	local formspec = mail.contacts_formspec .. mail.compile_contact_list(name, selected_idxs.contacts[name])
 	minetest.show_formspec(name, "mail:contacts", formspec)
+end
+
+function mail.show_maillists(name)
+	local formspec = mail.maillists_formspec
+	minetest.show_formspec(name, "mail:maillists", formspec)
 end
 
 function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
@@ -500,6 +515,9 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.contacts then
 			mail.show_contacts(name)
+
+		elseif fields.maillists then
+			mail.show_maillists(name)
 
 		elseif fields.about then
 			mail.show_about(name)
