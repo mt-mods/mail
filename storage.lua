@@ -91,21 +91,6 @@ function mail.addMessage(message)
 		
 		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")),",") -- extracted maillists from all receivers
 		
-		-- extract players from mailing lists
-		for _, receiver in ipairs(globalReceivers) do
-			local receiverInfo = mail.split(receiver, "@") -- @maillist
-			if receiverInfo[1] == "" and receiverInfo[2] then -- in case of maillist
-				local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[2]))
-				if players_ml then
-					for _, player in ipairs(players_ml) do
-						table.insert(receivers, 1, player)
-					end
-				end
-			else -- in case of player
-				table.insert(receivers, 1, receiver)
-			end
-		end
-		
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
 				mail.addStatus(receiver, message.id, "unread")
