@@ -85,7 +85,6 @@ function mail.send(...)
 
 	-- form the actual mail
 	local msg = {
-		unread  = true,
 		sender  = m.from,
 		to      = m.to,
 		cc      = m.cc,
@@ -111,4 +110,19 @@ function mail.send(...)
 			break
 		end
 	end
+end
+
+function mail.split(str, delimiter) -- flux split function
+    local rv = {}
+    local i, j = str:find(delimiter, nil, true)
+
+    while i do
+        table.insert(rv, str:sub(1, i - 1))
+        str = str:sub(j + 1)
+        i, j = str:find(delimiter, nil, true)
+    end
+
+    table.insert(rv, str)
+
+    return rv
 end

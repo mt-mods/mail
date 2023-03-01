@@ -26,22 +26,22 @@ function mail.getMessages()
 end
 
 function mail.getPlayerMessages(playername)
-	local messages = mail.read_json_file(mail.getMailFile(playername))
+	local messages = mail.getMessages()
+	local playerMessages = {}
 	if messages then
 		for _, msg in ipairs(messages) do
-			if not msg.time then
-				-- add missing time field if not available (happens with old data)
-				msg.time = 0
+			local receivers = mail.split((msg.to .. ", " .. (msg.cc or "") .. ", " .. (msg.bcc or "")),",")
+			for _, receiver in ipairs(receivers) do
+				if receiver == playername then
+					table.insert(playerMessages, msg)
+				end
 			end
 		end
-
-		-- sort by received date descending
-		table.sort(messages, function(a,b) return a.time > b.time end)
 		-- show hud notification
-		mail.hud_update(playername, messages)
+		mail.hud_update(playername, playerMessages)
 	end
 
-	return messages
+	return playerMessages
 end
 
 function mail.setMessages(playername, messages)
