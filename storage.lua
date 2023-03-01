@@ -226,6 +226,24 @@ function mail.setContact(playername, updated_contact)
 	end
 end
 
+function mail.deleteContact(owner, name)
+	local contacts = mail.getContacts()
+	local newContacts = {}
+	for _, contact in ipairs(contacts) do
+		if contact.owner == owner and contact.name == name then
+			table.remove(contacts, _)
+		else
+			table.insert(newContacts, contact)
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", newContacts) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
+
 function mail.read_json_file(path)
 	local file = io.open(path, "r")
 	local content = {}

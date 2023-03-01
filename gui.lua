@@ -739,7 +739,7 @@ function mail.handle_receivefields(player, formname, fields)
 						selected_idxs.contacts[name] = k
 						break
 					elseif k == selected_idxs.contacts[name] then
-						contacts[selected_idxs.contacts[name]] = nil
+						mail.deleteContact(name, contacts[selected_idxs.contacts[name]].name)
 						selected_idxs.contacts[name] = nil
 						found = true
 					else
@@ -750,8 +750,6 @@ function mail.handle_receivefields(player, formname, fields)
 					-- was the last in the list, so take the previous (new last)
 					selected_idxs.contacts[name] = last
 				end
-
-				mail.setContacts(name, contacts)
 			end
 
 			mail.show_contacts(name)
