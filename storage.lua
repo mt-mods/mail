@@ -196,11 +196,12 @@ function mail.addMaillist(maillist, players_string)
 	end
 	table.insert(maillists, 1, maillist)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
-		-- add default status for players contained in the maillist
-		local players = mail.split(players_string,",")
+		-- add status for players contained in the maillist
+		local players = mail.split(players_string,"\n")
 		for _, player in ipairs(players) do
-			if minetest.player_exists(player) then -- avoid blank names
-				mail.addPlayerToMaillist(player, maillist.id, "to")
+			local playerInfo = mail.split(player, " ")
+			if minetest.player_exists(playerInfo[1]) then -- avoid blank names
+				mail.addPlayerToMaillist(playerInfo[1], maillist.id, playerInfo[2])
 			end
 		end
 		return true

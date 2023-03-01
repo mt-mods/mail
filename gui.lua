@@ -888,7 +888,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.new then
 			selected_idxs.maillists[name] = "#NEW#"
-			mail.show_edit_maillist(name, "", "", "")
+			mail.show_edit_maillist(name, "", "", "Player1 to\nPlayer2 cc\nPlayer3 bcc")
 
 		elseif fields.edit and selected_idxs.maillists[name] and maillists[selected_idxs.maillists[name]] then
 			mail.show_edit_maillist(
