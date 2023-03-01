@@ -458,7 +458,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.forward then
 			local message = messages[selected_idxs.messages[name]]
-			mail.forward(name, message.subject)
+			mail.forward(name, message)
 
 		elseif fields.delete then
 			if messages[selected_idxs.messages[name]] then
