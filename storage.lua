@@ -56,8 +56,63 @@ end
 
 function mail.addMessage(message)
 	local messages = mail.getMessages()
+	local message_id = 0
+	if #messages > 0 then
+		local previousMsg = messages[1]
+		message.id = previousMsg.id + 1
+	else
+		message.id = 1
+	end
 	table.insert(messages, 1, message)
 	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
+		-- add default status (unread for receivers) of this message
+		local isSenderAReceiver = false
+		local receivers = mail.split((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")),",")
+		for _, receiver in ipairs(receivers) do
+			if minetest.player_exists(receiver) then -- avoid blank names
+				mail.addStatus(receiver, message.id, "unread")
+				if message.sender == receiver then
+					isSenderAReceiver = true
+				end
+			end
+		end
+		
+		if isSenderAReceiver == false then
+			mail.addStatus(message.sender, message.id, "read")
+		end
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
+
+function mail.getStatus()
+	local messagesStatus = mail.read_json_file(mail.maildir .. "/mail.status.json")
+	return messagesStatus
+end
+
+function mail.addStatus(player, msg_id, status)
+	local messagesStatus = mail.getStatus()
+	local msg_status = {id = msg_id, player = player, status = status}
+	table.insert(messagesStatus, 1, msg_status)
+	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
+
+function mail.setStatus(player, msg_id, status)
+	local messagesStatus = mail.getStatus()
+	for _, msg_status in ipairs(messagesStatus) do
+		if msg_status.id == msg_id and msg_status.player == player then
+			msg_status = {id = msg_id, player = player, status = status}
+		end
+	end
+	table.insert(messagesStatus, 1, status)
+	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed - messages may be lost!")
