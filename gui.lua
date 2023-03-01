@@ -236,7 +236,7 @@ end
 function mail.compile_contact_list(name, selected, playernames)
 	-- TODO: refactor this - not just compiles *a* list, but *the* list for the contacts screen (too inflexible)
 	local formspec = {}
-	local contacts = mail.getContacts(name)
+	local contacts = mail.getPlayerContacts(name)
 
 	if playernames == nil then
 		local length = 0
@@ -535,8 +535,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.delete then
 			if messages[selected_idxs.messages[name]] then
-				table.remove(messages,selected_idxs.messages[name])
-				mail.setMessages(name, messages)
+				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "deleted")
 			end
 
 			if boxtab_index == 1 then
@@ -564,20 +563,20 @@ function mail.handle_receivefields(player, formname, fields)
 				return
 			end
 
-			local contacts = mail.getContacts(name)
+			-- add new contacts if some receivers aren't registered
+			local contacts = mail.getPlayerContacts(name)
 			local recipients = mail.parse_player_list(fields.to)
-			local changed = false
-			for _,v in pairs(recipients) do
-				if contacts[string.lower(v)] == nil then
-					contacts[string.lower(v)] = {
-						name = v,
-						note = "",
-					}
-					changed = true
+			local isNew = true
+			for r_,recipient in ipairs(recipients) do
+				for c_,contact in ipairs(contacts) do
+					if contact.name == recipient then
+						isNew = false
+						break
+					end
 				end
-			end
-			if changed then
-				mail.setContacts(name, contacts)
+				if isNew then
+					mail.addContact(name, {name = recipient, note = ""})
+				end
 			end
 
 			minetest.after(0.5, function()
@@ -612,7 +611,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:selectcontact" then
 		local name = player:get_player_name()
-		local contacts = mail.getContacts(name)
+		local contacts = mail.getPlayerContacts(name)
 		local draft = message_drafts[name]
 
 		-- get indexes for fields with selected rows
@@ -682,7 +681,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:contacts" then
 		local name = player:get_player_name()
-		local contacts = mail.getContacts(name)
+		local contacts = mail.getPlayerContacts(name)
 
 		if fields.contacts then
 			local evt = minetest.explode_table_event(fields.contacts)
@@ -752,7 +751,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:editcontact" then
 		local name = player:get_player_name()
-		local contacts = mail.getContacts(name)
+		local contacts = mail.getPlayerContacts(name)
 
 		if fields.save then
 			if selected_idxs.contacts[name] and selected_idxs.contacts[name] ~= "#NEW#" then
@@ -768,7 +767,7 @@ function mail.handle_receivefields(player, formname, fields)
 						return true
 
 					else
-						contacts[string.lower(fields.name)] = contact
+						mail.setContact(name, contact)
 						contacts[selected_idxs.contacts[name]] = nil
 					end
 				end
@@ -780,10 +779,8 @@ function mail.handle_receivefields(player, formname, fields)
 					name = fields.name,
 					note = fields.note,
 				}
-				contacts[string.lower(contact.name)] = contact
+				mail.addContact(name, contact)
 			end
-
-			mail.setContacts(name, contacts)
 			mail.show_contacts(name)
 
 		elseif fields.back then

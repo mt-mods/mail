@@ -3,11 +3,6 @@ function mail.getMailFile(playername)
 	return mail.maildir .. "/" .. saneplayername .. ".json"
 end
 
-function mail.getContactsFile(playername)
-	local saneplayername = string.gsub(playername, "[.|/]", "")
-	return mail.maildir .. "/contacts/" .. saneplayername .. ".json"
-end
-
 function mail.getMessages()
 	local messages = mail.read_json_file(mail.maildir .. "/mail.messages.json")
 	if messages then
@@ -156,8 +151,24 @@ function mail.setStatus(player, msg_id, status)
 	end
 end
 
-function mail.getContacts(playername)
-	return mail.read_json_file(mail.getContactsFile(playername))
+function mail.getContactsFile()
+	return mail.maildir .. "/mail.contacts.json"
+end
+
+function mail.getContacts()
+	local contacts = mail.read_json_file(mail.maildir .. "/mail.contacts.json")
+	return contacts
+end
+
+function mail.getPlayerContacts(playername)
+	local contacts = mail.getContacts()
+	local playerContacts = {}
+	for _, contact in ipairs(contacts) do
+		if contact.owner == playername then
+			table.insert(playerContacts, {name = contact.name, note = contact.note})
+		end
+	end
+	return playerContacts
 end
 
 function mail.pairsByKeys(t, f)
@@ -188,6 +199,32 @@ function mail.setContacts(playername, contacts)
 	end
 end
 
+function mail.addContact(playername, contact)
+	local contacts = mail.getContacts()
+	local newContact = {owner = playername, name = contact.name, note = contact.note}
+	table.insert(contacts, 1, newContact)
+	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
+
+function mail.setContact(playername, updated_contact)
+	local contacts = mail.getContacts()
+	for _, contact in ipairs(contacts) do
+		if contact.owner == playername and contact.name == updated_contact.name then
+			contacts[_] = {owner = playername, name = updated_contact.name, note = updated_contact.note}
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
 
 function mail.read_json_file(path)
 	local file = io.open(path, "r")
