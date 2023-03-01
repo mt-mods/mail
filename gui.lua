@@ -104,7 +104,7 @@ function mail.show_inbox(name)
 	if messages[1] then
 		for _, message in ipairs(messages) do
 			mail.ensure_new_format(message, name)
-			if message.unread then
+			if mail.getMessageStatus(name, message.id) == "unread" then
 				if not mail.player_in_list(name, message.to) then
 					formspec[#formspec + 1] = ",#FFD788"
 				else
@@ -349,9 +349,10 @@ function mail.show_message(name, msgnumber)
 	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
-	if message.unread then
-		message.unread = false
-		mail.setMessages(name, messages)
+	message_status = mail.getMessageStatus(name, message.id)
+	
+	if message_status == "unread" then
+		mail.setStatus(name, message.id, "read")
 	end
 
 	minetest.show_formspec(name,"mail:message",formspec)
@@ -470,8 +471,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.delete then
 			if messages[selected_idxs.messages[name]] then
-				table.remove(messages, selected_idxs.messages[name])
-				mail.setMessages(name, messages)
+				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "deleted")
 			end
 
 			if boxtab_index == 1 then
@@ -494,18 +494,14 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.markread then
 			if messages[selected_idxs.messages[name]] then
-				messages[selected_idxs.messages[name]].unread = false
-				-- set messages immediately, so it shows up already when updating the inbox
-				mail.setMessages(name, messages)
+				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "read")
 			end
 
 			mail.show_inbox(name)
 
 		elseif fields.markunread then
 			if messages[selected_idxs.messages[name]] then
-				messages[selected_idxs.messages[name]].unread = true
-				-- set messages immediately, so it shows up already when updating the inbox
-				mail.setMessages(name, messages)
+				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "unread")
 			end
 
 			mail.show_inbox(name)

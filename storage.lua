@@ -32,8 +32,10 @@ function mail.getPlayerMessages(playername)
 		for _, msg in ipairs(messages) do
 			local receivers = mail.split((msg.to .. ", " .. (msg.cc or "") .. ", " .. (msg.bcc or "")),",")
 			for _, receiver in ipairs(receivers) do
-				if receiver == playername then
-					table.insert(playerMessages, msg)
+				if receiver == playername then -- check if player is a receiver
+					if mail.getStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+						table.insert(playerMessages, msg)
+					end
 				end
 			end
 		end
@@ -92,6 +94,15 @@ function mail.getStatus()
 	return messagesStatus
 end
 
+function mail.getMessageStatus(player, msg_id)
+	local messagesStatus = mail.getStatus()
+	for _, msg in ipairs(messagesStatus) do
+		if msg.id == msg_id and msg.player == player then
+			return msg.status
+		end
+	end
+end
+
 function mail.addStatus(player, msg_id, status)
 	local messagesStatus = mail.getStatus()
 	local msg_status = {id = msg_id, player = player, status = status}
@@ -108,10 +119,9 @@ function mail.setStatus(player, msg_id, status)
 	local messagesStatus = mail.getStatus()
 	for _, msg_status in ipairs(messagesStatus) do
 		if msg_status.id == msg_id and msg_status.player == player then
-			msg_status = {id = msg_id, player = player, status = status}
+			messagesStatus[_] = {id = msg_id, player = player, status = status}
 		end
 	end
-	table.insert(messagesStatus, 1, status)
 	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
 		return true
 	else
