@@ -6,11 +6,15 @@ and add individual player names to recipient list
 --]]
 function mail.normalize_players_and_add_recipients(field, recipients, undeliverable)
     local order = mail.parse_player_list(field)
-    for _, player_name in ipairs(order) do
-        if not minetest.player_exists(player_name) then
-            undeliverable[player_name] = true
-        else
-            recipients[player_name] = true
+    for _, recipient_name in ipairs(order) do
+        if mail.split(recipient_name, "@")[1] == "" then -- in case of maillist
+            recipients[recipient_name] = true
+        else -- in case of playerˇ
+            if not minetest.player_exists(recipient_name) then
+                undeliverable[recipient_name] = true
+            else
+                recipients[recipient_name] = true
+            end
         end
     end
     return mail.concat_player_list(order)

@@ -33,8 +33,7 @@ function mail.getPlayerMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			
-			local receivers = mail.split((msg.to .. "," .. cc .. "," .. bcc),",") -- split players into table
+			local receivers = mail.extractMaillists((msg.to .. "," .. (msg.cc or "") .. "," .. (msg.bcc or "")),",") -- extracted maillists from all receivers
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
@@ -79,7 +78,7 @@ end
 
 function mail.addMessage(message)
 	local messages = mail.getMessages()
-	if #messages > 0 then
+	if messages[1] then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
 	else
@@ -89,7 +88,24 @@ function mail.addMessage(message)
 	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
 		-- add default status (unread for receivers) of this message
 		local isSenderAReceiver = false
-		local receivers = mail.split((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")),",")
+		
+		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")),",") -- extracted maillists from all receivers
+		
+		-- extract players from mailing lists
+		for _, receiver in ipairs(globalReceivers) do
+			local receiverInfo = mail.split(receiver, "@") -- @maillist
+			if receiverInfo[1] == "" and receiverInfo[2] then -- in case of maillist
+				local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[2]))
+				if players_ml then
+					for _, player in ipairs(players_ml) do
+						table.insert(receivers, 1, player)
+					end
+				end
+			else -- in case of player
+				table.insert(receivers, 1, receiver)
+			end
+		end
+		
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
 				mail.addStatus(receiver, message.id, "unread")
@@ -188,7 +204,7 @@ end
 
 function mail.addMaillist(maillist, players_string)
 	local maillists = mail.getMaillists()
-	if #maillists > 0 then
+	if maillists[1] then
 		local previousMl = maillists[1]
 		maillist.id = previousMl.id + 1
 	else
@@ -211,9 +227,34 @@ function mail.addMaillist(maillist, players_string)
 	end
 end
 
+function mail.getMaillistIdFromName(ml_name)
+	local maillists = mail.getMaillists()
+	local ml_id = 0
+	for _, maillist in ipairs(maillists) do
+		if maillist.name == ml_name then
+			ml_id = maillist.id
+			break
+		end
+	end
+	return ml_id
+end
+
 function mail.getPlayersInMaillists()
-	local messagesStatus = mail.read_json_file(mail.maildir .. "/mail.maillists_players.json")
-	return messagesStatus
+	local players_mls = mail.read_json_file(mail.maildir .. "/mail.maillists_players.json")
+	return players_mls
+end
+
+function mail.getPlayersInMaillist(ml_id)
+	local players_mls = mail.getPlayersInMaillists() -- players from all maillists
+	local player_ml = {} -- players from this maillist
+	if players_mls[1] then
+		for _, playerInfo in ipairs(players_mls) do
+			if playerInfo.id == ml_id then
+				table.insert(player_ml, 1, playerInfo.player)
+			end
+		end
+	end
+	return player_ml
 end
 
 function mail.addPlayerToMaillist(player, ml_id, status)
@@ -256,6 +297,28 @@ function mail.deleteMaillist(ml_id)
 		minetest.log("error","[mail] Save failed!")
 		return false
 	end
+end
+
+function mail.extractMaillists(receivers)
+	local globalReceivers = mail.split(receivers,",") -- receivers including maillists
+	local receivers = {} -- extracted receivers
+	
+	-- extract players from mailing lists
+	for _, receiver in ipairs(globalReceivers) do
+		local receiverInfo = mail.split(receiver, "@") -- @maillist
+		if receiverInfo[1] == "" and receiverInfo[2] then -- in case of maillist
+			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[2]))
+			if players_ml then
+				for _, player in ipairs(players_ml) do
+					table.insert(receivers, 1, player)
+				end
+			end
+		else -- in case of player
+			table.insert(receivers, 1, receiver)
+		end
+	end
+	
+	return receivers
 end
 
 function mail.pairsByKeys(t, f)
