@@ -227,6 +227,36 @@ function mail.addPlayerToMaillist(player, ml_id, status)
 	end
 end
 
+function mail.deleteMaillist(ml_id)
+	-- remove players attached to the maillist
+	local maillists_players = mail.getPlayersInMaillists()
+	for _, player in ipairs(maillist_players) do
+		if player.id then
+			table.remove(maillist_players, _)
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillist_players) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed!")
+		return false
+	end
+	
+	--then remove the maillist itself
+	local maillists = mail.getMaillists()
+	for _, maillist in ipairs(maillists) do
+		if maillist.id then
+			table.remove(maillists, _)
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed!")
+		return false
+	end
+end
+
 function mail.pairsByKeys(t, f)
 	-- http://www.lua.org/pil/19.3.html
 	local a = {}
@@ -284,15 +314,12 @@ end
 
 function mail.deleteContact(owner, name)
 	local contacts = mail.getContacts()
-	local newContacts = {}
 	for _, contact in ipairs(contacts) do
 		if contact.owner == owner and contact.name == name then
 			table.remove(contacts, _)
-		else
-			table.insert(newContacts, contact)
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", newContacts) then
+	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed - messages may be lost!")

@@ -215,11 +215,11 @@ function mail.show_maillists(name)
 		end
 		if selected_idxs.maillists[name] then
 			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = tostring(selected_idxs.maillists[name] + 1)
+			formspec[#formspec + 1] = selected_idxs.maillists[name]
 		end
 		formspec[#formspec + 1] = "]"
 	else
-		formspec[#formspec + 1] = "]label[2.25,4.5;No mail]"
+		formspec[#formspec + 1] = "]label[2.25,4.5;No maillist]"
 	end
 	minetest.show_formspec(name, "mail:maillists", table.concat(formspec, ""))
 end
@@ -376,6 +376,7 @@ function mail.compile_contact_list(name, selected, playernames)
 		formspec[#formspec + 1] = "]"
 	end
 	return table.concat(formspec, "")
+	
 end
 
 function mail.show_message(name, msgnumber)
@@ -866,51 +867,73 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:maillists" then
 		local name = player:get_player_name()
-		
-		if fields.new then
+		local maillists = mail.getPlayerMaillists(name)
+
+		if fields.maillists then
+			local evt = minetest.explode_table_event(fields.maillists)
+			for k, _, i in mail.pairsByKeys(maillists) do
+				if i == evt.row - 1 then
+					selected_idxs.maillists[name] = k
+					break
+				end
+			end
+			if evt.type == "DCL" and maillists[selected_idxs.maillists[name]] then
+				mail.show_edit_maillist(
+					name,
+					maillists[selected_idxs.maillists[name]].name,
+					maillists[selected_idxs.maillists[name]].desc,
+					""
+				)
+			end
+
+		elseif fields.new then
 			selected_idxs.maillists[name] = "#NEW#"
 			mail.show_edit_maillist(name, "", "", "")
-			
+
 		elseif fields.edit and selected_idxs.maillists[name] and maillists[selected_idxs.maillists[name]] then
-			mail.show_edit_contact(
+			mail.show_edit_maillist(
 				name,
 				maillists[selected_idxs.maillists[name]].name,
-				maillists[selected_idxs.maillists[name]].desc
+				maillists[selected_idxs.maillists[name]].desc,
+				""
 			)
 
 		elseif fields.delete then
-			if contacts[selected_idxs.contacts[name]] then
-				-- delete the contact and set the selected to the next in the list,
+			if maillists[selected_idxs.maillists[name]] then
+				-- delete the maillist and set the selected to the next in the list,
 				-- except if it was the last. Then determine the new last
 				local found = false
 				local last = nil
-				for k in mail.pairsByKeys(contacts) do
+				for k in mail.pairsByKeys(maillists) do
 					if found then
-						selected_idxs.contacts[name] = k
+						selected_idxs.maillists[name] = k
 						break
-					elseif k == selected_idxs.contacts[name] then
-						mail.deleteContact(name, contacts[selected_idxs.contacts[name]].name)
-						selected_idxs.contacts[name] = nil
+					elseif k == selected_idxs.maillists[name] then
+						mail.deleteMaillist(name, maillists[selected_idxs.maillists[name]].id)
+						selected_idxs.maillists[name] = nil
 						found = true
 					else
 						last = k
 					end
 				end
-				if found and not selected_idxs.contacts[name] then
+				if found and not selected_idxs.maillists[name] then
 					-- was the last in the list, so take the previous (new last)
-					selected_idxs.contacts[name] = last
+					selected_idxs.maillists[name] = last
 				end
 			end
 
 			mail.show_maillists(name)
-	
+
 		elseif fields.back then
+
 			if boxtab_index == 1 then
 				mail.show_inbox(name)
 			elseif boxtab_index == 2 then
 				mail.show_sent(name)
 			end
 		end
+
+		return true
 		
 	elseif formname == "mail:editmaillist" then
 		local name = player:get_player_name()
