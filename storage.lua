@@ -79,7 +79,6 @@ end
 
 function mail.addMessage(message)
 	local messages = mail.getMessages()
-	local message_id = 0
 	if #messages > 0 then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
@@ -169,6 +168,63 @@ function mail.getPlayerContacts(playername)
 		end
 	end
 	return playerContacts
+end
+
+function mail.getMaillists()
+	local maillists = mail.read_json_file(mail.maildir .. "/mail.maillists.json")
+	return maillists
+end
+
+function mail.getPlayerMaillists(playername)
+	local maillists = mail.getMaillists()
+	local playerMaillists = {}
+	for _, maillist in ipairs(maillists) do
+		if maillist.owner == playername then
+			table.insert(playerMaillists, {name = maillist.name, desc = maillist.desc})
+		end
+	end
+	return playerMaillists
+end
+
+function mail.addMaillist(maillist, players_string)
+	local maillists = mail.getMaillists()
+	if #maillists > 0 then
+		local previousMl = maillists[1]
+		maillist.id = previousMl.id + 1
+	else
+		maillist.id = 1
+	end
+	table.insert(maillists, 1, maillist)
+	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
+		-- add default status for players contained in the maillist
+		local players = mail.split(players_string,",")
+		for _, player in ipairs(players) do
+			if minetest.player_exists(player) then -- avoid blank names
+				mail.addPlayerToMaillist(player, maillist.id, "to")
+			end
+		end
+		return true
+	else
+		minetest.log("error","[mail] Save failed - maillist may be lost!")
+		return false
+	end
+end
+
+function mail.getPlayersInMaillists()
+	local messagesStatus = mail.read_json_file(mail.maildir .. "/mail.maillists_players.json")
+	return messagesStatus
+end
+
+function mail.addPlayerToMaillist(player, ml_id, status)
+	local playersMls = mail.getPlayersInMaillists()
+	local new_player = {id = ml_id, player = player, status = status}
+	table.insert(playersMls, 1, new_player)
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - maillist may be lost!")
+		return false
+	end
 end
 
 function mail.pairsByKeys(t, f)
