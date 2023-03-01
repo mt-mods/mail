@@ -39,8 +39,9 @@ function mail.getPlayerMessages(playername)
 				bcc = msg.bcc
 			end
 			
-			local receivers = mail.split((msg.to .. ", " .. cc .. ", " .. bcc),",")
+			local receivers = mail.split((msg.to .. "," .. cc .. "," .. bcc),",") -- split players into table
 			for _, receiver in ipairs(receivers) do
+				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
 					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
 						table.insert(playerMessages, msg)
@@ -53,6 +54,22 @@ function mail.getPlayerMessages(playername)
 	end
 
 	return playerMessages
+end
+
+function mail.getPlayerSentMessages(playername)
+	local messages = mail.getMessages()
+	local playerSentMessages = {}
+	if messages[1] then
+		for _, msg in ipairs(messages) do
+			if msg.sender == playername then -- check if player is the sender
+				if mail.getMessageStatus(playername, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+					table.insert(playerSentMessages, msg)
+				end
+			end
+		end
+	end
+
+	return playerSentMessages
 end
 
 function mail.setMessages(playername, messages)

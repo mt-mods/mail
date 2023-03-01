@@ -122,8 +122,7 @@ function mail.show_inbox(name)
 			formspec[#formspec + 1] = ","
 			if message.subject ~= "" then
 				if string.len(message.subject) > 30 then
-					formspec[#formspec + 1] =
-							minetest.formspec_escape(string.sub(message.subject, 1, 27))
+					formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.subject, 1, 27))
 					formspec[#formspec + 1] = "..."
 				else
 					formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
@@ -145,38 +144,33 @@ end
 
 function mail.show_sent(name)
 	local formspec = { mail.sent_formspec }
-	local messages = mail.getMessages()
-	local nbMails = 0
+	local messages = mail.getPlayerSentMessages(name)
+
+	message_drafts[name] = nil
 
 	if messages[1] then
 		for _, message in ipairs(messages) do
-			mail.ensure_new_format(message, name)
-			if message.sender == name then
-				nbMails = nbMails + 1
-				formspec[#formspec + 1] = ","
-				formspec[#formspec + 1] = ","
-				formspec[#formspec + 1] = minetest.formspec_escape(message.to)
-				formspec[#formspec + 1] = ","
-				if message.subject ~= "" then
-					if string.len(message.subject) > 30 then
-						formspec[#formspec + 1] =
-								minetest.formspec_escape(string.sub(message.subject, 1, 27))
-						formspec[#formspec + 1] = "..."
-					else
-						formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
-					end
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = minetest.formspec_escape(message.to)
+			formspec[#formspec + 1] = ","
+			if message.subject ~= "" then
+				if string.len(message.subject) > 30 then
+					formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.subject, 1, 27))
+					formspec[#formspec + 1] = "..."
 				else
-					formspec[#formspec + 1] = "(No subject)"
+					formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
 				end
+			else
+				formspec[#formspec + 1] = "(No subject)"
 			end
-			if selected_idxs.messages[name] then
-				formspec[#formspec + 1] = ";"
-				formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
-			end
-			formspec[#formspec + 1] = "]"
 		end
-	end
-	if nbMails == 0 then
+		if selected_idxs.messages[name] then
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
+		end
+		formspec[#formspec + 1] = "]"
+	else
 		formspec[#formspec + 1] = "]label[2.25,4.5;No mail]"
 	end
 	minetest.show_formspec(name, "mail:sent", table.concat(formspec, ""))
