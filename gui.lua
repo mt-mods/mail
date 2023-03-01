@@ -145,33 +145,28 @@ end
 
 function mail.show_sent(name)
 	local formspec = { mail.sent_formspec }
-	local playerContacts = mail.getContacts(name)
+	local messages = mail.getMessages()
 	local nbMails = 0
-	for k, contact, i, l in mail.pairsByKeys(playerContacts) do
-		local contactMessages = mail.getPlayerMessages(contact.name)
 
-		message_drafts[name] = nil
-
-		if contactMessages[1] then
-			for _, message in ipairs(contactMessages) do
-				mail.ensure_new_format(message, name)
-				if message.sender == name then
-					nbMails = nbMails + 1
-					formspec[#formspec + 1] = ","
-					formspec[#formspec + 1] = ","
-					formspec[#formspec + 1] = minetest.formspec_escape(message.to)
-					formspec[#formspec + 1] = ","
-					if message.subject ~= "" then
-						if string.len(message.subject) > 30 then
-							formspec[#formspec + 1] =
-									minetest.formspec_escape(string.sub(message.subject, 1, 27))
-							formspec[#formspec + 1] = "..."
-						else
-							formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
-						end
+	if messages[1] then
+		for _, message in ipairs(messages) do
+			mail.ensure_new_format(message, name)
+			if message.sender == name then
+				nbMails = nbMails + 1
+				formspec[#formspec + 1] = ","
+				formspec[#formspec + 1] = ","
+				formspec[#formspec + 1] = minetest.formspec_escape(message.to)
+				formspec[#formspec + 1] = ","
+				if message.subject ~= "" then
+					if string.len(message.subject) > 30 then
+						formspec[#formspec + 1] =
+								minetest.formspec_escape(string.sub(message.subject, 1, 27))
+						formspec[#formspec + 1] = "..."
 					else
-						formspec[#formspec + 1] = "(No subject)"
+						formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
 					end
+				else
+					formspec[#formspec + 1] = "(No subject)"
 				end
 			end
 			if selected_idxs.messages[name] then

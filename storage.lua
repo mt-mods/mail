@@ -30,10 +30,19 @@ function mail.getPlayerMessages(playername)
 	local playerMessages = {}
 	if messages then
 		for _, msg in ipairs(messages) do
-			local receivers = mail.split((msg.to .. ", " .. (msg.cc or "") .. ", " .. (msg.bcc or "")),",")
+			local cc = ""
+			local bcc = ""
+			if msg.cc then
+				cc = msg.cc
+			end
+			if msg.bcc then
+				bcc = msg.bcc
+			end
+			
+			local receivers = mail.split((msg.to .. ", " .. cc .. ", " .. bcc),",")
 			for _, receiver in ipairs(receivers) do
 				if receiver == playername then -- check if player is a receiver
-					if mail.getStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
 						table.insert(playerMessages, msg)
 					end
 				end
