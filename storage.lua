@@ -39,6 +39,7 @@ function mail.getPlayerMessages(playername)
 				if receiver == playername then -- check if player is a receiver
 					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
 						table.insert(playerMessages, msg)
+						break
 					end
 				end
 			end
