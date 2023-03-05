@@ -227,7 +227,7 @@ function mail.getPlayerMaillists(playername)
 	local playerMaillists = {}
 	for _, maillist in ipairs(maillists) do
 		if maillist.owner == playername then
-			table.insert(playerMaillists, {name = maillist.name, desc = maillist.desc})
+			table.insert(playerMaillists, {id = maillist.id, name = maillist.name, desc = maillist.desc})
 		end
 	end
 	return playerMaillists
@@ -258,6 +258,33 @@ function mail.addMaillist(maillist, players_string)
 	end
 end
 
+function mail.setMaillist(ml_id, updated_maillist, players_string)
+	local maillists = mail.getMaillists()
+	local maillist_id = 0
+	for _, maillist in ipairs(maillists) do
+		if maillist.id == ml_id then
+			maillist_id = maillist.id
+			maillists[_] = {id = maillist_id, owner = updated_maillist.owner, name = updated_maillist.name, desc = updated_maillist.desc}
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
+		-- remove all players
+		mail.removePlayersFromMaillist(maillist_id)
+		-- to add those registered in the updated maillist
+		local players = mail.split(players_string,"\n")
+		for _, player in ipairs(players) do
+			local playerInfo = mail.split(player, " ")
+			if minetest.player_exists(playerInfo[1]) then -- avoid blank names
+				mail.addPlayerToMaillist(playerInfo[1], maillist_id, playerInfo[2])
+			end
+		end
+		return true
+	else
+		minetest.log("error","[mail] Save failed - maillist may be lost!")
+		return false
+	end
+end
+
 function mail.getMaillistIdFromName(ml_name)
 	local maillists = mail.getMaillists()
 	local ml_id = 0
@@ -275,17 +302,28 @@ function mail.getPlayersInMaillists()
 	return players_mls
 end
 
-function mail.getPlayersInMaillist(ml_id)
+function mail.getPlayersDataInMaillist(ml_id)
 	local players_mls = mail.getPlayersInMaillists() -- players from all maillists
-	local player_ml = {} -- players from this maillist
+	local players_ml = {} -- players from this maillist
 	if players_mls[1] then
 		for _, playerInfo in ipairs(players_mls) do
 			if playerInfo.id == ml_id then
-				table.insert(player_ml, 1, playerInfo.player)
+				table.insert(players_ml, 1, playerInfo)
 			end
 		end
 	end
-	return player_ml
+	return players_ml
+end
+
+function mail.getPlayersInMaillist(ml_id)
+	local players_ml = mail.getPlayersDataInMaillist(ml_id) -- players from this maillist
+	local players_names_ml = {}
+	if players_ml[1] then
+		for _, playerInfo in ipairs(players_ml) do
+			table.insert(players_names_ml, 1, playerInfo.player)
+		end
+	end
+	return players_names_ml
 end
 
 function mail.addPlayerToMaillist(player, ml_id, status)
@@ -300,29 +338,54 @@ function mail.addPlayerToMaillist(player, ml_id, status)
 	end
 end
 
-function mail.deleteMaillist(ml_id)
-	-- remove players attached to the maillist
-	local maillists_players = mail.getPlayersInMaillists()
-	for _, player in ipairs(maillist_players) do
-		if player.id then
-			table.remove(maillist_players, _)
+function mail.setPlayerInMaillist(playername, ml_id, status)
+	local playersMls = mail.getPlayersInMaillists()
+	local updated_player = {id = ml_id, player = player, status = status}
+	table.insert(playersMls, 1, new_player)
+	for _, player in ipairs(playersMls) do
+		if player.player == playername and player.id == ml_id then
+			playersMls[_] = {id = ml_id, player = player, status = status}
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillist_players) then
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
+		return true
+	else
+		minetest.log("error","[mail] Save failed - messages may be lost!")
+		return false
+	end
+end
+
+function mail.removePlayersFromMaillist(ml_id)
+	local maillists_players = mail.getPlayersInMaillists()
+	for _, player in ipairs(maillists_players) do
+		if player.id == ml_id then
+			table.remove(maillists_players, _)
+		end
+	end
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed!")
 		return false
 	end
-	
-	--then remove the maillist itself
+end
+
+function mail.deleteMaillist(ml_id)
 	local maillists = mail.getMaillists()
+	local maillists_players = mail.getPlayersInMaillists()
+	-- remove players attached to the maillist
+	for _, player in ipairs(maillists_players) do
+		if player.id == ml_id then
+			table.remove(maillists_players, _)
+		end
+	end
+	-- then remove the maillist itself
 	for _, maillist in ipairs(maillists) do
-		if maillist.id then
+		if maillist.id == ml_id then
 			table.remove(maillists, _)
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) and mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed!")

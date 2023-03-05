@@ -87,7 +87,7 @@ mail.maillists_formspec = "size[8,9;]" .. theme .. [[
 		button[6,1.60;2,0.5;delete;Delete]
 		button[6,8.25;2,0.5;back;Back]
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;contacts;#999,Name,Description]]
+		table[0,0;5.75,9;maillists;#999,Name,Description]]
 
 
 function mail.show_about(name)
@@ -932,18 +932,18 @@ function mail.handle_receivefields(player, formname, fields)
 
 		if fields.maillists then
 			local evt = minetest.explode_table_event(fields.maillists)
-			for k, _, i in mail.pairsByKeys(maillists) do
-				if i == evt.row - 1 then
-					selected_idxs.maillists[name] = k
-					break
-				end
-			end
+			selected_idxs.maillists[name] = evt.row - 1
 			if evt.type == "DCL" and maillists[selected_idxs.maillists[name]] then
+				local players_ml = mail.getPlayersDataInMaillist(maillists[selected_idxs.maillists[name]].id)
+				local players_string = ""
+				for _, p in ipairs(players_ml) do
+					players_string = players_string .. p.player .. " " .. p.status .. "\n"
+				end
 				mail.show_edit_maillist(
 					name,
 					maillists[selected_idxs.maillists[name]].name,
 					maillists[selected_idxs.maillists[name]].desc,
-					""
+					players_string
 				)
 			end
 
@@ -951,12 +951,17 @@ function mail.handle_receivefields(player, formname, fields)
 			selected_idxs.maillists[name] = "#NEW#"
 			mail.show_edit_maillist(name, "", "", "Player1 to\nPlayer2 cc\nPlayer3 bcc")
 
-		elseif fields.edit and selected_idxs.maillists[name] and maillists[selected_idxs.maillists[name]] then
+		elseif fields.edit and maillists[selected_idxs.maillists[name]] then
+			local players_ml = mail.getPlayersDataInMaillist(maillists[selected_idxs.maillists[name]].id)
+			local players_string = ""
+			for _, p in ipairs(players_ml) do
+				players_string = players_string .. p.player .. " " .. p.status .. "\n"
+			end
 			mail.show_edit_maillist(
 				name,
 				maillists[selected_idxs.maillists[name]].name,
 				maillists[selected_idxs.maillists[name]].desc,
-				""
+				players_string
 			)
 
 		elseif fields.delete then
@@ -970,7 +975,7 @@ function mail.handle_receivefields(player, formname, fields)
 						selected_idxs.maillists[name] = k
 						break
 					elseif k == selected_idxs.maillists[name] then
-						mail.deleteMaillist(name, maillists[selected_idxs.maillists[name]].id)
+						mail.deleteMaillist(maillists[selected_idxs.maillists[name]].id)
 						selected_idxs.maillists[name] = nil
 						found = true
 					else
@@ -1001,32 +1006,14 @@ function mail.handle_receivefields(player, formname, fields)
 		local maillists = mail.getPlayerMaillists(name)
 
 		if fields.save then
+			local maillist = {
+				owner = name,
+				name = fields.name,
+				desc = fields.desc,
+			}
 			if selected_idxs.maillists[name] and selected_idxs.maillists[name] ~= "#NEW#" then
-				local maillist = maillists[selected_idxs.maillists[name]]
-				if selected_idxs.maillists[name] ~= string.lower(fields.name) then
-					-- name changed!
-					if #fields.name == 0 then
-						mail.show_edit_maillist(name, maillist.name, fields.desc, "empty")
-						return true
-
-					elseif maillists[string.lower(fields.name)] ~= nil then
-						mail.show_edit_maillist(name, maillist.name, fields.desc, "collision")
-						return true
-
-					else
-						mail.setMaillist(name, maillist)
-						maillists[selected_idxs.maillists[name]] = nil
-					end
-				end
-				maillist.name = fields.name
-				maillist.desc = fields.desc
-
+				mail.setMaillist(maillists[selected_idxs.maillists[name]].id, maillist, fields.players)
 			else
-				local maillist = {
-					owner = name,
-					name = fields.name,
-					desc = fields.desc,
-				}
 				mail.addMaillist(maillist, fields.players)
 			end
 			mail.show_maillists(name)
