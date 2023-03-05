@@ -20,6 +20,17 @@ function mail.getMessages()
 	return messages
 end
 
+function mail.getMessage(msg_id)
+	local messages = mail.getMessages()
+	if messages then
+		for _, msg in ipairs(messages) do
+			if msg.id == msg_id then
+				return msg
+			end
+		end
+	end
+end
+
 function mail.getPlayerMessages(playername)
 	local messages = mail.getMessages()
 	local playerMessages = {}
@@ -41,14 +52,48 @@ function mail.getPlayerMessages(playername)
 						table.insert(playerMessages, msg)
 						break
 					end
+				elseif msg.sender == playername then
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+						table.insert(playerMessages, msg)
+						break
+					end
+				end
+			end
+		end
+	end
+
+	return playerMessages
+end
+
+function mail.getPlayerInboxMessages(playername)
+	local messages = mail.getMessages()
+	local playerInboxMessages = {}
+	if messages then
+		for _, msg in ipairs(messages) do
+			local cc = ""
+			local bcc = ""
+			if msg.cc then
+				cc = msg.cc
+			end
+			if msg.bcc then
+				bcc = msg.bcc
+			end
+			local receivers = mail.extractMaillists((msg.to .. "," .. (msg.cc or "") .. "," .. (msg.bcc or "")),",") -- extracted maillists from all receivers
+			for _, receiver in ipairs(receivers) do
+				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
+				if receiver == playername then -- check if player is a receiver
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+						table.insert(playerInboxMessages, msg)
+						break
+					end
 				end
 			end
 		end
 		-- show hud notification
-		mail.hud_update(playername, playerMessages)
+		mail.hud_update(playername, playerInboxMessages)
 	end
 
-	return playerMessages
+	return playerInboxMessages
 end
 
 function mail.getPlayerSentMessages(playername)

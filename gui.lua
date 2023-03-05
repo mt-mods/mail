@@ -1,6 +1,7 @@
 -- refactor these to some proper management thing
 mail.selected_idxs = {
-	messages = {},
+	inbox = {},
+	sent = {},
 	contacts = {},
 	maillists = {},
 	to = {},
@@ -39,7 +40,7 @@ mail.inbox_formspec = "size[8,10;]" .. theme .. [[
 		button_exit[6,9.5;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,9.35;messages;#999,From,Subject]]
+		table[0,0.7;5.75,9.35;inbox;#999,From,Subject]]
 
 mail.sent_formspec = "size[8,10;]" .. theme .. [[		
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
@@ -56,7 +57,7 @@ mail.sent_formspec = "size[8,10;]" .. theme .. [[
 		button_exit[6,9.5;2,0.5;quit;Close]
 		
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,9.35;messages;#999,To,Subject]]
+		table[0,0.7;5.75,9.35;sent;#999,To,Subject]]
 
 mail.contacts_formspec = "size[8,9;]" .. theme .. [[
 		button[6,0.10;2,0.5;new;New]
@@ -108,7 +109,7 @@ end
 
 function mail.show_inbox(name)
 	local formspec = { mail.inbox_formspec }
-	local messages = mail.getPlayerMessages(name)
+	local messages = mail.getPlayerInboxMessages(name)
 
 	message_drafts[name] = nil
 
@@ -142,9 +143,9 @@ function mail.show_inbox(name)
 				formspec[#formspec + 1] = "(No subject)"
 			end
 		end
-		if selected_idxs.messages[name] then
+		if selected_idxs.inbox[name] then
 			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
+			formspec[#formspec + 1] = tostring(selected_idxs.inbox[name] + 1)
 		end
 		formspec[#formspec + 1] = "]"
 	else
@@ -176,9 +177,9 @@ function mail.show_sent(name)
 				formspec[#formspec + 1] = "(No subject)"
 			end
 		end
-		if selected_idxs.messages[name] then
+		if selected_idxs.sent[name] then
 			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = tostring(selected_idxs.messages[name] + 1)
+			formspec[#formspec + 1] = tostring(selected_idxs.sent[name] + 1)
 		end
 		formspec[#formspec + 1] = "]"
 	else
@@ -380,8 +381,7 @@ function mail.compile_contact_list(name, selected, playernames)
 end
 
 function mail.show_message(name, msgnumber)
-	local messages = mail.getPlayerMessages(name)
-	local message = messages[msgnumber]
+	local message = mail.getMessage(msgnumber)
 	local formspec = [[
 			size[8,9]
 
@@ -509,12 +509,23 @@ function mail.handle_receivefields(player, formname, fields)
 	elseif formname == "mail:inbox" or formname == "mail:sent" then
 		local name = player:get_player_name()
 		local messages = mail.getPlayerMessages(name)
+		local messagesInbox = mail.getPlayerInboxMessages(name)
+		local messagesSent = mail.getPlayerSentMessages(name)
 
-		if fields.messages then
-			local evt = minetest.explode_table_event(fields.messages)
-			selected_idxs.messages[name] = evt.row - 1
-			if evt.type == "DCL" and messages[selected_idxs.messages[name]] then
-				mail.show_message(name, selected_idxs.messages[name])
+		if fields.inbox then -- inbox table
+			local evt = minetest.explode_table_event(fields.inbox)
+			selected_idxs.inbox[name] = evt.row - 1
+			if evt.type == "DCL" and messagesInbox[selected_idxs.inbox[name]] then
+				mail.show_message(name, messagesInbox[selected_idxs.inbox[name]].id)
+			end
+			return true
+		end
+
+		if fields.sent then -- sent table
+			local evt = minetest.explode_table_event(fields.sent)
+			selected_idxs.sent[name] = evt.row - 1
+			if evt.type == "DCL" and messagesSent[selected_idxs.sent[name]] then
+				mail.show_message(name, messagesSent[selected_idxs.sent[name]].id)
 			end
 			return true
 		end
@@ -528,13 +539,17 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.show_sent(name)
 
 		elseif fields.read then
-			if messages[selected_idxs.messages[name]] then
-				mail.show_message(name, selected_idxs.messages[name])
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then -- inbox table
+				mail.show_message(name, messagesInbox[selected_idxs.inbox[name]].id)
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then -- sent table
+				mail.show_message(name, messagesSent[selected_idxs.sent[name]].id)
 			end
 
 		elseif fields.delete then
-			if messages[selected_idxs.messages[name]] then
-				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "deleted")
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then -- inbox table
+				mail.setStatus(name, messagesInbox[selected_idxs.inbox[name]].id, "deleted")
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then -- sent table
+				mail.setStatus(name, messagesSent[selected_idxs.sent[name]].id, "deleted")
 			end
 
 			if boxtab_index == 1 then
@@ -543,31 +558,58 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.show_sent(name)
 			end
 
-		elseif fields.reply and messages[selected_idxs.messages[name]] then
-			local message = messages[selected_idxs.messages[name]]
-			mail.reply(name, message)
+		elseif fields.reply then
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+				mail.reply(name, message)
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+				mail.reply(name, message)
+			end
 
-		elseif fields.replyall and messages[selected_idxs.messages[name]] then
-			local message = messages[selected_idxs.messages[name]]
-			mail.replyall(name, message)
+		elseif fields.replyall then
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+				mail.replyall(name, message)
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+				mail.replyall(name, message)
+			end
 
-		elseif fields.forward and messages[selected_idxs.messages[name]] then
-			local message = messages[selected_idxs.messages[name]]
-			mail.forward(name, message)
+		elseif fields.forward then
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+				mail.forward(name, message)
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+				mail.forward(name, message)
+			end
 
 		elseif fields.markread then
-			if messages[selected_idxs.messages[name]] then
-				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "read")
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then
+				mail.setStatus(name, messagesInbox[selected_idxs.inbox[name]].id, "read")
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then
+				mail.setStatus(name, messagesSent[selected_idxs.sent[name]].id, "read")
 			end
 
-			mail.show_inbox(name)
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 
 		elseif fields.markunread then
-			if messages[selected_idxs.messages[name]] then
-				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "unread")
+			if formname == "mail:inbox" and messagesInbox[selected_idxs.inbox[name]] then
+				mail.setStatus(name, messagesInbox[selected_idxs.inbox[name]].id, "unread")
+			elseif formname == "mail:sent" and messagesSent[selected_idxs.sent[name]] then
+				mail.setStatus(name, messagesSent[selected_idxs.sent[name]].id, "unread")
 			end
 
-			mail.show_inbox(name)
+			if boxtab_index == 1 then
+				mail.show_inbox(name)
+			elseif boxtab_index == 2 then
+				mail.show_sent(name)
+			end
 
 		elseif fields.new then
 			mail.show_compose(name)
@@ -587,7 +629,8 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
-		local messages = mail.getPlayerMessages(name)
+		local messagesInbox = mail.getPlayerInboxMessages(name)
+		local messagesSent = mail.getPlayerSentMessages(name)
 
 		if fields.back then
 			if boxtab_index == 1 then
@@ -599,20 +642,34 @@ function mail.handle_receivefields(player, formname, fields)
 			return true	-- don't uselessly set messages
 
 		elseif fields.reply then
-			local message = messages[selected_idxs.messages[name]]
+			if messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+			elseif messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+			end
 			mail.reply(name, message)
 
 		elseif fields.replyall then
-			local message = messages[selected_idxs.messages[name]]
+			if messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+			elseif messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+			end
 			mail.replyall(name, message)
 
 		elseif fields.forward then
-			local message = messages[selected_idxs.messages[name]]
-			mail.forward(name, message.subject)
+			if messagesInbox[selected_idxs.inbox[name]] then
+				local message = messagesInbox[selected_idxs.inbox[name]]
+			elseif messagesSent[selected_idxs.sent[name]] then
+				local message = messagesSent[selected_idxs.sent[name]]
+			end
+			mail.forward(name, message)
 
 		elseif fields.delete then
-			if messages[selected_idxs.messages[name]] then
-				mail.setStatus(name, messages[selected_idxs.messages[name]].id, "deleted")
+			if messagesInbox[selected_idxs.inbox[name]] then
+				mail.setStatus(name, messagesInbox[selected_idxs.inbox[name]].id, "deleted")
+			elseif messagesSent[selected_idxs.sent[name]] then
+				mail.setStatus(name, messagesSent[selected_idxs.sent[name]].id, "deleted")
 			end
 
 			if boxtab_index == 1 then
