@@ -4,7 +4,7 @@ mtt.register("send mail", function(callback)
     auth_handler.set_password("player2", "")
 
     -- send a mail
-    mail.send("player1", "player2", "something", "blah")
+    mail.send({from = "player1", to = "player2", subject = "something", body = "blah"})
 
     -- check the receivers inbox
     local list2 = mail.getPlayerInboxMessages("player2")
