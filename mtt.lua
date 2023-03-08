@@ -1,5 +1,4 @@
 mtt.register("send mail", function(callback)
-    minetest.after(10, function()
     -- create "player2"
     local auth_handler = minetest.get_auth_handler()
     auth_handler.set_password("player2", "")
@@ -11,5 +10,4 @@ mtt.register("send mail", function(callback)
     local list2 = mail.getPlayerInboxMessages("player2")
     assert(list2 ~= nil and #list2 > 0)
     callback()
-    end
 end)

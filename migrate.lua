@@ -1,6 +1,6 @@
 function mail.migrate()
 	local gen_file_v1 = io.open(minetest.get_worldpath().."/mail.db", "r")
-	if file then
+	if gen_file_v1 then
 		mail.migrate_v1_to_v2()
 	end
 	
