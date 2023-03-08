@@ -177,7 +177,7 @@ function mail.addStatus(player, msg_id, status)
 	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - messages status may be lost!")
 		return false
 	end
 end
@@ -192,7 +192,7 @@ function mail.setStatus(player, msg_id, status)
 	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - messages status may be lost!")
 		return false
 	end
 end
@@ -350,7 +350,7 @@ function mail.setPlayerInMaillist(playername, ml_id, status)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - maillist may be lost!")
 		return false
 	end
 end
@@ -450,7 +450,7 @@ function mail.addContact(playername, contact)
 	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - contact may be lost!")
 		return false
 	end
 end
@@ -465,7 +465,7 @@ function mail.setContact(playername, updated_contact)
 	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - contact may be lost!")
 		return false
 	end
 end
@@ -480,7 +480,7 @@ function mail.deleteContact(owner, name)
 	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
 		return true
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
+		minetest.log("error","[mail] Save failed - contact may be lost!")
 		return false
 	end
 end
