@@ -127,16 +127,16 @@ function mail.addMessage(message)
 	if messages[1] then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
+		table.insert(messages, 1, message)
 	else
-		messages = {}
 		message.id = 1
+		messages = {message}
 	end
-	table.insert(messages, 1, message)
 	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
 		-- add default status (unread for receivers) of this message
 		local isSenderAReceiver = false
 		
-		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")),",") -- extracted maillists from all receivers
+		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or ""))) -- extracted maillists from all receivers
 		
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
