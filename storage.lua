@@ -124,7 +124,7 @@ end
 
 function mail.addMessage(message)
 	local messages = mail.getMessages()
-	if messages then
+	if messages[1] then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
 	else
