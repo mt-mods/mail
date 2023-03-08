@@ -8,7 +8,7 @@ mtt.register("send mail", function(callback)
     mail.send("player1", "player2", "something", "blah")
 
     -- check the receivers inbox
-    local list2 = mail.getMessages("player2")
+    local list2 = mail.getPlayerInboxMessages("player2")
     assert(list2 ~= nil and #list2 > 0)
     callback()
 end)
