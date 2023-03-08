@@ -38,6 +38,7 @@ end
 
 -- migrate from v2 to v3 database
 function mail.migrate_v2_to_v3()
+	minetest.mkdir(mail.maildir) -- if necessary (eg. first login)
 	minetest.log("info", "[mail] Migration from v2 to v3 database")
 	minetest.after(0,function()
 		for playername, value in minetest.get_auth_handler().iterate() do
@@ -84,7 +85,7 @@ end
 
 function mail.migrate_contacts(playername)
 	local gen_file_v1 = io.open(minetest.get_worldpath().."/mail.db", "r")
-	if file then
+	if gen_file_v1 then
 		mail.migrate_contacts_v1_to_v2()
 	end
 	
