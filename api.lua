@@ -88,6 +88,7 @@ function mail.send(...)
 		sender  = m.from,
 		to      = m.to,
 		cc      = m.cc,
+		bcc     = m.bcc,
 		subject = m.subject,
 		body    = m.body,
 		time    = os.time(),
