@@ -124,10 +124,11 @@ end
 
 function mail.addMessage(message)
 	local messages = mail.getMessages()
-	if messages[1] then
+	if messages then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
 	else
+		messages = {}
 		message.id = 1
 	end
 	table.insert(messages, 1, message)
