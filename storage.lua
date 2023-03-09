@@ -3,7 +3,10 @@ function mail.getMailFile(playername)
 	return mail.maildir .. "/" .. saneplayername .. ".json"
 end
 
-function mail.getMessages()
+function mail.getMessages(playername)
+	if (playername) then
+		return mail.getPlayerMessages(playername)
+	end
 	local messages = mail.read_json_file(mail.maildir .. "/mail.messages.json")
 	if messages then
 		for _, msg in ipairs(messages) do
