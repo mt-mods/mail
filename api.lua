@@ -112,18 +112,3 @@ function mail.send(...)
 		end
 	end
 end
-
-function mail.split(str, delimiter) -- flux split function
-    local rv = {}
-    local i, j = str:find(delimiter, nil, true)
-
-    while i do
-        table.insert(rv, str:sub(1, i - 1))
-        str = str:sub(j + 1)
-        i, j = str:find(delimiter, nil, true)
-    end
-
-    table.insert(rv, str)
-
-    return rv
-end
