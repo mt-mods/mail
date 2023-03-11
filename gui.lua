@@ -702,7 +702,7 @@ function mail.handle_receivefields(player, formname, fields)
 			local recipients = mail.parse_player_list(fields.to)
 			local isNew = true
 			for r_,recipient in ipairs(recipients) do
-				if mail.split(recipient, "@")[1] == "" then -- in case of maillist
+				if recipient:split("@")[1] == "" then -- in case of maillist
 					isNew = false
 				else
 					for c_,contact in ipairs(contacts) do
