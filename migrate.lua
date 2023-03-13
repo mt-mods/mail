@@ -66,7 +66,8 @@ function mail.migrate_messages_v2_to_v3()
 						break
 					end
 				end
-				if new_msg then
+				-- add if valid and "to" field populated (missing in ancient storage formats)
+				if new_msg and msg.to then
 					local msg_table = {
 						sender  = msg.sender,
 						to      = msg.to,
