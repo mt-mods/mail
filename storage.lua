@@ -47,16 +47,16 @@ function mail.getPlayerMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			local receivers = mail.extractMaillists((msg.to .. "," .. (msg.cc or "") .. "," .. (msg.bcc or "")),",") -- extracted maillists from all receivers
+			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",") -- extracted maillists from all receivers
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
 						table.insert(playerMessages, msg)
 						break
 					end
 				elseif msg.sender == playername then
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
 						table.insert(playerMessages, msg)
 						break
 					end
@@ -81,11 +81,11 @@ function mail.getPlayerInboxMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			local receivers = mail.extractMaillists((msg.to .. "," .. (msg.cc or "") .. "," .. (msg.bcc or "")),",") -- extracted maillists from all receivers
+			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",") -- extracted maillists from all receivers
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
 						table.insert(playerInboxMessages, msg)
 						break
 					end
@@ -140,7 +140,7 @@ function mail.addMessage(message)
 		local isSenderAReceiver = false
 		
 		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or ""))) -- extracted maillists from all receivers
-		
+
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
 				mail.addStatus(receiver, message.id, "unread")
@@ -149,7 +149,7 @@ function mail.addMessage(message)
 				end
 			end
 		end
-		
+
 		if isSenderAReceiver == false then
 			mail.addStatus(message.sender, message.id, "read")
 		end
@@ -248,7 +248,7 @@ function mail.addMaillist(maillist, players_string)
 	table.insert(maillists, 1, maillist)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
 		-- add status for players contained in the maillist
-		local players = player_string:split("\n")
+		local players = players_string:split("\n")
 		for _, player in ipairs(players) do
 			local playerInfo = player:split(" ")
 			if minetest.player_exists(playerInfo[1]) then -- avoid blank names
@@ -344,8 +344,8 @@ end
 
 function mail.setPlayerInMaillist(playername, ml_id, status)
 	local playersMls = mail.getPlayersInMaillists()
-	local updated_player = {id = ml_id, player = player, status = status}
-	table.insert(playersMls, 1, new_player)
+	local updated_player = {id = ml_id, player = playername, status = status}
+	table.insert(playersMls, 1, updated_player)
 	for _, player in ipairs(playersMls) do
 		if player.player == playername and player.id == ml_id then
 			playersMls[_] = {id = ml_id, player = player, status = status}
@@ -397,10 +397,10 @@ function mail.deleteMaillist(ml_id)
 	end
 end
 
-function mail.extractMaillists(receivers)
-	local globalReceivers = receivers:split(",") -- receivers including maillists
+function mail.extractMaillists(receivers_string)
+	local globalReceivers = receivers_string:split(",") -- receivers including maillists
 	local receivers = {} -- extracted receivers
-	
+
 	-- extract players from mailing lists
 	for _, receiver in ipairs(globalReceivers) do
 		local receiverInfo = receiver:split("@") -- @maillist
@@ -415,7 +415,7 @@ function mail.extractMaillists(receivers)
 			table.insert(receivers, 1, receiver)
 		end
 	end
-	
+
 	return receivers
 end
 
