@@ -533,7 +533,7 @@ function mail.handle_receivefields(player, formname, fields)
 		if fields.boxtab == "1" then
 			boxtab_index = 1
 			mail.show_inbox(name)
-	
+
 		elseif fields.boxtab == "2" then
 			boxtab_index = 2
 			mail.show_sent(name)
