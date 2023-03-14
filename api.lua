@@ -93,7 +93,7 @@ function mail.send(...)
 		body    = m.body,
 		time    = os.time(),
 	}
-	
+
 	-- insert in global storage
 	mail.addMessage(msg)
 
