@@ -3,13 +3,12 @@ function mail.migrate()
 	if gen_file_v1 then
 		mail.migrate_v1_to_v2()
 	end
-	
+
 	local info_file_v3 = mail.read_json_file(mail.maildir .. "/mail.info.json")
 	if not info_file_v3.dbversion then
 		mail.migrate_v2_to_v3()
 	end
 end
-	
 
 -- migrate from mail.db to player-file-based mailbox
 function mail.migrate_v1_to_v2()
@@ -46,7 +45,6 @@ function mail.migrate_v2_to_v3()
 		end
 	end)
 	mail.migrate_messages_v2_to_v3()
-	local info_file = mail.read_json_file(mail.maildir .. "/mail.info.json")
 	mail.write_json_file(mail.maildir .. "/mail.info.json", { dbversion = 3.0 })
 end
 
@@ -58,7 +56,8 @@ function mail.migrate_messages_v2_to_v3()
 			local saneplayername = string.gsub(playername, "[.|/]", "")
 			local player_inbox = mail.read_json_file(mail.maildir .. "/" .. saneplayername .. ".json")
 			for _, msg in ipairs(player_inbox) do
-				local msg_id = tostring(msg.time) .. msg.sender -- id like "123456789.0singleplayer" -- it presumes that a same sender cannot send two mails within a second
+				-- id like "123456789.0singleplayer" -- it presumes that a same sender cannot send two mails within a second
+				local msg_id = tostring(msg.time) .. msg.sender
 				local new_msg = true -- check if that mail was already processed with another player
 				for _, cur_id in ipairs(already_processed) do
 					if cur_id == msg_id then
@@ -87,12 +86,11 @@ end
 function mail.migrate_contacts(playername)
 	local gen_file_v1 = io.open(minetest.get_worldpath().."/mail.db", "r")
 	if gen_file_v1 then
-		mail.migrate_contacts_v1_to_v2()
+		mail.migrate_contacts_v1_to_v2(playername)
 	end
-	
+
 	-- v2 to v3 directly in general function
 end
-
 
 function mail.migrate_contacts_v1_to_v2(playername)
 	local file = io.open(mail.getContactsFile(playername), 'r')
@@ -119,7 +117,7 @@ end
 
 function mail.migrate_contacts_v2_to_v3(playername)
 	local player_contacts = mail.read_json_file(mail.maildir .. "/contacts/" .. playername .. ".json")
-	
+
 	for _, c in pairs(player_contacts) do
 		mail.addContact(playername, { name = c.name, note = c.note })
 	end
