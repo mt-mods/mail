@@ -25,7 +25,7 @@ end
 
 mail.inbox_formspec = "size[8,10;]" .. theme .. [[
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;1;false;false]
-		
+
 		button[6,0.10;2,0.5;new;New]
 		button[6,0.95;2,0.5;read;Read]
 		button[6,1.70;2,0.5;reply;Reply]
@@ -38,13 +38,13 @@ mail.inbox_formspec = "size[8,10;]" .. theme .. [[
 		button[6,7.6;2,0.5;maillists;Mail lists]
 		button[6,8.7;2,0.5;about;About]
 		button_exit[6,9.5;2,0.5;quit;Close]
-		
+
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,9.35;inbox;#999,From,Subject]]
 
-mail.sent_formspec = "size[8,10;]" .. theme .. [[		
+mail.sent_formspec = "size[8,10;]" .. theme .. [[
 		tabheader[0.3,1;boxtab;Inbox,Sent messages;2;false;false]
-		
+
 		button[6,0.10;2,0.5;new;New]
 		button[6,0.95;2,0.5;read;Read]
 		button[6,1.70;2,0.5;reply;Reply]
@@ -55,7 +55,7 @@ mail.sent_formspec = "size[8,10;]" .. theme .. [[
 		button[6,7.6;2,0.5;maillists;Mail lists]
 		button[6,8.7;2,0.5;about;About]
 		button_exit[6,9.5;2,0.5;quit;Close]
-		
+
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,9.35;sent;#999,To,Subject]]
 
@@ -377,7 +377,7 @@ function mail.compile_contact_list(name, selected, playernames)
 		formspec[#formspec + 1] = "]"
 	end
 	return table.concat(formspec, "")
-	
+
 end
 
 function mail.show_message(name, msgnumber)
@@ -412,8 +412,8 @@ function mail.show_message(name, msgnumber)
 	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
-	message_status = mail.getMessageStatus(name, message.id)
-	
+	local message_status = mail.getMessageStatus(name, message.id)
+
 	if message_status == "unread" then
 		mail.setStatus(name, message.id, "read")
 	end
@@ -495,7 +495,7 @@ function mail.forward(name, message)
 end
 
 function mail.handle_receivefields(player, formname, fields)
-	
+
 	if formname == "mail:about" then
 		minetest.after(0.5, function()
 			if boxtab_index == 1 then
@@ -508,7 +508,7 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:inbox" or formname == "mail:sent" then
 		local name = player:get_player_name()
-		local messages = mail.getPlayerMessages(name)
+		-- split inbox and sent msgs for different tests
 		local messagesInbox = mail.getPlayerInboxMessages(name)
 		local messagesSent = mail.getPlayerSentMessages(name)
 
@@ -529,11 +529,11 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 			return true
 		end
-		
+
 		if fields.boxtab == "1" then
 			boxtab_index = 1
 			mail.show_inbox(name)
-			
+	
 		elseif fields.boxtab == "2" then
 			boxtab_index = 2
 			mail.show_sent(name)
@@ -642,26 +642,29 @@ function mail.handle_receivefields(player, formname, fields)
 			return true	-- don't uselessly set messages
 
 		elseif fields.reply then
+			local message = ""
 			if messagesInbox[selected_idxs.inbox[name]] then
-				local message = messagesInbox[selected_idxs.inbox[name]]
+				message = messagesInbox[selected_idxs.inbox[name]]
 			elseif messagesSent[selected_idxs.sent[name]] then
-				local message = messagesSent[selected_idxs.sent[name]]
+				message = messagesSent[selected_idxs.sent[name]]
 			end
 			mail.reply(name, message)
 
 		elseif fields.replyall then
+			local message = ""
 			if messagesInbox[selected_idxs.inbox[name]] then
-				local message = messagesInbox[selected_idxs.inbox[name]]
+				message = messagesInbox[selected_idxs.inbox[name]]
 			elseif messagesSent[selected_idxs.sent[name]] then
-				local message = messagesSent[selected_idxs.sent[name]]
+				message = messagesSent[selected_idxs.sent[name]]
 			end
 			mail.replyall(name, message)
 
 		elseif fields.forward then
+			local message = ""
 			if messagesInbox[selected_idxs.inbox[name]] then
-				local message = messagesInbox[selected_idxs.inbox[name]]
+				message = messagesInbox[selected_idxs.inbox[name]]
 			elseif messagesSent[selected_idxs.sent[name]] then
-				local message = messagesSent[selected_idxs.sent[name]]
+				message = messagesSent[selected_idxs.sent[name]]
 			end
 			mail.forward(name, message)
 
@@ -701,11 +704,11 @@ function mail.handle_receivefields(player, formname, fields)
 			local contacts = mail.getPlayerContacts(name)
 			local recipients = mail.parse_player_list(fields.to)
 			local isNew = true
-			for r_,recipient in ipairs(recipients) do
+			for _,recipient in ipairs(recipients) do
 				if recipient:split("@")[1] == "" then -- in case of maillist
 					isNew = false
 				else
-					for c_,contact in ipairs(contacts) do
+					for _,contact in ipairs(contacts) do
 						if contact.name == recipient then
 							isNew = false
 							break
@@ -1000,7 +1003,7 @@ function mail.handle_receivefields(player, formname, fields)
 		end
 
 		return true
-		
+
 	elseif formname == "mail:editmaillist" then
 		local name = player:get_player_name()
 		local maillists = mail.getPlayerMaillists(name)
@@ -1023,7 +1026,7 @@ function mail.handle_receivefields(player, formname, fields)
 		end
 
 		return true
-		
+
 	elseif fields.mail then
 
 			if boxtab_index == 1 then
