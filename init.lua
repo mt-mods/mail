@@ -4,7 +4,7 @@ mail = {
 
 	-- database version
 	dbversion = 3.0,
-	
+
 	-- mail directory
 	maildir = minetest.get_worldpath().."/mails",
 	contactsdir = minetest.get_worldpath().."/mails/contacts"
