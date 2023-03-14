@@ -47,7 +47,8 @@ function mail.getPlayerMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",") -- extracted maillists from all receivers
+			-- extracted maillists from all receivers
+			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",")
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
@@ -81,7 +82,8 @@ function mail.getPlayerInboxMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",") -- extracted maillists from all receivers
+			-- extracted maillists from all receivers
+			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",")
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
@@ -105,7 +107,8 @@ function mail.getPlayerSentMessages(playername)
 	if messages[1] then
 		for _, msg in ipairs(messages) do
 			if msg.sender == playername then -- check if player is the sender
-				if mail.getMessageStatus(playername, msg.id) ~= "deleted" then -- do not return if the message was deleted from player
+				-- do not return if the message was deleted from player
+				if mail.getMessageStatus(playername, msg.id) ~= "deleted" then
 					table.insert(playerSentMessages, msg)
 				end
 			end
@@ -138,8 +141,9 @@ function mail.addMessage(message)
 	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
 		-- add default status (unread for receivers) of this message
 		local isSenderAReceiver = false
-		
-		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or ""))) -- extracted maillists from all receivers
+
+		 -- extracted maillists from all receivers
+		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")))
 
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
@@ -268,7 +272,11 @@ function mail.setMaillist(ml_id, updated_maillist, players_string)
 	for _, maillist in ipairs(maillists) do
 		if maillist.id == ml_id then
 			maillist_id = maillist.id
-			maillists[_] = {id = maillist_id, owner = updated_maillist.owner, name = updated_maillist.name, desc = updated_maillist.desc}
+			maillists[_] = {
+				id = maillist_id,
+				owner = updated_maillist.owner,
+				name = updated_maillist.name,
+				desc = updated_maillist.desc}
 		end
 	end
 	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
@@ -389,7 +397,9 @@ function mail.deleteMaillist(ml_id)
 			table.remove(maillists, _)
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) and mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
+	local players_writing_done = mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players)
+	local maillist_writing_done = mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists)
+	if players_writing_done and maillist_writing_done then
 		return true
 	else
 		minetest.log("error","[mail] Save failed!")
