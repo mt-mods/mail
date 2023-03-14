@@ -40,7 +40,7 @@ function mail.migrate_v2_to_v3()
 	minetest.mkdir(mail.maildir) -- if necessary (eg. first login)
 	minetest.log("info", "[mail] Migration from v2 to v3 database")
 	minetest.after(0,function()
-		for playername, value in minetest.get_auth_handler().iterate() do
+		for playername, _ in minetest.get_auth_handler().iterate() do
 			mail.migrate_contacts_v2_to_v3(playername)
 		end
 	end)
@@ -52,7 +52,7 @@ function mail.migrate_messages_v2_to_v3()
 	local already_processed = {} -- store messages that are already process to avoid duplicates
 	minetest.after(0,function()
 		-- check in every inbox to fetch messages
-		for playername, value in minetest.get_auth_handler().iterate() do
+		for playername, _ in minetest.get_auth_handler().iterate() do
 			local saneplayername = string.gsub(playername, "[.|/]", "")
 			local player_inbox = mail.read_json_file(mail.maildir .. "/" .. saneplayername .. ".json")
 			for _, msg in ipairs(player_inbox) do
