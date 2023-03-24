@@ -937,11 +937,8 @@ function mail.handle_receivefields(player, formname, fields)
 			local evt = minetest.explode_table_event(fields.maillists)
 			selected_idxs.maillists[name] = evt.row - 1
 			if evt.type == "DCL" and maillists[selected_idxs.maillists[name]] then
-				local players_ml = mail.getPlayersDataInMaillist(maillists[selected_idxs.maillists[name]].id)
-				local players_string = ""
-				for _, p in ipairs(players_ml) do
-					players_string = players_string .. p.player .. " " .. p.status .. "\n"
-				end
+				local players_ml = mail.getPlayersInMaillist(maillists[selected_idxs.maillists[name]].id)
+				local players_string = mail.concat_player_list(players_ml)
 				mail.show_edit_maillist(
 					name,
 					maillists[selected_idxs.maillists[name]].name,
@@ -952,14 +949,11 @@ function mail.handle_receivefields(player, formname, fields)
 
 		elseif fields.new then
 			selected_idxs.maillists[name] = "#NEW#"
-			mail.show_edit_maillist(name, "", "", "Player1 to\nPlayer2 cc\nPlayer3 bcc")
+			mail.show_edit_maillist(name, "", "", "Player1, Player2, Player3")
 
 		elseif fields.edit and maillists[selected_idxs.maillists[name]] then
-			local players_ml = mail.getPlayersDataInMaillist(maillists[selected_idxs.maillists[name]].id)
-			local players_string = ""
-			for _, p in ipairs(players_ml) do
-				players_string = players_string .. p.player .. " " .. p.status .. "\n"
-			end
+			local players_ml = mail.getPlayersInMaillist(maillists[selected_idxs.maillists[name]].id)
+			local players_string = mail.concat_player_list(players_ml)
 			mail.show_edit_maillist(
 				name,
 				maillists[selected_idxs.maillists[name]].name,

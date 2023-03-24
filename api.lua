@@ -47,11 +47,14 @@ function mail.send(...)
 	-- normalize to, cc and bcc while compiling a list of all recipients
 	local recipients = {}
 	local undeliverable = {}
+	m.to = mail.concat_player_list(mail.extractMaillists(m.to, m.from))
 	m.to = mail.normalize_players_and_add_recipients(m.to, recipients, undeliverable)
 	if m.cc then
+		m.cc = mail.concat_player_list(mail.extractMaillists(m.cc, m.from))
 		m.cc = mail.normalize_players_and_add_recipients(m.cc, recipients, undeliverable)
 	end
 	if m.bcc then
+		m.bcc = mail.concat_player_list(mail.extractMaillists(m.bcc, m.from))
 		m.bcc = mail.normalize_players_and_add_recipients(m.bcc, recipients, undeliverable)
 	end
 

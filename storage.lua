@@ -47,8 +47,7 @@ function mail.getPlayerMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			-- extracted maillists from all receivers
-			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",")
+			local receivers = (msg.to .. "," .. cc .. "," .. bcc):split(",")
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
@@ -82,8 +81,7 @@ function mail.getPlayerInboxMessages(playername)
 			if msg.bcc then
 				bcc = msg.bcc
 			end
-			-- extracted maillists from all receivers
-			local receivers = mail.extractMaillists((msg.to .. "," .. cc .. "," .. bcc),",")
+			local receivers = (msg.to .. "," .. cc .. "," .. bcc):split(",")
 			for _, receiver in ipairs(receivers) do
 				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
 				if receiver == playername then -- check if player is a receiver
@@ -143,7 +141,7 @@ function mail.addMessage(message)
 		local isSenderAReceiver = false
 
 		 -- extracted maillists from all receivers
-		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")))
+		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")), message.sender)
 
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
@@ -252,11 +250,10 @@ function mail.addMaillist(maillist, players_string)
 	table.insert(maillists, 1, maillist)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
 		-- add status for players contained in the maillist
-		local players = players_string:split("\n")
+		local players = mail.parse_player_list(players_string)
 		for _, player in ipairs(players) do
-			local playerInfo = player:split(" ")
-			if minetest.player_exists(playerInfo[1]) then -- avoid blank names
-				mail.addPlayerToMaillist(playerInfo[1], maillist.id, playerInfo[2])
+			if minetest.player_exists(player) then -- avoid blank names
+				mail.addPlayerToMaillist(player, maillist.id)
 			end
 		end
 		return true
@@ -283,11 +280,10 @@ function mail.setMaillist(ml_id, updated_maillist, players_string)
 		-- remove all players
 		mail.removePlayersFromMaillist(maillist_id)
 		-- to add those registered in the updated maillist
-		local players = players_string:split("\n")
+		local players = mail.parse_player_list(players_string)
 		for _, player in ipairs(players) do
-			local playerInfo = player:split(" ")
-			if minetest.player_exists(playerInfo[1]) then -- avoid blank names
-				mail.addPlayerToMaillist(playerInfo[1], maillist_id, playerInfo[2])
+			if minetest.player_exists(player) then -- avoid blank names
+				mail.addPlayerToMaillist(player, maillist_id)
 			end
 		end
 		return true
@@ -297,11 +293,11 @@ function mail.setMaillist(ml_id, updated_maillist, players_string)
 	end
 end
 
-function mail.getMaillistIdFromName(ml_name)
+function mail.getMaillistIdFromName(ml_name, owner)
 	local maillists = mail.getMaillists()
 	local ml_id = 0
 	for _, maillist in ipairs(maillists) do
-		if maillist.name == ml_name then
+		if maillist.name == ml_name and maillist.owner == owner then
 			ml_id = maillist.id
 			break
 		end
@@ -332,33 +328,18 @@ function mail.getPlayersInMaillist(ml_id)
 	local players_names_ml = {}
 	if players_ml[1] then
 		for _, playerInfo in ipairs(players_ml) do
-			table.insert(players_names_ml, 1, playerInfo.player)
+			if playerInfo and playerInfo.player and minetest.player_exists(playerInfo.player) then
+				table.insert(players_names_ml, 1, playerInfo.player)
+			end
 		end
 	end
 	return players_names_ml
 end
 
-function mail.addPlayerToMaillist(player, ml_id, status)
+function mail.addPlayerToMaillist(player, ml_id)
 	local playersMls = mail.getPlayersInMaillists()
-	local new_player = {id = ml_id, player = player, status = status}
+	local new_player = {id = ml_id, player = player}
 	table.insert(playersMls, 1, new_player)
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - maillist may be lost!")
-		return false
-	end
-end
-
-function mail.setPlayerInMaillist(playername, ml_id, status)
-	local playersMls = mail.getPlayersInMaillists()
-	local updated_player = {id = ml_id, player = playername, status = status}
-	table.insert(playersMls, 1, updated_player)
-	for _, player in ipairs(playersMls) do
-		if player.player == playername and player.id == ml_id then
-			playersMls[_] = {id = ml_id, player = player, status = status}
-		end
-	end
 	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
 		return true
 	else
@@ -369,12 +350,13 @@ end
 
 function mail.removePlayersFromMaillist(ml_id)
 	local maillists_players = mail.getPlayersInMaillists()
-	for _, player in ipairs(maillists_players) do
-		if player.id == ml_id then
-			table.remove(maillists_players, _)
+	local updated_players = {}
+	for _, playerInfo in ipairs(maillists_players) do
+		if playerInfo.id ~= ml_id then
+			table.insert(updated_players, playerInfo)
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) then
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", updated_players) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed!")
@@ -407,15 +389,15 @@ function mail.deleteMaillist(ml_id)
 	end
 end
 
-function mail.extractMaillists(receivers_string)
-	local globalReceivers = receivers_string:split(",") -- receivers including maillists
+function mail.extractMaillists(receivers_string, maillists_owner)
+	local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
 	local receivers = {} -- extracted receivers
 
 	-- extract players from mailing lists
 	for _, receiver in ipairs(globalReceivers) do
 		local receiverInfo = receiver:split("@") -- @maillist
-		if receiverInfo[1] == "" and receiverInfo[2] then -- in case of maillist
-			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[2]))
+		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] and mail.getMaillistIdFromName(receiverInfo[1], maillists_owner) ~= 0 then -- in case of maillist
+			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[1], maillists_owner))
 			if players_ml then
 				for _, player in ipairs(players_ml) do
 					table.insert(receivers, 1, player)
