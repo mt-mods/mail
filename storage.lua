@@ -367,20 +367,14 @@ end
 
 function mail.deleteMaillist(ml_id)
 	local maillists = mail.getMaillists()
-	local maillists_players = mail.getPlayersInMaillists()
 	-- remove players attached to the maillist
-	for _, player in ipairs(maillists_players) do
-		if player.id == ml_id then
-			table.remove(maillists_players, _)
-		end
-	end
+	local players_writing_done = mail.removePlayersFromMaillist(ml_id)
 	-- then remove the maillist itself
 	for _, maillist in ipairs(maillists) do
 		if maillist.id == ml_id then
 			table.remove(maillists, _)
 		end
 	end
-	local players_writing_done = mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players)
 	local maillist_writing_done = mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists)
 	if players_writing_done and maillist_writing_done then
 		return true
