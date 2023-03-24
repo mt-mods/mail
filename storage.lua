@@ -141,7 +141,8 @@ function mail.addMessage(message)
 		local isSenderAReceiver = false
 
 		 -- extracted maillists from all receivers
-		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "") .. "," .. (message.bcc or "")), message.sender)
+		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "")
+			.. "," .. (message.bcc or "")), message.sender)
 
 		for _, receiver in ipairs(receivers) do
 			if minetest.player_exists(receiver) then -- avoid blank names
@@ -396,7 +397,8 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 	-- extract players from mailing lists
 	for _, receiver in ipairs(globalReceivers) do
 		local receiverInfo = receiver:split("@") -- @maillist
-		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] and mail.getMaillistIdFromName(receiverInfo[1], maillists_owner) ~= 0 then -- in case of maillist
+		if receiverInfo[1] and receiver == "@" .. receiverInfo[1]
+			and mail.getMaillistIdFromName(receiverInfo[1], maillists_owner) ~= 0 then -- in case of maillist
 			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[1], maillists_owner))
 			if players_ml then
 				for _, player in ipairs(players_ml) do
