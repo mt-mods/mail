@@ -131,7 +131,7 @@ function mail.addMessage(message)
 	if messages[1] then
 		local previousMsg = messages[1]
 		message.id = previousMsg.id + 1
-		table.insert(messages, 1, message)
+		table.insert(messages, message)
 	else
 		message.id = 1
 		messages = {message}
@@ -180,7 +180,7 @@ end
 function mail.addStatus(player, msg_id, status)
 	local messagesStatus = mail.getStatus()
 	local msg_status = {id = msg_id, player = player, status = status}
-	table.insert(messagesStatus, 1, msg_status)
+	table.insert(messagesStatus, msg_status)
 	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
 		return true
 	else
@@ -248,7 +248,7 @@ function mail.addMaillist(maillist, players_string)
 	else
 		maillist.id = 1
 	end
-	table.insert(maillists, 1, maillist)
+	table.insert(maillists, maillist)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
 		-- add status for players contained in the maillist
 		local players = mail.parse_player_list(players_string)
@@ -317,7 +317,7 @@ function mail.getPlayersDataInMaillist(ml_id)
 	if players_mls[1] then
 		for _, playerInfo in ipairs(players_mls) do
 			if playerInfo.id == ml_id then
-				table.insert(players_ml, 1, playerInfo)
+				table.insert(players_ml, playerInfo)
 			end
 		end
 	end
@@ -330,7 +330,7 @@ function mail.getPlayersInMaillist(ml_id)
 	if players_ml[1] then
 		for _, playerInfo in ipairs(players_ml) do
 			if playerInfo and playerInfo.player and minetest.player_exists(playerInfo.player) then
-				table.insert(players_names_ml, 1, playerInfo.player)
+				table.insert(players_names_ml, playerInfo.player)
 			end
 		end
 	end
@@ -340,7 +340,7 @@ end
 function mail.addPlayerToMaillist(player, ml_id)
 	local playersMls = mail.getPlayersInMaillists()
 	local new_player = {id = ml_id, player = player}
-	table.insert(playersMls, 1, new_player)
+	table.insert(playersMls, new_player)
 	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
 		return true
 	else
@@ -402,11 +402,11 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[1], maillists_owner))
 			if players_ml then
 				for _, player in ipairs(players_ml) do
-					table.insert(receivers, 1, player)
+					table.insert(receivers, player)
 				end
 			end
 		else -- in case of player
-			table.insert(receivers, 1, receiver)
+			table.insert(receivers, receiver)
 		end
 	end
 
