@@ -351,13 +351,13 @@ end
 
 function mail.removePlayersFromMaillist(ml_id)
 	local maillists_players = mail.getPlayersInMaillists()
-	local updated_players = {}
-	for _, playerInfo in ipairs(maillists_players) do
-		if playerInfo.id ~= ml_id then
-			table.insert(updated_players, playerInfo)
+	for i=#maillists_players,1,-1 do
+		local playerInfo = maillists_players[i]
+		if playerInfo.id == ml_id then
+			table.remove(maillists_players, i)
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", updated_players) then
+	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) then
 		return true
 	else
 		minetest.log("error","[mail] Save failed!")
@@ -464,9 +464,10 @@ end
 
 function mail.deleteContact(owner, name)
 	local contacts = mail.getContacts()
-	for _, contact in ipairs(contacts) do
+	for i=#contacts,1,-1 do
+		local contact = contacts[i]
 		if contact.owner == owner and contact.name == name then
-			table.remove(contacts, _)
+			table.remove(contacts, i)
 		end
 	end
 	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
