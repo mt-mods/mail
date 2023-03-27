@@ -7,7 +7,10 @@ mail = {
 
 	-- mail directory
 	maildir = minetest.get_worldpath().."/mails",
-	contactsdir = minetest.get_worldpath().."/mails/contacts"
+	contactsdir = minetest.get_worldpath().."/mails/contacts",
+
+	-- mod storage
+	storage = minetest.get_mod_storage()
 }
 
 

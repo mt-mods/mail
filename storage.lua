@@ -1,26 +1,20 @@
-function mail.getMailFile(playername)
-	local saneplayername = string.gsub(playername, "[.|/]", "")
-	return mail.maildir .. "/" .. saneplayername .. ".json"
+function mail.get_storage_entry(playername)
+	local str = mail.storage:get_string(playername)
+	if str == "" then
+		-- new entry
+		return {
+			contacts = {},
+			inbox = {},
+			outbox = {}
+		}
+	else
+		-- deserialize existing entry
+		return minetest.parse_json(str)
+	end
 end
 
-function mail.getMessages(playername)
-	if (playername) then
-		return mail.getPlayerMessages(playername)
-	end
-	local messages = mail.read_json_file(mail.maildir .. "/mail.messages.json")
-	if messages then
-		for _, msg in ipairs(messages) do
-			if not msg.time then
-				-- add missing time field if not available (happens with old data)
-				msg.time = 0
-			end
-		end
-
-		-- sort by received date descending
-		table.sort(messages, function(a,b) return a.time > b.time end)
-	end
-
-	return messages
+function mail.set_storage_entry(playername, entry)
+	mail.storage:get_string(playername, minetest.write_json(entry))
 end
 
 function mail.getMessage(msg_id)
@@ -34,7 +28,8 @@ function mail.getMessage(msg_id)
 	end
 end
 
-function mail.getPlayerMessages(playername)
+-- api in use by the `fancyvend` mod
+function mail.getMessages(playername)
 	local messages = mail.getMessages()
 	local playerMessages = {}
 	if messages then
@@ -66,37 +61,6 @@ function mail.getPlayerMessages(playername)
 	end
 
 	return playerMessages
-end
-
-function mail.getPlayerInboxMessages(playername)
-	local messages = mail.getMessages()
-	local playerInboxMessages = {}
-	if messages then
-		for _, msg in ipairs(messages) do
-			local cc = ""
-			local bcc = ""
-			if msg.cc then
-				cc = msg.cc
-			end
-			if msg.bcc then
-				bcc = msg.bcc
-			end
-			local receivers = (msg.to .. "," .. cc .. "," .. bcc):split(",")
-			for _, receiver in ipairs(receivers) do
-				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
-				if receiver == playername then -- check if player is a receiver
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
-						table.insert(playerInboxMessages, msg)
-						break
-					end
-				end
-			end
-		end
-		-- show hud notification
-		mail.hud_update(playername, playerInboxMessages)
-	end
-
-	return playerInboxMessages
 end
 
 function mail.getPlayerSentMessages(playername)

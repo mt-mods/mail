@@ -109,7 +109,8 @@ end
 
 function mail.show_inbox(name)
 	local formspec = { mail.inbox_formspec }
-	local messages = mail.getPlayerInboxMessages(name)
+	local entry = mail.get_storage_entry(name)
+	local messages = entry.inbox
 
 	message_drafts[name] = nil
 
@@ -509,8 +510,10 @@ function mail.handle_receivefields(player, formname, fields)
 	elseif formname == "mail:inbox" or formname == "mail:sent" then
 		local name = player:get_player_name()
 		-- split inbox and sent msgs for different tests
-		local messagesInbox = mail.getPlayerInboxMessages(name)
-		local messagesSent = mail.getPlayerSentMessages(name)
+		local entry = mail.get_storage_entry(name)
+
+		local messagesInbox = entry.inbox
+		local messagesSent = entry.outbox
 
 		if fields.inbox then -- inbox table
 			local evt = minetest.explode_table_event(fields.inbox)
@@ -629,8 +632,10 @@ function mail.handle_receivefields(player, formname, fields)
 
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
-		local messagesInbox = mail.getPlayerInboxMessages(name)
-		local messagesSent = mail.getPlayerSentMessages(name)
+		local entry = mail.get_storage_entry(name)
+
+		local messagesInbox = entry.inbox
+		local messagesSent = entry.outbox
 
 		if fields.back then
 			if boxtab_index == 1 then
