@@ -32,7 +32,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local name = player:get_player_name()
     if fields.send then
-        local error = mail.send({
+        local err = mail.send({
             from = name,
             to = fields.to,
             cc = fields.cc,
@@ -40,8 +40,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             subject = fields.subject,
             body = fields.body,
         })
-        if error then
-            minetest.chat_send_player(name, error)
+        if err then
+            minetest.chat_send_player(name, err)
             return
         end
 
