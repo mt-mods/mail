@@ -1,7 +1,8 @@
 local FORMNAME = "mail:message"
 
-function mail.show_message(name, msgnumber)
-	local message = mail.getMessage(msgnumber)
+function mail.show_message(name, id)
+	local message = mail.get_message(name, id)
+
 	local formspec = [[
 			size[8,9]
 
@@ -32,10 +33,9 @@ function mail.show_message(name, msgnumber)
 	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
-	local message_status = mail.getMessageStatus(name, message.id)
-
-	if message_status == "unread" then
-		mail.setStatus(name, message.id, "read")
+	if not message.read then
+		-- mark as read
+		mail.mark_read(name, id)
 	end
 
 	minetest.show_formspec(name, FORMNAME, formspec)
@@ -125,9 +125,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.delete then
 		if messagesInbox[mail.selected_idxs.inbox[name]] then
-			mail.setStatus(name, messagesInbox[mail.selected_idxs.inbox[name]].id, "deleted")
+			mail.delete_mail(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
 		elseif messagesSent[mail.selected_idxs.sent[name]] then
-			mail.setStatus(name, messagesSent[mail.selected_idxs.sent[name]].id, "deleted")
+			mail.delete_mail(name, messagesSent[mail.selected_idxs.sent[name]].id)
 		end
 		mail.show_mail_menu(name)
 	end

@@ -59,156 +59,64 @@ function mail.set_storage_entry(playername, entry)
 	mail.storage:get_string(playername, minetest.write_json(entry))
 end
 
-function mail.getMessage(msg_id)
-	local messages = mail.getMessages()
-	if messages then
-		for _, msg in ipairs(messages) do
-			if msg.id == msg_id then
-				return msg
-			end
+-- get a mail by id from the players in- or outbox
+function mail.get_message(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			return msg
+		end
+	end
+	for _, msg in ipairs(entry.outbox) do
+		if msg.id == msg_id then
+			return msg
 		end
 	end
 end
 
--- api in use by the `fancyvend` mod
-function mail.getMessages(playername)
-	local messages = mail.getMessages()
-	local playerMessages = {}
-	if messages then
-		for _, msg in ipairs(messages) do
-			local cc = ""
-			local bcc = ""
-			if msg.cc then
-				cc = msg.cc
-			end
-			if msg.bcc then
-				bcc = msg.bcc
-			end
-			local receivers = (msg.to .. "," .. cc .. "," .. bcc):split(",")
-			for _, receiver in ipairs(receivers) do
-				receiver = string.gsub(receiver, " ", "") -- avoid blank spaces (ex : " singleplayer" instead of "singleplayer")
-				if receiver == playername then -- check if player is a receiver
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
-						table.insert(playerMessages, msg)
-						break
-					end
-				elseif msg.sender == playername then
-					if mail.getMessageStatus(receiver, msg.id) ~= "deleted" then -- do not return if the message was deleted by player
-						table.insert(playerMessages, msg)
-						break
-					end
-				end
-			end
-		end
-	end
-
-	return playerMessages
-end
-
-function mail.getPlayerSentMessages(playername)
-	local messages = mail.getMessages()
-	local playerSentMessages = {}
-	if messages[1] then
-		for _, msg in ipairs(messages) do
-			if msg.sender == playername then -- check if player is the sender
-				-- do not return if the message was deleted from player
-				if mail.getMessageStatus(playername, msg.id) ~= "deleted" then
-					table.insert(playerSentMessages, msg)
-				end
-			end
-		end
-	end
-
-	return playerSentMessages
-end
-
-function mail.setMessages(playername, messages)
-	if mail.write_json_file(mail.getMailFile(playername), messages) then
-		mail.hud_update(playername, messages)
-		return true
-	else
-		minetest.log("error","[mail] Save failed - messages may be lost! ("..playername..")")
-		return false
-	end
-end
-
-function mail.addMessage(message)
-	local messages = mail.getMessages()
-	if messages[1] then
-		local previousMsg = messages[1]
-		message.id = previousMsg.id + 1
-		table.insert(messages, message)
-	else
-		message.id = 1
-		messages = {message}
-	end
-	if mail.write_json_file(mail.maildir .. "/mail.messages.json", messages) then
-		-- add default status (unread for receivers) of this message
-		local isSenderAReceiver = false
-
-		 -- extracted maillists from all receivers
-		local receivers = mail.extractMaillists((message.to .. "," .. (message.cc or "")
-			.. "," .. (message.bcc or "")), message.sender)
-
-		for _, receiver in ipairs(receivers) do
-			if minetest.player_exists(receiver) then -- avoid blank names
-				mail.addStatus(receiver, message.id, "unread")
-				if message.sender == receiver then
-					isSenderAReceiver = true
-				end
-			end
-		end
-
-		if isSenderAReceiver == false then
-			mail.addStatus(message.sender, message.id, "read")
-		end
-		return true
-	else
-		minetest.log("error","[mail] Save failed - messages may be lost!")
-		return false
-	end
-end
-
-function mail.getStatus()
-	local messagesStatus = mail.read_json_file(mail.maildir .. "/mail.status.json")
-	return messagesStatus
-end
-
-function mail.getMessageStatus(player, msg_id)
-	local messagesStatus = mail.getStatus()
-	for _, msg in ipairs(messagesStatus) do
-		if msg.id == msg_id and msg.player == player then
-			return msg.status
+-- marks a mail read by its id
+function mail.mark_read(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			msg.read = true
+			mail.set_storage_entry(playername, entry)
+			return
 		end
 	end
 end
 
-function mail.addStatus(player, msg_id, status)
-	local messagesStatus = mail.getStatus()
-	local msg_status = {id = msg_id, player = player, status = status}
-	table.insert(messagesStatus, msg_status)
-	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - messages status may be lost!")
-		return false
+-- marks a mail unread by its id
+function mail.mark_unread(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			msg.read = false
+			mail.set_storage_entry(playername, entry)
+			return
+		end
 	end
 end
 
-function mail.setStatus(player, msg_id, status)
-	local messagesStatus = mail.getStatus()
-	for _, msg_status in ipairs(messagesStatus) do
-		if msg_status.id == msg_id and msg_status.player == player then
-			messagesStatus[_] = {id = msg_id, player = player, status = status}
+-- deletes a mail by its id
+function mail.delete_mail(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for i, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			table.remove(entry.outbox, i)
+			mail.set_storage_entry(playername, entry)
+			return
 		end
 	end
-	if mail.write_json_file(mail.maildir .. "/mail.status.json", messagesStatus) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - messages status may be lost!")
-		return false
+	for i, msg in ipairs(entry.outbox) do
+		if msg.id == msg_id then
+			table.remove(entry.outbox, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
 	end
 end
+
 
 function mail.getContactsFile()
 	return mail.maildir .. "/mail.contacts.json"

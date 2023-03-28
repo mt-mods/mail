@@ -19,7 +19,8 @@ local sent_formspec = "size[8,10;]" .. mail.theme .. [[
 
 function mail.show_sent(name)
 	local formspec = { sent_formspec }
-	local messages = mail.getPlayerSentMessages(name)
+	local entry = mail.get_storage_entry(name)
+	local messages = entry.outbox
 
 	mail.message_drafts[name] = nil
 

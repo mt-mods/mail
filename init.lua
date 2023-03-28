@@ -1,9 +1,6 @@
 mail = {
-	-- api version
-	apiversion = 1.1,
-
-	-- database version
-	dbversion = 3.0,
+	-- version
+	version = 3,
 
 	-- mail directory
 	maildir = minetest.get_worldpath().."/mails",
@@ -39,6 +36,7 @@ end
 
 local MP = minetest.get_modpath(minetest.get_current_modname())
 dofile(MP .. "/util/normalize.lua")
+dofile(MP .. "/util/uuid.lua")
 dofile(MP .. "/chatcommands.lua")
 dofile(MP .. "/migrate.lua")
 dofile(MP .. "/hud.lua")

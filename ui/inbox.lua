@@ -28,7 +28,7 @@ function mail.show_inbox(name)
 
     if messages[1] then
         for _, message in ipairs(messages) do
-            if mail.getMessageStatus(name, message.id) == "unread" then
+            if not message.read then
                 if not mail.player_in_list(name, message.to) then
                     formspec[#formspec + 1] = ",#FFD788"
                 else
@@ -114,9 +114,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.delete then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then -- inbox table
-            mail.setStatus(name, messagesInbox[mail.selected_idxs.inbox[name]].id, "deleted")
+            mail.delete_mail(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
         elseif formname == "mail:sent" and messagesSent[mail.selected_idxs.sent[name]] then -- sent table
-            mail.setStatus(name, messagesSent[mail.selected_idxs.sent[name]].id, "deleted")
+            mail.delete_mail(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
         mail.show_mail_menu(name)
@@ -150,18 +150,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.markread then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then
-            mail.setStatus(name, messagesInbox[mail.selected_idxs.inbox[name]].id, "read")
+            mail.mark_read(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
         elseif formname == "mail:sent" and messagesSent[mail.selected_idxs.sent[name]] then
-            mail.setStatus(name, messagesSent[mail.selected_idxs.sent[name]].id, "read")
+            mail.mark_read(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
         mail.show_mail_menu(name)
 
     elseif fields.markunread then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then
-            mail.setStatus(name, messagesInbox[mail.selected_idxs.inbox[name]].id, "unread")
+            mail.mark_unread(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
         elseif formname == "mail:sent" and messagesSent[mail.selected_idxs.sent[name]] then
-            mail.setStatus(name, messagesSent[mail.selected_idxs.sent[name]].id, "unread")
+            mail.mark_unread(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
         mail.show_mail_menu(name)

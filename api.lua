@@ -97,8 +97,17 @@ function mail.send(...)
 		time    = os.time(),
 	}
 
-	-- insert in global storage
-	mail.addMessage(msg)
+	-- add in senders outbox
+	local entry = mail.get_storage_entry(m.from)
+	table.insert(entry.outbox, msg)
+	mail.set_storage_entry(m.from, entry)
+
+	-- add in every receivers inbox
+	for recipient in pairs(recipients) do
+		entry = mail.get_storage_entry(recipient)
+		table.insert(entry.inbox, msg)
+		mail.set_storage_entry(recipient, entry)
+	end
 
 	-- notify recipients that happen to be online
 	local mail_alert = f(mail.receive_mail_message, m.from, m.subject)
