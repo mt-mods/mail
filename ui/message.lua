@@ -24,7 +24,7 @@ function mail.show_message(name, id)
 			button[6,8.5;2,1;delete;Delete]
 		]] .. mail.theme
 
-	local from = minetest.formspec_escape(message.sender) or ""
+	local from = minetest.formspec_escape(message.from) or ""
 	local to = minetest.formspec_escape(message.to) or ""
 	local cc = minetest.formspec_escape(message.cc) or ""
 	local date = type(message.time) == "number"
@@ -43,7 +43,7 @@ end
 
 function mail.reply(name, message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
-	mail.show_compose(name, message.sender, "Re: "..message.subject, replyfooter)
+	mail.show_compose(name, message.from, "Re: "..message.subject, replyfooter)
 end
 
 function mail.replyall(name, message)
@@ -51,8 +51,8 @@ function mail.replyall(name, message)
 
 	-- new recipients are the sender plus the original recipients, minus ourselves
 	local recipients = message.to or ""
-	if message.sender ~= nil then
-		recipients = message.sender .. ", " .. recipients
+	if message.from ~= nil then
+		recipients = message.from .. ", " .. recipients
 	end
 	recipients = mail.parse_player_list(recipients)
 	for k,v in pairs(recipients) do

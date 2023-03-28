@@ -42,7 +42,7 @@ function mail.show_inbox(name)
                 end
             end
             formspec[#formspec + 1] = ","
-            formspec[#formspec + 1] = minetest.formspec_escape(message.sender)
+            formspec[#formspec + 1] = minetest.formspec_escape(message.from)
             formspec[#formspec + 1] = ","
             if message.subject ~= "" then
                 if string.len(message.subject) > 30 then

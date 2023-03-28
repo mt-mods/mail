@@ -10,36 +10,15 @@ end
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
 mail.read_later_message = "You can read your messages later by using the /mail command"
 
---[[
-mail sending function, can be invoked with one object argument (new api) or
-all 4 parameters (old compat version)
-see: "Mail format" api.md
+function mail.send(m)
+	if type(m.from) ~= "string" then return false, "'from' is not a string" end
+	if type(m.to) ~= "string" then return false, "'to' is not a string" end
+	if type(m.body) ~= "string" then return false, "'body' is not a string" end
 
-TODO: refactor this garbage code!
---]]
-function mail.send(...)
-	-- figure out format
-	local m
-	if #{...} == 1 then
-		-- new format (one table param)
-		m = ...
-		-- populate "to" field
-		m.to = m.to or m.dst
-		-- populate "from" field
-		m.from = m.from or m.src
-	else
-		-- old format
-		m = {}
-		m.from, m.to, m.subject, m.body = ...
-	end
+	-- defaults
+	m.subject = m.subject or "(No subject)"
 
-	-- sane default values
-	m.subject = m.subject or ""
-	m.body = m.body or ""
-
-	if m.subject == "" then
-		m.subject = "(No subject)"
-	end
+	-- limit subject line
 	if string.len(m.subject) > 30 then
 		m.subject = string.sub(m.subject,1,27) .. "..."
 	end
@@ -63,9 +42,7 @@ function mail.send(...)
 		for name in pairs(undeliverable) do
 			undeliverable_names[#undeliverable_names + 1] = '"' .. name .. '"'
 		end
-		return f("recipients %s don't exist; cannot send mail.",
-			table.concat(undeliverable_names, ", ")
-		)
+		return false, f("recipients %s don't exist; cannot send mail.", table.concat(undeliverable_names, ", "))
 	end
 
 	local extra = {}
@@ -89,13 +66,13 @@ function mail.send(...)
 	-- form the actual mail
 	local msg = {
 		id = mail.new_uuid(),
-		sender  = m.from,
-		to      = m.to,
-		cc      = m.cc,
-		bcc     = m.bcc,
+		from = m.from,
+		to = m.to,
+		cc = m.cc,
+		bcc = m.bcc,
 		subject = m.subject,
-		body    = m.body,
-		time    = os.time(),
+		body = m.body,
+		time = os.time(),
 	}
 
 	-- add in senders outbox
@@ -124,4 +101,6 @@ function mail.send(...)
 			break
 		end
 	end
+
+	return true
 end

@@ -9,47 +9,28 @@ mail = {
 	cc = "carbon copy",
 	bcc = "players, which, get, a, copy, but, are, not, visible, to, others",
 	subject = "subject line",
-	body = "mail body",
-	-- 8 attachments max
-	attachments = {"default:stone 99", "default:gold_ingot 99"}
+	body = "mail body"
 }
 ```
 
-The fields `to`, `cc` and `bcc` can contain a player, multiple player names separated by commas, or be empty. Players in `to` are the recipiants, who are addressed directly. `cc` specifies players that get the mail to get notified, but are not immediate part of the conversation. There is no technical difference between `to` and `cc`, it just implies meaning for the players. Players can see all fields making up the mail except `bcc`, which is the only difference to `cc`.
-
-Attachments need to be provided for each player getting the mail. Until this is implemented, trying to send a mail to multiple players will fail.
-
-The `from` and `to` fields were renamed from the previous format:
-
-```lua
-mail = {
-	src = "source name",
-	dst = "destination name",
-	subject = "subject line",
-	body = "mail body",
-	-- 8 attachments max
-	attachments = {"default:stone 99", "default:gold_ingot 99"}
-}
-```
+The fields `to`, `cc` and `bcc` can contain a player, multiple player names separated by commas, or be empty.
+Players in `to` are the recipiants, who are addressed directly. `cc` specifies players that get the mail to get notified, but are not immediate part of the conversation.
+There is no technical difference between `to` and `cc`, it just implies meaning for the players.
+Players can see all fields making up the mail except `bcc`, which is the only difference to `cc`.
 
 ## Sending mail
-Old variant (pre-1.1)
-```lua
-local error = mail.send("source name", "destination name", "subject line", "mail body")
--- error will contain an error message if mail couldn't be delivered, otherwise nil
-```
 
-New variant (1.1+)
 ```lua
-local error = mail.send({
-	from = "sender name",
-	to = "destination name",
-	cc = "carbon copy",
-	bcc = "blind carbon copy",
+local success, error = mail.send({
+	from = "singleplayer",
+	to = "playername",
+	cc = "carbon, copy",
+	bcc = "blind, carbon, copy",
 	subject = "subject line",
 	body = "mail body"
 })
--- error will contain an error message if mail couldn't be delivered, otherwise nil
+
+-- if "success" is false the error parameter will contain a message
 ```
 
 # Hooks
@@ -61,22 +42,56 @@ mail.register_on_receive(function(m)
 end)
 ```
 
-# internal mail format (on-disk)
-The mail format on-disk
+# Internals
 
-> (worldfolder)/mails/(playername).json
-
-```json
-[{
-	"unread": true,
-	"sender": "sender name",
-	"subject": "subject name",
-	"body": "main\nmultiline\nbody",
-	"time": 1551258349,
-	"attachments": [
-		"default:stone 99",
-		"default:gold_ingot 99"
-	]
-}]
-
-```
+mod-storage entry for a player (indexed by playername and serialized with json):
+```lua
+{
+	contacts = {
+		{
+			-- name of the player (unique key in the list)
+			name = "",
+			-- note
+			note = ""
+		},{
+			...
+		}
+	},
+	inbox = {
+		{
+			-- globally unique mail id
+			id = "d6cce35c-487a-458f-bab2-9032c2621f38",
+			-- sending player name
+			from = "",
+			-- receiving player name
+			to = "",
+			-- carbon copy (optional)
+			cc = "playername, playername2",
+			-- blind carbon copy (optional)
+			bcc = "",
+			-- mail subject
+			subject = "",
+			-- mail body
+			body = "",
+			-- timestamp (os.time())
+			time = 1234,
+			-- read-flag (true: player has read the mail, inbox only)
+			read = true
+		},{
+			...
+		}
+	},
+	outbox = {
+		-- same format as "inbox"
+	},
+	lists = {
+		{
+			-- name of the maillist (unique key in the list)
+			name = "",
+			-- description
+			description = "",
+			-- playername list
+			players = {"playername", "playername2"}
+		}
+	}
+}

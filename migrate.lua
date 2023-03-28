@@ -41,7 +41,7 @@ function mail.migrate_v2_to_v3()
 				if msg.to then
 					table.insert(entry.inbox, {
 						id = mail.new_uuid(),
-						sender  = msg.sender,
+						from  = msg.sender or msg.from,
 						to      = msg.to,
 						cc      = msg.cc,
 						subject = msg.subject,

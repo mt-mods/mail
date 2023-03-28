@@ -1,3 +1,5 @@
+-- storage getter/setter
+
 function mail.get_storage_entry(playername)
 	local str = mail.storage:get_string(playername)
 	if str == "" then
@@ -13,52 +15,6 @@ function mail.get_storage_entry(playername)
 		return minetest.parse_json(str)
 	end
 end
-
---[[
-Mail format (inbox, outbox):
-
-table of: {
-	-- globally unique mail id
-	id = "d6cce35c-487a-458f-bab2-9032c2621f38",
-	-- sending player name
-	sender = "",
-	-- receiving player name
-	to = "",
-	-- carbon copy (optional)
-	cc = "",
-	-- blind carbon copy (optional)
-	bcc = "",
-	-- mail subject
-	subject = "",
-	-- mail body
-	body = "",
-	-- timestamp (os.time())
-	time = 1234,
-	-- read-flag (true: player has read the mail, inbox only)
-	read = true
-}
-
-Contact format:
-
-table of: {
-	-- name of the player (unique key in the list)
-	name = "",
-	-- note
-	note = ""
-}
-
-Mail-list format:
-
-table of: {
-	-- name of the maillist (unique key in the list)
-	name = "",
-	-- description
-	description = "",
-	-- playername list
-	players = {"playername", "playername2"}
-}
-
---]]
 
 function mail.set_storage_entry(playername, entry)
 	mail.storage:get_string(playername, minetest.write_json(entry))
