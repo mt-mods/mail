@@ -117,26 +117,43 @@ function mail.delete_mail(playername, msg_id)
 	end
 end
 
-
-function mail.getContactsFile()
-	return mail.maildir .. "/mail.contacts.json"
-end
-
-function mail.getContacts()
-	local contacts = mail.read_json_file(mail.maildir .. "/mail.contacts.json")
-	return contacts
-end
-
-function mail.getPlayerContacts(playername)
-	local contacts = mail.getContacts()
-	local playerContacts = {}
-	for _, contact in ipairs(contacts) do
-		if contact.owner == playername then
-			table.insert(playerContacts, {name = contact.name, note = contact.note})
+-- add or update a contact
+function mail.update_contact(playername, contact)
+	local entry = mail.get_storage_entry(playername)
+	local existing_updated = false
+	for _, existing_contact in ipairs(entry.contacts) do
+		if existing_contact.name == contact.name then
+			-- update
+			existing_contact.note = contact.note
+			existing_updated = true
 		end
 	end
-	return playerContacts
+	if not existing_updated then
+		-- insert
+		table.insert(entry.contacts, contact)
+	end
+	mail.set_storage_entry(playername, entry)
 end
+
+-- deletes a contact
+function mail.delete_contact(playername, contactname)
+	local entry = mail.get_storage_entry(playername)
+	for i, existing_contact in ipairs(entry.contacts) do
+		if existing_contact.name == contactname then
+			-- delete
+			table.remove(entry.contacts, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+-- get all contacts
+function mail.get_contacts(playername)
+	local entry = mail.get_storage_entry(playername)
+	return entry.contact
+end
+
 
 function mail.getMaillists()
 	local maillists = mail.read_json_file(mail.maildir .. "/mail.maillists.json")
@@ -338,58 +355,6 @@ function mail.pairsByKeys(t, f)
 		end
 	end
 	return iter
-end
-
-function mail.setContacts(playername, contacts)
-	if mail.write_json_file(mail.getContactsFile(playername), contacts) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - contacts may be lost! ("..playername..")")
-		return false
-	end
-end
-
-function mail.addContact(playername, contact)
-	local contacts = mail.getContacts()
-	local newContact = {owner = playername, name = contact.name, note = contact.note}
-	table.insert(contacts, 1, newContact)
-	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - contact may be lost!")
-		return false
-	end
-end
-
-function mail.setContact(playername, updated_contact)
-	local contacts = mail.getContacts()
-	for _, contact in ipairs(contacts) do
-		if contact.owner == playername and contact.name == updated_contact.name then
-			contacts[_] = {owner = playername, name = updated_contact.name, note = updated_contact.note}
-		end
-	end
-	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - contact may be lost!")
-		return false
-	end
-end
-
-function mail.deleteContact(owner, name)
-	local contacts = mail.getContacts()
-	for i=#contacts,1,-1 do
-		local contact = contacts[i]
-		if contact.owner == owner and contact.name == name then
-			table.remove(contacts, i)
-		end
-	end
-	if mail.write_json_file(mail.maildir .. "/mail.contacts.json", contacts) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - contact may be lost!")
-		return false
-	end
 end
 
 function mail.read_json_file(path)

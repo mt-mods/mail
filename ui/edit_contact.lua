@@ -34,7 +34,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local contacts = mail.getPlayerContacts(name)
+	local contacts = mail.get_contacts(name)
 
 	if fields.save then
 		if mail.selected_idxs.contacts[name] and mail.selected_idxs.contacts[name] ~= "#NEW#" then
@@ -50,20 +50,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					return true
 
 				else
-					mail.setContact(name, contact)
+					mail.update_contact(name, contact)
 					contacts[mail.selected_idxs.contacts[name]] = nil
 				end
 			end
 			contact.name = fields.name
 			contact.note = fields.note
-			mail.setContact(name, contact)
+			mail.update_contact(name, contact)
 
 		else
-			local contact = {
+			mail.update_contact(name, {
 				name = fields.name,
 				note = fields.note,
-			}
-			mail.addContact(name, contact)
+			})
 		end
 		mail.show_contacts(name)
 

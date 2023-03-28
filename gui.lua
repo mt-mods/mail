@@ -2,7 +2,7 @@
 function mail.compile_contact_list(name, selected, playernames)
 	-- TODO: refactor this - not just compiles *a* list, but *the* list for the contacts screen (too inflexible)
 	local formspec = {}
-	local contacts = mail.getPlayerContacts(name)
+	local contacts = mail.get_contacts(name)
 
 	if playernames == nil then
 		local length = 0

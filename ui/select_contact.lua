@@ -45,7 +45,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local contacts = mail.getPlayerContacts(name)
+	local contacts = mail.get_contacts(name)
 	local draft = mail.message_drafts[name]
 
 	-- get indexes for fields with selected rows

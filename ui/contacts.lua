@@ -20,7 +20,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local contacts = mail.getPlayerContacts(name)
+	local contacts = mail.get_contacts(name)
 
 	if fields.contacts then
 		local evt = minetest.explode_table_event(fields.contacts)
@@ -60,7 +60,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					mail.selected_idxs.contacts[name] = k
 					break
 				elseif k == mail.selected_idxs.contacts[name] then
-					mail.deleteContact(name, contacts[mail.selected_idxs.contacts[name]].name)
+					mail.delete_contact(name, contacts[mail.selected_idxs.contacts[name]].name)
 					mail.selected_idxs.contacts[name] = nil
 					found = true
 				else

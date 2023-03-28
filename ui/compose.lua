@@ -46,7 +46,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
 
         -- add new contacts if some receivers aren't registered
-        local contacts = mail.getPlayerContacts(name)
+        local contacts = mail.get_contacts(name)
         local recipients = mail.parse_player_list(fields.to)
         local isNew = true
         for _,recipient in ipairs(recipients) do
@@ -61,7 +61,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
             if isNew then
-                mail.addContact(name, {name = recipient, note = ""})
+                mail.update_contact(name, {name = recipient, note = ""})
             end
         end
 
