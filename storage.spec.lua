@@ -18,6 +18,12 @@ mtt.register("storage", function(callback)
     assert(contacts[1].note == contact.note)
     assert(contacts[1].name == contact.name)
 
+    -- read through api
+    local contacts2 = mail.get_contacts(playername)
+    assert(#contacts2 == 1)
+    assert(contacts2[1].note == contact.note)
+    assert(contacts2[1].name == contact.name)
+
     -- update
     mail.update_contact(playername, {
         name = contact.name,

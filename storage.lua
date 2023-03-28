@@ -119,7 +119,7 @@ end
 -- get all contacts
 function mail.get_contacts(playername)
 	local entry = mail.get_storage_entry(playername)
-	return entry.contact
+	return entry.contacts
 end
 
 -- returns the maillists of a player
