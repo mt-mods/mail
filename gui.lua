@@ -116,7 +116,6 @@ function mail.show_inbox(name)
 
 	if messages[1] then
 		for _, message in ipairs(messages) do
-			mail.ensure_new_format(message, name)
 			if mail.getMessageStatus(name, message.id) == "unread" then
 				if not mail.player_in_list(name, message.to) then
 					formspec[#formspec + 1] = ",#FFD788"
@@ -454,13 +453,11 @@ function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc,
 end
 
 function mail.reply(name, message)
-	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 	mail.show_compose(name, message.sender, "Re: "..message.subject, replyfooter)
 end
 
 function mail.replyall(name, message)
-	mail.ensure_new_format(message)
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 
 	-- new recipients are the sender plus the original recipients, minus ourselves

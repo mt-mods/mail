@@ -59,9 +59,3 @@ function mail.player_in_list(name, list)
     end
     return false
 end
-
-function mail.ensure_new_format(message, name)
-    if message.to == nil then
-        message.to = name
-    end
-end

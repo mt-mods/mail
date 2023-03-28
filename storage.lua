@@ -5,13 +5,55 @@ function mail.get_storage_entry(playername)
 		return {
 			contacts = {},
 			inbox = {},
-			outbox = {}
+			outbox = {},
+			lists = {}
 		}
 	else
 		-- deserialize existing entry
 		return minetest.parse_json(str)
 	end
 end
+
+--[[
+Mail format (inbox, outbox):
+{
+	-- sending player name
+	sender = "",
+	-- receiving player name
+	to = "",
+	-- carbon copy (optional)
+	cc = "",
+	-- blind carbon copy (optional)
+	bcc = "",
+	-- mail subject
+	subject = "",
+	-- mail body
+	body = "",
+	-- timestamp (os.time())
+	time = 1234,
+	-- read-flag (true: player has read the mail, inbox only)
+	read = true
+}
+
+Contact format:
+{
+	-- name of the player
+	name = "",
+	-- note
+	note = ""
+}
+
+Mail-list format:
+{
+	-- name of the maillist
+	name = "",
+	-- description
+	description = "",
+	-- player list (delimited by newline)
+	players = ""
+}
+
+--]]
 
 function mail.set_storage_entry(playername, entry)
 	mail.storage:get_string(playername, minetest.write_json(entry))
