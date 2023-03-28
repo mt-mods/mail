@@ -10,7 +10,7 @@ local maillists_formspec = "size[8,9;]" .. mail.theme .. [[
 
 function mail.show_maillists(name)
 	local formspec = { maillists_formspec }
-	local maillists = mail.getPlayerMaillists(name)
+	local maillists = mail.get_maillists(name)
 
 	if maillists[1] then
 		for _, maillist in ipairs(maillists) do
@@ -46,14 +46,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local maillists = mail.getPlayerMaillists(name)
+	local maillists = mail.get_maillists(name)
 
 	if fields.maillists then
 		local evt = minetest.explode_table_event(fields.maillists)
 		mail.selected_idxs.maillists[name] = evt.row - 1
 		if evt.type == "DCL" and maillists[mail.selected_idxs.maillists[name]] then
-			local players_ml = mail.getPlayersInMaillist(maillists[mail.selected_idxs.maillists[name]].id)
-			local players_string = mail.concat_player_list(players_ml)
+			local maillist = mail.get_maillist_by_name(name, maillists[mail.selected_idxs.maillists[name]].name)
+			local players_string = mail.concat_player_list(maillist.players)
 			mail.show_edit_maillist(
 				name,
 				maillists[mail.selected_idxs.maillists[name]].name,
@@ -67,8 +67,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		mail.show_edit_maillist(name, "", "", "Player1, Player2, Player3")
 
 	elseif fields.edit and maillists[mail.selected_idxs.maillists[name]] then
-		local players_ml = mail.getPlayersInMaillist(maillists[mail.selected_idxs.maillists[name]].id)
-		local players_string = mail.concat_player_list(players_ml)
+		local maillist = mail.get_maillist_by_name(name, maillists[mail.selected_idxs.maillists[name]].name)
+		local players_string = mail.concat_player_list(maillist.players)
 		mail.show_edit_maillist(
 			name,
 			maillists[mail.selected_idxs.maillists[name]].name,
@@ -87,7 +87,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					mail.selected_idxs.maillists[name] = k
 					break
 				elseif k == mail.selected_idxs.maillists[name] then
-					mail.deleteMaillist(maillists[mail.selected_idxs.maillists[name]].id)
+					mail.delete_maillist(maillists[mail.selected_idxs.maillists[name]].name)
 					mail.selected_idxs.maillists[name] = nil
 					found = true
 				else

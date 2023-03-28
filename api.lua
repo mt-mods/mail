@@ -88,6 +88,7 @@ function mail.send(...)
 
 	-- form the actual mail
 	local msg = {
+		id = mail.new_uuid(),
 		sender  = m.from,
 		to      = m.to,
 		cc      = m.cc,

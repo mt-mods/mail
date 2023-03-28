@@ -36,19 +36,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local maillists = mail.getPlayerMaillists(name)
-
 	if fields.save then
-		local maillist = {
+		mail.update_maillist(name, {
 			owner = name,
 			name = fields.name,
 			desc = fields.desc,
-		}
-		if mail.selected_idxs.maillists[name] and mail.selected_idxs.maillists[name] ~= "#NEW#" then
-			mail.setMaillist(maillists[mail.selected_idxs.maillists[name]].id, maillist, fields.players)
-		else
-			mail.addMaillist(maillist, fields.players)
-		end
+			players = mail.parse_player_list(fields.players)
+		})
 		mail.show_maillists(name)
 
 	elseif fields.back then

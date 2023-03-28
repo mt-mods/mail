@@ -16,7 +16,10 @@ end
 
 --[[
 Mail format (inbox, outbox):
-{
+
+table of: {
+	-- globally unique mail id
+	id = "d6cce35c-487a-458f-bab2-9032c2621f38",
 	-- sending player name
 	sender = "",
 	-- receiving player name
@@ -36,21 +39,23 @@ Mail format (inbox, outbox):
 }
 
 Contact format:
-{
-	-- name of the player
+
+table of: {
+	-- name of the player (unique key in the list)
 	name = "",
 	-- note
 	note = ""
 }
 
 Mail-list format:
-{
-	-- name of the maillist
+
+table of: {
+	-- name of the maillist (unique key in the list)
 	name = "",
 	-- description
 	description = "",
-	-- player list (delimited by newline)
-	players = ""
+	-- playername list
+	players = {"playername", "playername2"}
 }
 
 --]]
@@ -121,11 +126,12 @@ end
 function mail.update_contact(playername, contact)
 	local entry = mail.get_storage_entry(playername)
 	local existing_updated = false
-	for _, existing_contact in ipairs(entry.contacts) do
+	for i, existing_contact in ipairs(entry.contacts) do
 		if existing_contact.name == contact.name then
 			-- update
-			existing_contact.note = contact.note
+			entry.contacts[i] = contact
 			existing_updated = true
+			break
 		end
 	end
 	if not existing_updated then
@@ -154,164 +160,50 @@ function mail.get_contacts(playername)
 	return entry.contact
 end
 
-
-function mail.getMaillists()
-	local maillists = mail.read_json_file(mail.maildir .. "/mail.maillists.json")
-	return maillists
+-- returns the maillists of a player
+function mail.get_maillists(playername)
+	local entry = mail.get_storage_entry(playername)
+	return entry.lists
 end
 
-function mail.getPlayerMaillists(playername)
-	local maillists = mail.getMaillists()
-	local playerMaillists = {}
-	for _, maillist in ipairs(maillists) do
-		if maillist.owner == playername then
-			table.insert(playerMaillists, {id = maillist.id, name = maillist.name, desc = maillist.desc})
+-- returns the maillists of a player
+function mail.get_maillist_by_name(playername, listname)
+	local entry = mail.get_storage_entry(playername)
+	for _, list in ipairs(entry.lists) do
+		if list.name == listname then
+			return list
 		end
-	end
-	return playerMaillists
-end
-
-function mail.addMaillist(maillist, players_string)
-	local maillists = mail.getMaillists()
-	if maillists[1] then
-		local previousMl = maillists[1]
-		maillist.id = previousMl.id + 1
-	else
-		maillist.id = 1
-	end
-	table.insert(maillists, maillist)
-	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
-		-- add status for players contained in the maillist
-		local players = mail.parse_player_list(players_string)
-		for _, player in ipairs(players) do
-			if minetest.player_exists(player) then -- avoid blank names
-				mail.addPlayerToMaillist(player, maillist.id)
-			end
-		end
-		return true
-	else
-		minetest.log("error","[mail] Save failed - maillist may be lost!")
-		return false
 	end
 end
 
-function mail.setMaillist(ml_id, updated_maillist, players_string)
-	local maillists = mail.getMaillists()
-	local maillist_id = 0
-	for _, maillist in ipairs(maillists) do
-		if maillist.id == ml_id then
-			maillist_id = maillist.id
-			maillists[_] = {
-				id = maillist_id,
-				owner = updated_maillist.owner,
-				name = updated_maillist.name,
-				desc = updated_maillist.desc}
-		end
-	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists) then
-		-- remove all players
-		mail.removePlayersFromMaillist(maillist_id)
-		-- to add those registered in the updated maillist
-		local players = mail.parse_player_list(players_string)
-		for _, player in ipairs(players) do
-			if minetest.player_exists(player) then -- avoid blank names
-				mail.addPlayerToMaillist(player, maillist_id)
-			end
-		end
-		return true
-	else
-		minetest.log("error","[mail] Save failed - maillist may be lost!")
-		return false
-	end
-end
-
-function mail.getMaillistIdFromName(ml_name, owner)
-	local maillists = mail.getMaillists()
-	local ml_id = 0
-	for _, maillist in ipairs(maillists) do
-		if maillist.name == ml_name and maillist.owner == owner then
-			ml_id = maillist.id
+-- updates or creates a maillist
+function mail.update_maillist(playername, list)
+	local entry = mail.get_storage_entry(playername)
+	local existing_updated = false
+	for i, existing_list in ipairs(entry.lists) do
+		if existing_list.name == list.name then
+			-- update
+			entry.lists[i] = list
+			existing_updated = true
 			break
 		end
 	end
-	return ml_id
+	if not existing_updated then
+		-- insert
+		table.insert(entry.lists, list)
+	end
+	mail.set_storage_entry(playername, entry)
 end
 
-function mail.getPlayersInMaillists()
-	local players_mls = mail.read_json_file(mail.maildir .. "/mail.maillists_players.json")
-	return players_mls
-end
-
-function mail.getPlayersDataInMaillist(ml_id)
-	local players_mls = mail.getPlayersInMaillists() -- players from all maillists
-	local players_ml = {} -- players from this maillist
-	if players_mls[1] then
-		for _, playerInfo in ipairs(players_mls) do
-			if playerInfo.id == ml_id then
-				table.insert(players_ml, playerInfo)
-			end
+function mail.delete_maillist(playername, listname)
+	local entry = mail.get_storage_entry(playername)
+	for i, list in ipairs(entry.lists) do
+		if list.name == listname then
+			-- delete
+			table.remove(entry.lists, i)
+			mail.set_storage_entry(playername, entry)
+			return
 		end
-	end
-	return players_ml
-end
-
-function mail.getPlayersInMaillist(ml_id)
-	local players_ml = mail.getPlayersDataInMaillist(ml_id) -- players from this maillist
-	local players_names_ml = {}
-	if players_ml[1] then
-		for _, playerInfo in ipairs(players_ml) do
-			if playerInfo and playerInfo.player and minetest.player_exists(playerInfo.player) then
-				table.insert(players_names_ml, playerInfo.player)
-			end
-		end
-	end
-	return players_names_ml
-end
-
-function mail.addPlayerToMaillist(player, ml_id)
-	local playersMls = mail.getPlayersInMaillists()
-	local new_player = {id = ml_id, player = player}
-	table.insert(playersMls, new_player)
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", playersMls) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - maillist may be lost!")
-		return false
-	end
-end
-
-function mail.removePlayersFromMaillist(ml_id)
-	local maillists_players = mail.getPlayersInMaillists()
-	for i=#maillists_players,1,-1 do
-		local playerInfo = maillists_players[i]
-		if playerInfo.id == ml_id then
-			table.remove(maillists_players, i)
-		end
-	end
-	if mail.write_json_file(mail.maildir .. "/mail.maillists_players.json", maillists_players) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed!")
-		return false
-	end
-end
-
-function mail.deleteMaillist(ml_id)
-	local maillists = mail.getMaillists()
-	-- remove players attached to the maillist
-	local players_writing_done = mail.removePlayersFromMaillist(ml_id)
-	-- then remove the maillist itself
-	for _, maillist in ipairs(maillists) do
-		if maillist.id == ml_id then
-			table.remove(maillists, _)
-		end
-	end
-	local maillist_writing_done = mail.write_json_file(mail.maildir .. "/mail.maillists.json", maillists)
-	if players_writing_done and maillist_writing_done then
-		return true
-	else
-		minetest.log("error","[mail] Save failed!")
-		return false
 	end
 end
 
@@ -322,12 +214,11 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 	-- extract players from mailing lists
 	for _, receiver in ipairs(globalReceivers) do
 		local receiverInfo = receiver:split("@") -- @maillist
-		if receiverInfo[1] and receiver == "@" .. receiverInfo[1]
-			and mail.getMaillistIdFromName(receiverInfo[1], maillists_owner) ~= 0 then -- in case of maillist
-			local players_ml = mail.getPlayersInMaillist(mail.getMaillistIdFromName(receiverInfo[1], maillists_owner))
-			if players_ml then
-				for _, player in ipairs(players_ml) do
-					table.insert(receivers, player)
+		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
+			local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
+			if maillist then
+				for _, playername in ipairs(maillist.players) do
+					table.insert(receivers, playername)
 				end
 			end
 		else -- in case of player
@@ -357,23 +248,3 @@ function mail.pairsByKeys(t, f)
 	return iter
 end
 
-function mail.read_json_file(path)
-	local file = io.open(path, "r")
-	local content = {}
-	if file then
-		local json = file:read("*a")
-		content = minetest.parse_json(json or "[]") or {}
-		file:close()
-	end
-	return content
-end
-
-function mail.write_json_file(path, content)
-	local file = io.open(path,"w")
-	local json = minetest.write_json(content)
-	if file and file:write(json) and file:close() then
-		return true
-	else
-		return false
-	end
-end
