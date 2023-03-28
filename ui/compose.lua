@@ -1,6 +1,6 @@
 local FORMNAME = "mail:compose"
 
-function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc, defaultbcc)
+function mail.show_compose(name, to, subject, body, cc, bcc)
 	local formspec = [[
 			size[8,9]
 			button[0,0;1,1;tocontacts;To:]
@@ -15,18 +15,12 @@ function mail.show_compose(name, defaultto, defaultsubj, defaultbody, defaultcc,
 			button[4.5,8.5;3,1;send;Send]
 		]] .. mail.theme
 
-	defaultto = defaultto or ""
-	defaultsubj = defaultsubj or ""
-	defaultbody = defaultbody or ""
-	defaultcc = defaultcc or ""
-	defaultbcc = defaultbcc or ""
-
 	formspec = string.format(formspec,
-		minetest.formspec_escape(defaultto),
-		minetest.formspec_escape(defaultcc),
-		minetest.formspec_escape(defaultbcc),
-		minetest.formspec_escape(defaultsubj),
-		minetest.formspec_escape(defaultbody))
+		minetest.formspec_escape(to or ""),
+		minetest.formspec_escape(cc or ""),
+		minetest.formspec_escape(bcc or ""),
+		minetest.formspec_escape(subject or ""),
+		minetest.formspec_escape(body or ""))
 
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
