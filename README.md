@@ -50,6 +50,12 @@ See the "LICENSE" file
 
 * Cheapie (initial idea/project)
 * Rubenwardy (lua/ui improvements)
+* BuckarooBanzay (cleanups, refactoring)
+* Athozus (outbox, maillists, ui fixes)
+* fluxionary (minor fixups)
+* SX (various fixes)
+* Toby1710 (ux fixes)
+* Peter Nerlich (cc, bcc)
 
 # Old/Historic stuff
 * Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
