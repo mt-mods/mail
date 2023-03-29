@@ -3,22 +3,22 @@ local FORMNAME = "mail:editcontact"
 function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 	local formspec = [[
 			size[6,7]
-			button[4,6.25;2,0.5;back;Back]
-			field[0.25,0.5;4,1;name;Player name:;%s]
-			textarea[0.25,1.6;4,6.25;note;Note:;%s]
-			button[4,0.10;2,1;save;Save]
+			button[4,6.25;2,0.5;back;]] .. S("Back") .. [[]
+			field[0.25,0.5;4,1;name;]] .. S("Player name") .. [[:;%s]
+			textarea[0.25,1.6;4,6.25;note;]] .. S("Note") .. [[:;%s]
+			button[4,0.10;2,1;save;]] .. S("Save") .. [[]
 		]]
 	if illegal_name_hint == "collision" then
 		formspec = formspec .. [[
-				label[4,1;That name]
-				label[4,1.5;is already in]
-				label[4,2;your contacts.]
+				label[4,1;]] .. S("That name") .. [[]
+				label[4,1.5;]] .. S("is already in") .. [[]
+				label[4,2;]] .. S("your contacts.") .. [[]
 			]]
 	elseif illegal_name_hint == "empty" then
 		formspec = formspec .. [[
-				label[4,1;The contact]
-				label[4,1.5;name cannot]
-				label[4,2;be empty.]
+				label[4,1;]] .. S("The contact") .. [[]
+				label[4,1.5;]] .. S("name cannot") .. [[]
+				label[4,2;]] .. S("be empty.") .. [[]
 			]]
 	end
 	formspec = formspec .. mail.theme

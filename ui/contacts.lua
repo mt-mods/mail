@@ -1,12 +1,12 @@
 local FORMNAME = "mail:contacts"
 
 local contacts_formspec = "size[8,9;]" .. mail.theme .. [[
-		button[6,0.10;2,0.5;new;New]
-		button[6,0.85;2,0.5;edit;Edit]
-		button[6,1.60;2,0.5;delete;Delete]
-		button[6,8.25;2,0.5;back;Back]
+		button[6,0.10;2,0.5;new;]] .. S("New") .. [[]
+		button[6,0.85;2,0.5;edit;]] .. S("Edit") .. [[]
+		button[6,1.60;2,0.5;delete;]] .. S("Delete") .. [[]
+		button[6,8.25;2,0.5;back;]] .. S("Back") .. [[]
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;contacts;#999,Name,Note]]
+		table[0,0;5.75,9;contacts;#999,]] .. S("Name") .. "," .. S("Note")
 
 
 function mail.show_contacts(name)

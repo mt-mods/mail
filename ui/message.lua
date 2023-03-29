@@ -10,18 +10,18 @@ function mail.show_message(name, id)
 
 			button[7.25,0.15;0.75,0.5;back;X]
 
-			label[0.2,0.1;From: %s]
-			label[0.2,0.5;To: %s]
-			label[0.2,0.9;CC: %s]
-			label[0.2,1.3;Date: %s]
+			label[0.2,0.1;]] .. S("From") .. [[: %s]
+			label[0.2,0.5;]] .. S("To") .. [[: %s]
+			label[0.2,0.9;]] .. S("CC") .. [[: %s]
+			label[0.2,1.3;]] .. S("Date") .. [[: %s]
 
-			label[0,2.1;Subject: %s]
+			label[0,2.1;]] .. S("Subject") .. [[: %s]
 			textarea[0.25,2.6;8,7.0;;;%s]
 
-			button[0,8.5;2,1;reply;Reply]
-			button[2,8.5;2,1;replyall;Reply All]
-			button[4,8.5;2,1;forward;Forward]
-			button[6,8.5;2,1;delete;Delete]
+			button[0,8.5;2,1;reply;]] .. S("Reply") .. [[]
+			button[2,8.5;2,1;replyall;]] .. S("Reply all") .. [[]
+			button[4,8.5;2,1;forward;]] .. S("Forward") .. [[]
+			button[6,8.5;2,1;delete;]] .. S("Delete") .. [[]
 		]] .. mail.theme
 
 	local from = minetest.formspec_escape(message.from) or ""

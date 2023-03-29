@@ -3,16 +3,16 @@ local FORMNAME = "mail:compose"
 function mail.show_compose(name, to, subject, body, cc, bcc)
 	local formspec = [[
 			size[8,9]
-			button[0,0;1,1;tocontacts;To:]
+			button[0,0;1,1;tocontacts;]] .. S("To") .. [[:]
 			field[1.1,0.3;3.2,1;to;;%s]
-			button[4,0;1,1;cccontacts;CC:]
+			button[4,0;1,1;cccontacts;]] .. S("CC") .. [[:]
 			field[5.1,0.3;3.1,1;cc;;%s]
-			button[4,0.75;1,1;bcccontacts;BCC:]
+			button[4,0.75;1,1;bcccontacts;]] .. S("BCC") .. [[:]
 			field[5.1,1.05;3.1,1;bcc;;%s]
-			field[0.25,2;8,1;subject;Subject:;%s]
+			field[0.25,2;8,1;subject;]] .. S("Subject") .. [[:;%s]
 			textarea[0.25,2.5;8,6;body;;%s]
-			button[0.5,8.5;3,1;cancel;Cancel]
-			button[4.5,8.5;3,1;send;Send]
+			button[0.5,8.5;3,1;cancel;]] .. S("Cancel") .. [[]
+			button[4.5,8.5;3,1;send;]] .. S("Send") .. [[]
 		]] .. mail.theme
 
 	formspec = string.format(formspec,
