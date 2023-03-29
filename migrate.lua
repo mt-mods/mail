@@ -46,7 +46,8 @@ end
 
 -- migrate from v2 to v3 database
 local function migrate_v2_to_v3()
-	minetest.mkdir(mail.maildir) -- if necessary (eg. first login)
+	local maildir = minetest.get_worldpath().."/mails"
+	minetest.mkdir(maildir) -- if necessary (eg. first login)
 	print("[mail] Migration from v2 to v3 database")
 
 	-- defer execution until auth-handler ready (first server-step)
@@ -54,13 +55,13 @@ local function migrate_v2_to_v3()
 		for playername, _ in minetest.get_auth_handler().iterate() do
 			local entry = mail.get_storage_entry(playername)
 
-			local player_contacts = read_json_file(mail.maildir .. "/contacts/" .. playername .. ".json")
+			local player_contacts = read_json_file(maildir .. "/contacts/" .. playername .. ".json")
 			for _, c in pairs(player_contacts) do
 				table.insert(entry.contacts, { name = c.name, note = c.note })
 			end
 
 			local saneplayername = string.gsub(playername, "[.|/]", "")
-			local player_inbox = read_json_file(mail.maildir .. "/" .. saneplayername .. ".json")
+			local player_inbox = read_json_file(maildir .. "/" .. saneplayername .. ".json")
 			for _, msg in ipairs(player_inbox) do
 				if msg.to then
 					table.insert(entry.inbox, {
