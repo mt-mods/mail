@@ -77,7 +77,7 @@ function mail.send(m)
 
 	-- add in senders outbox
 	local entry = mail.get_storage_entry(m.from)
-	table.insert(entry.outbox, msg)
+	table.insert(entry.outbox, 1, msg)
 	mail.set_storage_entry(m.from, entry)
 
 	-- add in every receivers inbox
