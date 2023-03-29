@@ -1,0 +1,28 @@
+
+mtt.register("migrate v1", function(callback)
+    local entry = mail.get_storage_entry("old_v1_player")
+    assert(entry)
+    assert(#entry.inbox == 1)
+    assert(entry.inbox[1].from == "singleplayer")
+    assert(entry.inbox[1].to == "old_v1_player")
+    assert(entry.inbox[1].subject == "test1")
+    assert(entry.inbox[1].body == "test2")
+    assert(entry.inbox[1].id)
+    assert(entry.inbox[1].time > 0)
+
+    callback()
+end)
+
+mtt.register("migrate v2", function(callback)
+    local entry = mail.get_storage_entry("old_v2_player")
+    assert(entry)
+    assert(#entry.inbox == 1)
+    assert(entry.inbox[1].from == "someone-else")
+    assert(entry.inbox[1].to == "old_v2_player")
+    assert(entry.inbox[1].subject == "test1")
+    assert(entry.inbox[1].body == "test2")
+    assert(entry.inbox[1].id)
+    assert(entry.inbox[1].time == 1678467148)
+
+    callback()
+end)

@@ -1,6 +1,7 @@
 minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)
-		local messages = mail.getMessages(name)
+		local entry = mail.get_storage_entry(name)
+		local messages = entry.inbox
 
 		local unreadcount = 0
 
@@ -16,6 +17,4 @@ minetest.register_on_joinplayer(function(player)
 
 		end
 	end, player:get_player_name())
-
-	mail.migrate_contacts(player:get_player_name())
 end)

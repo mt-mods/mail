@@ -1,14 +1,10 @@
 
-mtt.register("send mail", function(callback)
-    -- create "player2"
+mtt.register("setup", function(callback)
+    -- create test players
     local auth_handler = minetest.get_auth_handler()
+    auth_handler.set_password("player1", "")
     auth_handler.set_password("player2", "")
+    auth_handler.set_password("player3", "")
 
-    -- send a mail
-    mail.send("player1", "player2", "something", "blah")
-
-    -- check the receivers inbox
-    local list2 = mail.getMessages("player2")
-    assert(list2 ~= nil and #list2 > 0)
     callback()
 end)

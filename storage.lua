@@ -1,47 +1,195 @@
+-- storage getter/setter
+local STORAGE_PREFIX = "mail/"
 
-function mail.getMailFile(playername)
-	local saneplayername = string.gsub(playername, "[.|/]", "")
-	return mail.maildir .. "/" .. saneplayername .. ".json"
+-- create or populate empty fields on an entry
+local function populate_entry(e)
+	e = e or {}
+	e.contacts = e.contacts or {}
+	e.inbox = e.inbox or {}
+	e.outbox = e.outbox or {}
+	e.lists = e.lists or {}
+	return e
 end
 
-function mail.getContactsFile(playername)
-	local saneplayername = string.gsub(playername, "[.|/]", "")
-	return mail.maildir .. "/contacts/" .. saneplayername .. ".json"
-end
-
-
-function mail.getMessages(playername)
-	local messages = mail.read_json_file(mail.getMailFile(playername))
-	if messages then
-		for _, msg in ipairs(messages) do
-			if not msg.time then
-				-- add missing time field if not available (happens with old data)
-				msg.time = 0
-			end
-		end
-
-		-- sort by received date descending
-		table.sort(messages, function(a,b) return a.time > b.time end)
-		-- show hud notification
-		mail.hud_update(playername, messages)
-	end
-
-	return messages
-end
-
-function mail.setMessages(playername, messages)
-	if mail.write_json_file(mail.getMailFile(playername), messages) then
-		mail.hud_update(playername, messages)
-		return true
+function mail.get_storage_entry(playername)
+	local str = mail.storage:get_string(STORAGE_PREFIX .. playername)
+	if str == "" then
+		-- new entry
+		return populate_entry()
 	else
-		minetest.log("error","[mail] Save failed - messages may be lost! ("..playername..")")
-		return false
+		-- deserialize existing entry
+		local e = minetest.parse_json(str)
+		return populate_entry(e)
 	end
 end
 
+function mail.set_storage_entry(playername, entry)
+	mail.storage:set_string(STORAGE_PREFIX .. playername, minetest.write_json(entry))
+end
 
-function mail.getContacts(playername)
-	return mail.read_json_file(mail.getContactsFile(playername))
+-- get a mail by id from the players in- or outbox
+function mail.get_message(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			return msg
+		end
+	end
+	for _, msg in ipairs(entry.outbox) do
+		if msg.id == msg_id then
+			return msg
+		end
+	end
+end
+
+-- marks a mail read by its id
+function mail.mark_read(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			msg.read = true
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+-- marks a mail unread by its id
+function mail.mark_unread(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			msg.read = false
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+-- deletes a mail by its id
+function mail.delete_mail(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for i, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			table.remove(entry.outbox, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+	for i, msg in ipairs(entry.outbox) do
+		if msg.id == msg_id then
+			table.remove(entry.outbox, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+-- add or update a contact
+function mail.update_contact(playername, contact)
+	local entry = mail.get_storage_entry(playername)
+	local existing_updated = false
+	for i, existing_contact in ipairs(entry.contacts) do
+		if existing_contact.name == contact.name then
+			-- update
+			entry.contacts[i] = contact
+			existing_updated = true
+			break
+		end
+	end
+	if not existing_updated then
+		-- insert
+		table.insert(entry.contacts, contact)
+	end
+	mail.set_storage_entry(playername, entry)
+end
+
+-- deletes a contact
+function mail.delete_contact(playername, contactname)
+	local entry = mail.get_storage_entry(playername)
+	for i, existing_contact in ipairs(entry.contacts) do
+		if existing_contact.name == contactname then
+			-- delete
+			table.remove(entry.contacts, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+-- get all contacts
+function mail.get_contacts(playername)
+	local entry = mail.get_storage_entry(playername)
+	return entry.contacts
+end
+
+-- returns the maillists of a player
+function mail.get_maillists(playername)
+	local entry = mail.get_storage_entry(playername)
+	return entry.lists
+end
+
+-- returns the maillists of a player
+function mail.get_maillist_by_name(playername, listname)
+	local entry = mail.get_storage_entry(playername)
+	for _, list in ipairs(entry.lists) do
+		if list.name == listname then
+			return list
+		end
+	end
+end
+
+-- updates or creates a maillist
+function mail.update_maillist(playername, list)
+	local entry = mail.get_storage_entry(playername)
+	local existing_updated = false
+	for i, existing_list in ipairs(entry.lists) do
+		if existing_list.name == list.name then
+			-- update
+			entry.lists[i] = list
+			existing_updated = true
+			break
+		end
+	end
+	if not existing_updated then
+		-- insert
+		table.insert(entry.lists, list)
+	end
+	mail.set_storage_entry(playername, entry)
+end
+
+function mail.delete_maillist(playername, listname)
+	local entry = mail.get_storage_entry(playername)
+	for i, list in ipairs(entry.lists) do
+		if list.name == listname then
+			-- delete
+			table.remove(entry.lists, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+end
+
+function mail.extractMaillists(receivers_string, maillists_owner)
+	local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
+	local receivers = {} -- extracted receivers
+
+	-- extract players from mailing lists
+	for _, receiver in ipairs(globalReceivers) do
+		local receiverInfo = receiver:split("@") -- @maillist
+		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
+			local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
+			if maillist then
+				for _, playername in ipairs(maillist.players) do
+					table.insert(receivers, playername)
+				end
+			end
+		else -- in case of player
+			table.insert(receivers, receiver)
+		end
+	end
+
+	return receivers
 end
 
 function mail.pairsByKeys(t, f)
@@ -63,33 +211,3 @@ function mail.pairsByKeys(t, f)
 	return iter
 end
 
-function mail.setContacts(playername, contacts)
-	if mail.write_json_file(mail.getContactsFile(playername), contacts) then
-		return true
-	else
-		minetest.log("error","[mail] Save failed - contacts may be lost! ("..playername..")")
-		return false
-	end
-end
-
-
-function mail.read_json_file(path)
-	local file = io.open(path, "r")
-	local content = {}
-	if file then
-		local json = file:read("*a")
-		content = minetest.parse_json(json or "[]") or {}
-		file:close()
-	end
-	return content
-end
-
-function mail.write_json_file(path, content)
-	local file = io.open(path,"w")
-	local json = minetest.write_json(content)
-	if file and file:write(json) and file:close() then
-		return true
-	else
-		return false
-	end
-end
