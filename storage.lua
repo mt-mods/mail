@@ -1,4 +1,5 @@
 -- storage getter/setter
+local STORAGE_PREFIX = "mail/"
 
 -- create or populate empty fields on an entry
 local function populate_entry(e)
@@ -11,7 +12,7 @@ local function populate_entry(e)
 end
 
 function mail.get_storage_entry(playername)
-	local str = mail.storage:get_string(playername)
+	local str = mail.storage:get_string(STORAGE_PREFIX .. playername)
 	if str == "" then
 		-- new entry
 		return populate_entry()
@@ -23,7 +24,7 @@ function mail.get_storage_entry(playername)
 end
 
 function mail.set_storage_entry(playername, entry)
-	mail.storage:set_string(playername, minetest.write_json(entry))
+	mail.storage:set_string(STORAGE_PREFIX .. playername, minetest.write_json(entry))
 end
 
 -- get a mail by id from the players in- or outbox
