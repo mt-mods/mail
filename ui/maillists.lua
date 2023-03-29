@@ -1,12 +1,12 @@
 local FORMNAME = "mail:maillists"
 
 local maillists_formspec = "size[8,9;]" .. mail.theme .. [[
-		button[6,0.10;2,0.5;new;New]
-		button[6,0.85;2,0.5;edit;Edit]
-		button[6,1.60;2,0.5;delete;Delete]
-		button[6,8.25;2,0.5;back;Back]
+		button[6,0.10;2,0.5;new;]] .. S("New") .. [[]
+		button[6,0.85;2,0.5;edit;]] .. S("Edit") .. [[]
+		button[6,1.60;2,0.5;delete;]] .. S("Delete") .. [[]
+		button[6,8.25;2,0.5;back;]] .. S("Back") .. [[]
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;maillists;#999,Name,Description]]
+		table[0,0;5.75,9;maillists;#999,]] .. S("Name") .. "," .. S("Note")
 
 function mail.show_maillists(name)
 	local formspec = { maillists_formspec }
@@ -26,7 +26,7 @@ function mail.show_maillists(name)
 					formspec[#formspec + 1] = minetest.formspec_escape(maillist.desc)
 				end
 			else
-				formspec[#formspec + 1] = "(No description)"
+				formspec[#formspec + 1] = S("(No description)")
 			end
 		end
 		if mail.selected_idxs.maillists[name] then
@@ -35,7 +35,7 @@ function mail.show_maillists(name)
 		end
 		formspec[#formspec + 1] = "]"
 	else
-		formspec[#formspec + 1] = "]label[2.25,4.5;No maillist]"
+		formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No maillist") .. "]"
 	end
 	minetest.show_formspec(name, FORMNAME, table.concat(formspec, ""))
 end
