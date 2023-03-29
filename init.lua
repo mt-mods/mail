@@ -58,6 +58,7 @@ mail.migrate()
 if minetest.get_modpath("mtt") then
 	dofile(MP .. "/mtt.lua")
 	dofile(MP .. "/api.spec.lua")
+	dofile(MP .. "/migrate.spec.lua")
 	dofile(MP .. "/util/uuid.spec.lua")
 	dofile(MP .. "/util/normalize.spec.lua")
 end

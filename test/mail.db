@@ -1,0 +1,1 @@
+local _={};_[1]="singleplayer";return {old_v1_player={{unread=true,subject="test1",sender=_[1],body="test2"}},[_[1]]={}}

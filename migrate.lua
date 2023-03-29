@@ -11,26 +11,24 @@ local function migrate_v1_to_v3()
 	file:close()
 
 	for name, oldmessages in pairs(oldmails) do
+		print("[mail,v1] + migrating player '" .. name .. "'")
 		local entry = mail.get_storage_entry(name)
 		for _, msg in ipairs(oldmessages) do
-			if msg.to then
-				table.insert(entry.inbox, {
-					id = mail.new_uuid(),
-					from  = msg.sender or msg.from,
-					to      = msg.to,
-					subject = msg.subject,
-					body    = msg.body,
-					time    = msg.time,
-				})
-			end
+			table.insert(entry.inbox, {
+				id = mail.new_uuid(),
+				from  = msg.sender or msg.from,
+				to      = msg.to or name,
+				subject = msg.subject,
+				body    = msg.body,
+				time    = msg.time or os.time(),
+			})
 		end
 		mail.set_storage_entry(name, entry)
 	end
 
 	-- rename file
-	print("[mail] migration done, renaming old mail.db")
+	print("[mail,v1] migration done, renaming old mail.db")
 	os.rename(minetest.get_worldpath().."/mail.db", minetest.get_worldpath().."/mail.db.old")
-	mail.storage:set_int(STORAGE_VERSION_KEY, 3)
 end
 
 local function read_json_file(path)
@@ -62,37 +60,39 @@ local function migrate_v2_to_v3()
 
 			local saneplayername = string.gsub(playername, "[.|/]", "")
 			local player_inbox = read_json_file(maildir .. "/" .. saneplayername .. ".json")
+			print("[mail,v2] + migrating player '" .. playername .. "'")
 			for _, msg in ipairs(player_inbox) do
-				if msg.to then
-					table.insert(entry.inbox, {
-						id = mail.new_uuid(),
-						from  = msg.sender or msg.from,
-						to      = msg.to,
-						cc      = msg.cc,
-						subject = msg.subject,
-						body    = msg.body,
-						time    = msg.time,
-					})
-				end
+				table.insert(entry.inbox, {
+					id = mail.new_uuid(),
+					from  = msg.sender or msg.from,
+					to      = msg.to or playername,
+					cc      = msg.cc,
+					subject = msg.subject,
+					body    = msg.body,
+					time    = msg.time or os.time(),
+				})
 			end
 
 			mail.set_storage_entry(playername, entry)
 		end
-		print("[mail] migration done")
-		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+		print("[mail,v2] migration done")
 	end)
 end
 
 function mail.migrate()
-	local v1_file = io.open(minetest.get_worldpath().."/mail.db", "r")
-	if v1_file then
-		-- v1 to v3
-		migrate_v1_to_v3()
-	end
-
+	-- check for v2 storage first, v1-migration might have set the v3-flag already
 	local version = mail.storage:get_int(STORAGE_VERSION_KEY)
 	if version < 3 then
 		-- v2 to v3
 		migrate_v2_to_v3()
+		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+	end
+
+	-- check for v1 storage
+	local v1_file = io.open(minetest.get_worldpath().."/mail.db", "r")
+	if v1_file then
+		-- v1 to v3
+		migrate_v1_to_v3()
+		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
 	end
 end
