@@ -30,6 +30,10 @@ if minetest.get_modpath("default") then
 	mail.theme = default.gui_bg .. default.gui_bg_img
 end
 
+-- translation
+S = minetest.get_translator("mail")
+
+-- sub files
 local MP = minetest.get_modpath(minetest.get_current_modname())
 dofile(MP .. "/util/normalize.lua")
 dofile(MP .. "/util/uuid.lua")

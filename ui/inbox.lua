@@ -1,18 +1,18 @@
-local inbox_formspec = "size[8,10;]" .. mail.theme .. [[
+local inbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
     tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages") .. [[;1;false;false]
 
-    button[6,0.10;2,0.5;new;]] .. S("New") .. [[]
-    button[6,0.95;2,0.5;read;]] .. S("Read") .. [[]
-    button[6,1.70;2,0.5;reply;]] .. S("Reply") .. [[]
-    button[6,2.45;2,0.5;replyall;]] .. S("Reply all") .. [[]
-    button[6,3.20;2,0.5;forward;]] .. S("Forward") .. [[]
-    button[6,3.95;2,0.5;delete;]] .. S("Delete") .. [[]
-    button[6,4.82;2,0.5;markread;]] .. S("Mark Read") .. [[]
-    button[6,5.55;2,0.5;markunread;]] .. S("Mark Unread") .. [[]
-    button[6,6.8;2,0.5;contacts;]] .. S("Contacts") .. [[]
-    button[6,7.6;2,0.5;maillists;]] .. S("Mail lists") .. [[]
-    button[6,8.7;2,0.5;about;]] .. S("About") .. [[]
-    button_exit[6,9.5;2,0.5;quit;]] .. S("Close") .. [[]
+    button[6,0.10;2.5,0.5;new;]] .. S("New") .. [[]
+    button[6,0.95;2.5,0.5;read;]] .. S("Read") .. [[]
+    button[6,1.70;2.5,0.5;reply;]] .. S("Reply") .. [[]
+    button[6,2.45;2.5,0.5;replyall;]] .. S("Reply all") .. [[]
+    button[6,3.20;2.5,0.5;forward;]] .. S("Forward") .. [[]
+    button[6,3.95;2.5,0.5;delete;]] .. S("Delete") .. [[]
+    button[6,4.82;2.5,0.5;markread;]] .. S("Mark Read") .. [[]
+    button[6,5.55;2.5,0.5;markunread;]] .. S("Mark Unread") .. [[]
+    button[6,6.8;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
+    button[6,7.6;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
+    button[6,8.7;2.5,0.5;about;]] .. S("About") .. [[]
+    button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
     tablecolumns[color;text;text]
     table[0,0.7;5.75,9.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
