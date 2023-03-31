@@ -63,13 +63,13 @@ function mail.send(m)
 		m.from, m.to, extra_log, m.subject, m.body
 	))
 
-	
+
 	local id = mail.new_uuid()
 	if m.id then
 		mail.delete_mail(m.from, m.id)
 		id = m.id
 	end
-	
+
 	-- form the actual mail
 	local msg = {
 		id = id,
@@ -135,7 +135,7 @@ function mail.save_draft(m)
 		mail.delete_mail(m.from, m.id)
 		id = m.id
 	end
-	
+
 	-- add (again ie. update) in sender drafts
 	local entry = mail.get_storage_entry(m.from)
 	table.insert(entry.drafts, 1, {
