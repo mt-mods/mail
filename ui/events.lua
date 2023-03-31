@@ -1,5 +1,5 @@
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "mail:inbox" and formname ~= "mail:sent" then
+    if formname ~= "mail:inbox" and formname ~= "mail:sent" and formname ~= "mail:drafts" then
         return
     end
 
@@ -10,6 +10,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     local messagesInbox = entry.inbox
     local messagesSent = entry.outbox
+    local messagesDrafts = entry.drafts
 
     if fields.inbox then -- inbox table
         local evt = minetest.explode_table_event(fields.inbox)
@@ -29,6 +30,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
+    if fields.drafts then -- drafts table
+        local evt = minetest.explode_table_event(fields.drafts)
+        mail.selected_idxs.drafts[name] = evt.row - 1
+        if evt.type == "DCL" and messagesDrafts[mail.selected_idxs.drafts[name]] then
+            mail.show_compose(name, 
+            messagesDrafts[mail.selected_idxs.drafts[name]].to,
+            messagesDrafts[mail.selected_idxs.drafts[name]].subject,
+            messagesDrafts[mail.selected_idxs.drafts[name]].body,
+            messagesDrafts[mail.selected_idxs.drafts[name]].cc,
+            messagesDrafts[mail.selected_idxs.drafts[name]].bcc,
+            messagesDrafts[mail.selected_idxs.drafts[name]].id
+            )
+        end
+        return true
+    end
+
     if fields.boxtab == "1" then
         mail.selected_idxs.boxtab[name] = 1
         mail.show_inbox(name)
@@ -36,6 +53,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.boxtab == "2" then
         mail.selected_idxs.boxtab[name] = 2
         mail.show_sent(name)
+
+    elseif fields.boxtab == "3" then
+        mail.selected_idxs.boxtab[name] = 3
+        mail.show_drafts(name)
 
     elseif fields.read then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then -- inbox table
@@ -49,6 +70,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.delete_mail(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
         elseif formname == "mail:sent" and messagesSent[mail.selected_idxs.sent[name]] then -- sent table
             mail.delete_mail(name, messagesSent[mail.selected_idxs.sent[name]].id)
+        elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
+            mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
         end
 
         mail.show_mail_menu(name)

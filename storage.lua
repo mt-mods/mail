@@ -7,6 +7,7 @@ local function populate_entry(e)
 	e.contacts = e.contacts or {}
 	e.inbox = e.inbox or {}
 	e.outbox = e.outbox or {}
+	e.drafts = e.drafts or {}
 	e.lists = e.lists or {}
 	return e
 end
@@ -79,6 +80,13 @@ function mail.delete_mail(playername, msg_id)
 	for i, msg in ipairs(entry.outbox) do
 		if msg.id == msg_id then
 			table.remove(entry.outbox, i)
+			mail.set_storage_entry(playername, entry)
+			return
+		end
+	end
+	for i, msg in ipairs(entry.drafts) do
+		if msg.id == msg_id then
+			table.remove(entry.drafts, i)
 			mail.set_storage_entry(playername, entry)
 			return
 		end

@@ -1,6 +1,7 @@
 local FORMNAME = "mail:compose"
+local msg_id = nil
 
-function mail.show_compose(name, to, subject, body, cc, bcc)
+function mail.show_compose(name, to, subject, body, cc, bcc, id)
 	local formspec = [[
 			size[8,9]
 			button[0,0;1,1;tocontacts;]] .. S("To") .. [[:]
@@ -11,16 +12,21 @@ function mail.show_compose(name, to, subject, body, cc, bcc)
 			field[5.1,1.05;3.1,1;bcc;;%s]
 			field[0.25,2;8,1;subject;]] .. S("Subject") .. [[:;%s]
 			textarea[0.25,2.5;8,6;body;;%s]
-			button[0.5,8.5;3,1;cancel;]] .. S("Cancel") .. [[]
-			button[4.5,8.5;3,1;send;]] .. S("Send") .. [[]
+			button[0.1,8.5;2.5,1;cancel;]] .. S("Cancel") .. [[]
+			button[2.7,8.5;2.5,1;draft;]] .. S("Save draft") .. [[]
+			button[5.3,8.5;2.5,1;send;]] .. S("Send") .. [[]
 		]] .. mail.theme
 
 	formspec = string.format(formspec,
-		minetest.formspec_escape(to or ""),
-		minetest.formspec_escape(cc or ""),
-		minetest.formspec_escape(bcc or ""),
-		minetest.formspec_escape(subject or ""),
-		minetest.formspec_escape(body or ""))
+		minetest.formspec_escape(to) or "",
+		minetest.formspec_escape(cc) or "",
+		minetest.formspec_escape(bcc) or "",
+		minetest.formspec_escape(subject) or "",
+		minetest.formspec_escape(body) or "")
+		
+    if id then
+        msg_id = id
+    end
 
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
@@ -32,7 +38,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local name = player:get_player_name()
     if fields.send then
+        local id = mail.new_uuid()
+        if msg_id then
+            id = msg_id
+        end
         local success, err = mail.send({
+            id = id,
             from = name,
             to = fields.to,
             cc = fields.cc,
@@ -81,6 +92,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.cancel then
         mail.message_drafts[name] = nil
+
+        mail.show_mail_menu(name)
+    
+    elseif fields.draft then
+        local id = mail.new_uuid()
+        if msg_id then
+            id = msg_id
+        end
+        mail.save_draft({
+            id = id,
+            from = name,
+            to = fields.to,
+            cc = fields.cc,
+            bcc = fields.bcc,
+            subject = fields.subject,
+            body = fields.body
+        })
 
         mail.show_mail_menu(name)
     end
