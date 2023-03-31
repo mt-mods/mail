@@ -1,5 +1,5 @@
 local FORMNAME = "mail:compose"
-local msg_id = nil
+local msg_id = {}
 
 function mail.show_compose(name, to, subject, body, cc, bcc, id)
 	local formspec = [[
@@ -25,7 +25,7 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 		minetest.formspec_escape(body) or "")
 
     if id then
-        msg_id = id
+        msg_id[name] = id
     end
 
 	minetest.show_formspec(name, FORMNAME, formspec)
@@ -39,8 +39,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
     if fields.send then
         local id = mail.new_uuid()
-        if msg_id then
-            id = msg_id
+        if msg_id[name] then
+            id = msg_id[name]
         end
         local success, err = mail.send({
             id = id,
@@ -97,8 +97,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.draft then
         local id = mail.new_uuid()
-        if msg_id then
-            id = msg_id
+        if msg_id[name] then
+            id = msg_id[name]
         end
         mail.save_draft({
             id = id,

@@ -63,8 +63,7 @@ function mail.send(m)
 		m.from, m.to, extra_log, m.subject, m.body
 	))
 
-
-	local id = mail.new_uuid()
+	local id
 	if m.id then
 		mail.delete_mail(m.from, m.id)
 		id = m.id
@@ -72,7 +71,7 @@ function mail.send(m)
 
 	-- form the actual mail
 	local msg = {
-		id = id,
+		id = id or mail.new_uuid(),
 		from = m.from,
 		to = m.to,
 		cc = m.cc,
@@ -125,12 +124,12 @@ function mail.save_draft(m)
 		m.subject = string.sub(m.subject,1,27) .. "..."
 	end
 
-	minetest.log("action", f("[mail] %q saves draft with subject %q and body %q",
+	minetest.log("verbose", f("[mail] %q saves draft with subject %q and body %q",
 		m.from, m.subject, m.body
 	))
 
 	-- remove it is an update
-	local id = mail.new_uuid()
+	local id
 	if m.id then
 		mail.delete_mail(m.from, m.id)
 		id = m.id
@@ -139,7 +138,7 @@ function mail.save_draft(m)
 	-- add (again ie. update) in sender drafts
 	local entry = mail.get_storage_entry(m.from)
 	table.insert(entry.drafts, 1, {
-		id = id,
+		id = id or mail.new_uuid(),
 		from = m.from,
 		to = m.to,
 		cc = m.cc,
