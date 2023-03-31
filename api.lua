@@ -63,9 +63,16 @@ function mail.send(m)
 		m.from, m.to, extra_log, m.subject, m.body
 	))
 
+
+	local id = mail.new_uuid()
+	if m.id then
+		mail.delete_mail(m.from, m.id)
+		id = m.id
+	end
+
 	-- form the actual mail
 	local msg = {
-		id = mail.new_uuid(),
+		id = id,
 		from = m.from,
 		to = m.to,
 		cc = m.cc,
@@ -103,4 +110,46 @@ function mail.send(m)
 	end
 
 	return true
+end
+
+function mail.save_draft(m)
+	if type(m.from) ~= "string" then return false, "'from' is not a string" end
+	if type(m.to) ~= "string" then return false, "'to' is not a string" end
+	if type(m.body) ~= "string" then return false, "'body' is not a string" end
+
+	-- defaults
+	m.subject = m.subject or "(No subject)"
+
+	-- limit subject line
+	if string.len(m.subject) > 30 then
+		m.subject = string.sub(m.subject,1,27) .. "..."
+	end
+
+	minetest.log("action", f("[mail] %q saves draft with subject %q and body %q",
+		m.from, m.subject, m.body
+	))
+
+	-- remove it is an update
+	local id = mail.new_uuid()
+	if m.id then
+		mail.delete_mail(m.from, m.id)
+		id = m.id
+	end
+
+	-- add (again ie. update) in sender drafts
+	local entry = mail.get_storage_entry(m.from)
+	table.insert(entry.drafts, 1, {
+		id = id,
+		from = m.from,
+		to = m.to,
+		cc = m.cc,
+		bcc = m.bcc,
+		subject = m.subject,
+		body = m.body,
+		time = os.time(),
+	})
+	mail.set_storage_entry(m.from, entry)
+
+	return true
+
 end

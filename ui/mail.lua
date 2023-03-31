@@ -6,5 +6,7 @@ function mail.show_mail_menu(playername)
         mail.show_inbox(playername)
     elseif index == 2 then
         mail.show_sent(playername)
+    elseif index == 3 then
+        mail.show_drafts(playername)
     end
 end

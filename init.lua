@@ -15,6 +15,7 @@ mail = {
 	selected_idxs = {
 		inbox = {},
 		sent = {},
+		drafts = {},
 		contacts = {},
 		maillists = {},
 		to = {},
@@ -47,6 +48,7 @@ dofile(MP .. "/onjoin.lua")
 dofile(MP .. "/ui/mail.lua")
 dofile(MP .. "/ui/inbox.lua")
 dofile(MP .. "/ui/outbox.lua")
+dofile(MP .. "/ui/drafts.lua")
 dofile(MP .. "/ui/message.lua")
 dofile(MP .. "/ui/events.lua")
 dofile(MP .. "/ui/contacts.lua")
