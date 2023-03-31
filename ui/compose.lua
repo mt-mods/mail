@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local FORMNAME = "mail:compose"
 local msg_id = nil
 

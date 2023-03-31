@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local drafts_formspec = "size[8.5,10;]" .. mail.theme .. [[
     tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;3;false;false]
 
