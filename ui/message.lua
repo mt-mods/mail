@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local FORMNAME = "mail:message"
 
 function mail.show_message(name, id)

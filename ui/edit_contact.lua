@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local FORMNAME = "mail:editcontact"
 
 function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)

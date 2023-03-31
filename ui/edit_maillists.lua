@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local FORMNAME = "mail:editmaillist"
 
 function mail.show_edit_maillist(playername, maillist_name, desc, players, illegal_name_hint)

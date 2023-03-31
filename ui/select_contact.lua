@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 local FORMNAME = "mail:selectcontact"
 
 local select_contact_formspec = "size[8,9;]" .. mail.theme .. [[
