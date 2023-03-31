@@ -65,6 +65,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.show_message(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
+    elseif fields.edit then
+        if formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then
+            mail.show_compose(name,
+            messagesDrafts[mail.selected_idxs.drafts[name]].to,
+            messagesDrafts[mail.selected_idxs.drafts[name]].subject,
+            messagesDrafts[mail.selected_idxs.drafts[name]].body,
+            messagesDrafts[mail.selected_idxs.drafts[name]].cc,
+            messagesDrafts[mail.selected_idxs.drafts[name]].bcc,
+            messagesDrafts[mail.selected_idxs.drafts[name]].id
+            )
+        end
+
     elseif fields.delete then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then -- inbox table
             mail.delete_mail(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
