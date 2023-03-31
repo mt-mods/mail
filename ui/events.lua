@@ -34,7 +34,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local evt = minetest.explode_table_event(fields.drafts)
         mail.selected_idxs.drafts[name] = evt.row - 1
         if evt.type == "DCL" and messagesDrafts[mail.selected_idxs.drafts[name]] then
-            mail.show_compose(name, 
+            mail.show_compose(name,
             messagesDrafts[mail.selected_idxs.drafts[name]].to,
             messagesDrafts[mail.selected_idxs.drafts[name]].subject,
             messagesDrafts[mail.selected_idxs.drafts[name]].body,

@@ -23,7 +23,7 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 		minetest.formspec_escape(bcc) or "",
 		minetest.formspec_escape(subject) or "",
 		minetest.formspec_escape(body) or "")
-		
+
     if id then
         msg_id = id
     end
@@ -94,7 +94,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.message_drafts[name] = nil
 
         mail.show_mail_menu(name)
-    
+
     elseif fields.draft then
         local id = mail.new_uuid()
         if msg_id then
