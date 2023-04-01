@@ -62,6 +62,12 @@ local function migrate_v2_to_v3()
 			local player_inbox = read_json_file(maildir .. "/" .. saneplayername .. ".json")
 			print("[mail,v2] + migrating player '" .. playername .. "'")
 			for _, msg in ipairs(player_inbox) do
+				local reading_status = false
+				if msg.unread then
+					reading_status = false
+				else
+					reading_status = true
+				end
 				table.insert(entry.inbox, {
 					id = mail.new_uuid(),
 					from  = msg.sender or msg.from,
@@ -70,6 +76,7 @@ local function migrate_v2_to_v3()
 					subject = msg.subject,
 					body    = msg.body,
 					time    = msg.time or os.time(),
+					read    = reading_status,
 				})
 			end
 
