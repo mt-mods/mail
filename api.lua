@@ -99,6 +99,9 @@ function mail.send(m)
 		local name = player:get_player_name()
 		if recipients[name] then
 			minetest.chat_send_player(name, mail_alert)
+			local receiver_entry = mail.get_storage_entry(name)
+			local receiver_messages = receiver_entry.inbox
+			mail.hud_update(name, receiver_messages)
 		end
 	end
 

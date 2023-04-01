@@ -2,11 +2,12 @@ minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)
 		local entry = mail.get_storage_entry(name)
 		local messages = entry.inbox
+		mail.hud_update(name, messages)
 
 		local unreadcount = 0
 
 		for _, message in pairs(messages) do
-			if message.unread then
+			if not message.read then
 				unreadcount = unreadcount + 1
 			end
 		end

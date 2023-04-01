@@ -43,7 +43,7 @@ function mail.hud_update(playername, messages)
 
 	local unreadcount = 0
 	for _, message in ipairs(messages) do
-		if message.unread then
+		if not message.read then
 			unreadcount = unreadcount + 1
 		end
 	end
