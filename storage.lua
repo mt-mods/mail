@@ -72,7 +72,7 @@ function mail.delete_mail(playername, msg_id)
 	local entry = mail.get_storage_entry(playername)
 	for i, msg in ipairs(entry.inbox) do
 		if msg.id == msg_id then
-			table.remove(entry.outbox, i)
+			table.remove(entry.inbox, i)
 			mail.set_storage_entry(playername, entry)
 			return
 		end
