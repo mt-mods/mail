@@ -47,10 +47,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
             -- if mail is invalid then store it as a draft
-            local id = mail.new_uuid()
-            if msg_id[name] then
-                id = msg_id[name]
-            end
             mail.save_draft({
                 id = id,
                 from = name,
