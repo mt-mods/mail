@@ -175,7 +175,7 @@ function mail.delete_maillist(playername, listname)
 end
 
 function mail.extractMaillists(receivers_string, maillists_owner)
-	local receivers = {} -- extracted receivers
+	local receivers = mail.parse_player_list(receivers_string) -- extracted receivers
 
 	-- extract players from mailing lists
 	while string.find(receivers_string, "@") do
