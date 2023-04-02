@@ -90,7 +90,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					mail.selected_idxs.maillists[name] = k
 					break
 				elseif k == mail.selected_idxs.maillists[name] then
-					mail.delete_maillist(maillists[mail.selected_idxs.maillists[name]].name)
+					mail.delete_maillist(name, maillists[mail.selected_idxs.maillists[name]].name)
 					mail.selected_idxs.maillists[name] = nil
 					found = true
 				else

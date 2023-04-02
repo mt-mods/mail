@@ -148,21 +148,17 @@ function mail.get_maillist_by_name(playername, listname)
 end
 
 -- updates or creates a maillist
-function mail.update_maillist(playername, list)
+function mail.update_maillist(playername, list, old_list_name)
 	local entry = mail.get_storage_entry(playername)
-	local existing_updated = false
 	for i, existing_list in ipairs(entry.lists) do
-		if existing_list.name == list.name then
-			-- update
-			entry.lists[i] = list
-			existing_updated = true
+		if existing_list.name == old_list_name then
+			-- delete
+			table.remove(entry.lists, i)
 			break
 		end
 	end
-	if not existing_updated then
-		-- insert
-		table.insert(entry.lists, list)
-	end
+	-- insert
+	table.insert(entry.lists, list)
 	mail.set_storage_entry(playername, entry)
 end
 
@@ -179,22 +175,26 @@ function mail.delete_maillist(playername, listname)
 end
 
 function mail.extractMaillists(receivers_string, maillists_owner)
-	local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
-	local receivers = {} -- extracted receivers
+	local receivers = mail.parse_player_list(receivers_string) -- extracted receivers
 
 	-- extract players from mailing lists
-	for _, receiver in ipairs(globalReceivers) do
-		local receiverInfo = receiver:split("@") -- @maillist
-		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
-			local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
-			if maillist then
-				for _, playername in ipairs(maillist.players) do
-					table.insert(receivers, playername)
+	while string.find(receivers_string, "@") do
+		local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
+		receivers = {}
+		for _, receiver in ipairs(globalReceivers) do
+			local receiverInfo = receiver:split("@") -- @maillist
+			if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
+				local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
+				if maillist then
+					for _, playername in ipairs(maillist.players) do
+						table.insert(receivers, playername)
+					end
 				end
+			else -- in case of player
+				table.insert(receivers, receiver)
 			end
-		else -- in case of player
-			table.insert(receivers, receiver)
 		end
+		receivers_string = mail.concat_player_list(receivers)
 	end
 
 	return receivers

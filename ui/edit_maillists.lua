@@ -1,9 +1,11 @@
 -- translation
 local S = minetest.get_translator("mail")
+local old_lists_names = {}
 
 local FORMNAME = "mail:editmaillist"
 
 function mail.show_edit_maillist(playername, maillist_name, desc, players, illegal_name_hint)
+	old_lists_names[playername] = maillist_name
 	local formspec = [[
 			size[6,7]
 			button[4,6.25;2,0.5;back;]] .. S("Back") .. [[]
@@ -45,7 +47,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			name = fields.name,
 			desc = fields.desc,
 			players = mail.parse_player_list(fields.players)
-		})
+		}, old_lists_names[name])
 		mail.show_maillists(name)
 
 	elseif fields.back then
