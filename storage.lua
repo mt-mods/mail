@@ -175,22 +175,26 @@ function mail.delete_maillist(playername, listname)
 end
 
 function mail.extractMaillists(receivers_string, maillists_owner)
-	local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
 	local receivers = {} -- extracted receivers
 
 	-- extract players from mailing lists
-	for _, receiver in ipairs(globalReceivers) do
-		local receiverInfo = receiver:split("@") -- @maillist
-		if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
-			local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
-			if maillist then
-				for _, playername in ipairs(maillist.players) do
-					table.insert(receivers, playername)
+	while string.find(receivers_string, "@") do
+		local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
+		receivers = {}
+		for _, receiver in ipairs(globalReceivers) do
+			local receiverInfo = receiver:split("@") -- @maillist
+			if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
+				local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
+				if maillist then
+					for _, playername in ipairs(maillist.players) do
+						table.insert(receivers, playername)
+					end
 				end
+			else -- in case of player
+				table.insert(receivers, receiver)
 			end
-		else -- in case of player
-			table.insert(receivers, receiver)
 		end
+		receivers_string = mail.concat_player_list(receivers)
 	end
 
 	return receivers
