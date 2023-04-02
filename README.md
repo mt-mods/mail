@@ -3,22 +3,21 @@ Mail mod for Minetest (ingame mod)
 
 ![](https://github.com/mt-mods/mail/workflows/test/badge.svg)
 ![](https://github.com/mt-mods/mail/workflows/luacheck/badge.svg)
-
+[![ContentDB](https://content.minetest.net/packages/mt-mods/mail/shields/downloads/)](https://content.minetest.net/packages/mt-mods/mail/)
 
 This is a fork of cheapies mail mod
 
 It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
 
-# Screenshots
+# Screenshot
 
-Ingame mail
-![](pics/ingame.png?raw=true)
+![](screenshot_1.png)
 
 # Installation
 
 ## In-game mail mod
 
-Install it like any other mod: copy the directory `mail_mod` to your "worldmods" folder
+Install it like any other mod: copy the directory `mail_mod` to your "worldmods" folder or use the [contentdb](https://content.minetest.net)
 
 ## Webmail
 
