@@ -41,6 +41,8 @@ function mail.show_message(name, id)
 		mail.mark_read(name, id)
 	end
 
+	mail.hud_update(name, mail.get_storage_entry(name).inbox)
+
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
 
