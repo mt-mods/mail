@@ -148,21 +148,17 @@ function mail.get_maillist_by_name(playername, listname)
 end
 
 -- updates or creates a maillist
-function mail.update_maillist(playername, list)
+function mail.update_maillist(playername, list, old_list_name)
 	local entry = mail.get_storage_entry(playername)
-	local existing_updated = false
 	for i, existing_list in ipairs(entry.lists) do
-		if existing_list.name == list.name then
-			-- update
-			entry.lists[i] = list
-			existing_updated = true
+		if existing_list.name == old_list_name then
+			-- delete
+			table.remove(entry.lists, i)
 			break
 		end
 	end
-	if not existing_updated then
-		-- insert
-		table.insert(entry.lists, list)
-	end
+	-- insert
+	table.insert(entry.lists, list)
 	mail.set_storage_entry(playername, entry)
 end
 
