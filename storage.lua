@@ -50,7 +50,7 @@ function mail.mark_read(playername, msg_id)
 		if msg.id == msg_id then
 			msg.read = true
 			mail.set_storage_entry(playername, entry)
-			mail.hud_update(name, entry.inbox)
+			mail.hud_update(playername, entry.inbox)
 			return
 		end
 	end
