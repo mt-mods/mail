@@ -7,10 +7,11 @@ function mail.show_about(name)
 			label[0,0;Mail]
 			label[0,0.4;Provided my mt-mods]
 			label[0,0.8;Version: 1.0.3]
-			label[0,1.4;License : WTFPL for textures]
-			label[0,1.8;https://github.com/mt-mods/mail]
-			label[0,2.2;https://content.minetest.net/packages/mt-mods/mail]
-			textarea[0.5,3.5;4,5.5;;Note;]] ..
+			label[0,1.4;Licenses:]
+			label[0.2,1.8;Expat (code), WTFPL (textures)]
+			label[0,2.4;https://github.com/mt-mods/mail]
+			label[0,2.8;https://content.minetest.net/packages/mt-mods/mail]
+			textarea[0.5,4.0;4,5.5;;Note;]] ..
 			[[NOTE: Communication using this system is NOT guaranteed to be private!]] ..
 			[[ Admins are able to view the messages of any player.]
 
