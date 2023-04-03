@@ -122,6 +122,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.mark_read(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
+        mail.hud_update(name, messagesInbox)
         mail.show_mail_menu(name)
 
     elseif fields.markunread then
