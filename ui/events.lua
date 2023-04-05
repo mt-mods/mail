@@ -7,9 +7,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- split inbox and sent msgs for different tests
     local entry = mail.get_storage_entry(name)
+    
+    local sortfield = fields.sortfield
+    local sortdirection = fields.sortdirection
+    if not sortfield or sortfield == "" or sortfield == "0" then
+        sortfield = 3
+    end
+    if not sortdirection or sortdirection == "" or sortdirection == "0" then
+        sortdirection = 1
+    end
 
-    local messagesInbox = entry.inbox
-    local messagesSent = entry.outbox
+    local messagesInbox = mail.sort_messages(entry.inbox, fields.sortfield, fields.sortdirection)
+    local messagesSent = mail.sort_messages(entry.outbox, fields.sortfield, fields.sortdirection)
     local messagesDrafts = entry.drafts
 
     if fields.inbox then -- inbox table
@@ -145,6 +154,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.about then
         mail.show_about(name)
 
+    elseif fields.sortfield or fields.sortdirection then
+        mail.show_inbox(name, fields.sortfield, fields.sortdirection)
     end
 
     return true
