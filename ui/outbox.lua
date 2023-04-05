@@ -30,8 +30,8 @@ function mail.show_sent(name, sortfield, sortdirection, filter)
 
         dropdown[0,9.4;2,0.5;sortfield;]] .. S("To") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
         dropdown[2.0,9.4;2,0.5;sortdirection;]] .. S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
-        field[4.25,9.85;2,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
-        button[5.75,9.4;0.5,0.5;search;Q]
+        field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
+        button[5.14,9.52;0.85,0.5;search;Q]
 
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,8.35;sent;#999,]] .. S("To") .. "," .. S("Subject")
