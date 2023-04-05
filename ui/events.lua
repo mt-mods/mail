@@ -8,6 +8,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- split inbox and sent msgs for different tests
     local entry = mail.get_storage_entry(name)
     
+    local messagesInboxUnAnalyzed = entry.inbox
+    local messagesOutBoxUnAnalyzed = entry.outbox
+    local messagesDrafts = entry.drafts
+
+    -- filter inbox/outbox messages
+
+    local filter = fields.filter
+    if not filter then
+        filter = ""
+    end
+
+    local messagesInboxFiltered = mail.filter_messages(messagesInboxUnAnalyzed, filter)
+    local messagesOutboxFiltered = mail.filter_messages(messagesOutBoxUnAnalyzed, filter)
+
+    -- then sort them
+
     local sortfield = fields.sortfield
     local sortdirection = fields.sortdirection
     if not sortfield or sortfield == "" or sortfield == "0" then
@@ -17,9 +33,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         sortdirection = 1
     end
 
-    local messagesInbox = mail.sort_messages(entry.inbox, tostring(sortfield), tostring(sortdirection))
-    local messagesSent = mail.sort_messages(entry.outbox, tostring(sortfield), tostring(sortdirection))
-    local messagesDrafts = entry.drafts
+    local messagesInbox = mail.sort_messages(messagesInboxFiltered, tostring(sortfield), tostring(sortdirection), filter)
+    local messagesSent = mail.sort_messages(messagesOutboxFiltered, tostring(sortfield), tostring(sortdirection), filter)
 
     if fields.inbox then -- inbox table
         local evt = minetest.explode_table_event(fields.inbox)
@@ -154,8 +169,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.about then
         mail.show_about(name)
 
-    elseif fields.sortfield or fields.sortdirection then
-        mail.show_mail_menu(name, fields.sortfield, fields.sortdirection)
+    elseif fields.sortfield or fields.sortdirection or fields.filter then
+        mail.show_mail_menu(name, sortfield, sortdirection, filter)
     end
 
     return true

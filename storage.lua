@@ -98,6 +98,22 @@ function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
 	return sorted_messages
 end
 
+function mail.filter_messages(unfiltered_messages, filter)
+	if not filter or filter == "" then
+		return unfiltered_messages
+	end
+
+	local filtered_messages = {}
+
+	for _, msg in ipairs(unfiltered_messages) do
+		if string.find(msg.from, filter) or string.find(msg.to, filter) or string.find(msg.subject, filter) then
+			table.insert(filtered_messages, msg)
+		end
+	end
+
+	return filtered_messages
+end
+
 -- marks a mail read by its id
 function mail.mark_read(playername, msg_id)
 	local entry = mail.get_storage_entry(playername)

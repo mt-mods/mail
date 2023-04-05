@@ -2,12 +2,16 @@
 local S = minetest.get_translator("mail")
 
 
-function mail.show_inbox(name, sortfield, sortdirection)
+function mail.show_inbox(name, sortfield, sortdirection, filter)
     if not sortfield or sortfield == "" or sortfield == "0" then
         sortfield = 3
     end
     if not sortdirection or sortdirection == "" or sortdirection == "0" then
         sortdirection = 1
+    end
+
+    if not filter then
+        filter = ""
     end
 
     local inbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
@@ -27,13 +31,15 @@ function mail.show_inbox(name, sortfield, sortdirection)
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
         dropdown[0,9.4;2,0.5;sortfield;]] .. S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
-        dropdown[2.2,9.4;2,0.5;sortdirection;]] .. S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
+        dropdown[2.0,9.4;2,0.5;sortdirection;]] .. S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
+        field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
+        button[5.14,9.52;0.85,0.5;search;Q]
 
         tablecolumns[color;text;text]
         table[0,0.7;5.75,8.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
     local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(entry.inbox, tostring(sortfield), tostring(sortdirection))
+    local messages = mail.sort_messages(mail.filter_messages(entry.inbox, filter), tostring(sortfield), tostring(sortdirection))
 
     mail.message_drafts[name] = nil
 
