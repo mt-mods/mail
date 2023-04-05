@@ -57,7 +57,7 @@ function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
 		table.insert(messages, unsorted_messages[1])
 		table.remove(unsorted_messages, 1)
 		-- sort messages
-		for i, unsorted_msg in ipairs(unsorted_messages) do
+		for _, unsorted_msg in ipairs(unsorted_messages) do
 			local is_message_sorted = false
 			for j, sorted_msg in ipairs(messages) do
 				if sortfield == "1" and unsorted_msg.from >= sorted_msg.from then -- for inbox
