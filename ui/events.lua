@@ -17,8 +17,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         sortdirection = 1
     end
 
-    local messagesInbox = mail.sort_messages(entry.inbox, fields.sortfield, fields.sortdirection)
-    local messagesSent = mail.sort_messages(entry.outbox, fields.sortfield, fields.sortdirection)
+    local messagesInbox = mail.sort_messages(entry.inbox, tostring(sortfield), tostring(sortdirection))
+    local messagesSent = mail.sort_messages(entry.outbox, tostring(sortfield), tostring(sortdirection))
     local messagesDrafts = entry.drafts
 
     if fields.inbox then -- inbox table
@@ -155,7 +155,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_about(name)
 
     elseif fields.sortfield or fields.sortdirection then
-        mail.show_inbox(name, fields.sortfield, fields.sortdirection)
+        mail.show_mail_menu(name, fields.sortfield, fields.sortdirection)
     end
 
     return true

@@ -33,7 +33,7 @@ function mail.show_inbox(name, sortfield, sortdirection)
         table[0,0.7;5.75,8.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
     local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(entry.inbox, sortfield, sortdirection)
+    local messages = mail.sort_messages(entry.inbox, tostring(sortfield), tostring(sortdirection))
 
     mail.message_drafts[name] = nil
 

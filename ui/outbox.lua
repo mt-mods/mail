@@ -24,14 +24,14 @@ function mail.show_sent(name, sortfield, sortdirection)
 		button[6,8.7;2.5,0.5;about;]] .. S("About") .. [[]
 		button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
-        dropdown[0,9.4;2,0.5;sortfield;]] .. S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
+        dropdown[0,9.4;2,0.5;sortfield;]] .. S("To") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
         dropdown[2.2,9.4;2,0.5;sortdirection;]] .. S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
 
 		tablecolumns[color;text;text]
 		table[0,0.7;5.75,8.35;sent;#999,]] .. S("To") .. "," .. S("Subject")
 	local formspec = { sent_formspec }
 	local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection)
+    local messages = mail.sort_messages(entry.outbox, tostring(sortfield), tostring(sortdirection))
 
 	mail.message_drafts[name] = nil
 

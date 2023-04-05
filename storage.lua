@@ -45,11 +45,11 @@ end
 
 function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
     local messages = {}
-    if not sortfield then
-        local sortfield = 3
+    if not sortfield or sortfield == "" then
+        sortfield = "3"
     end
-    if not sortdirection then
-		local sortdirection = 1
+    if not sortdirection or sortdirection == "" then
+		sortdirection = "1"
 	end
 
 	if unsorted_messages[1] then
@@ -60,15 +60,19 @@ function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
 		for i, unsorted_msg in ipairs(unsorted_messages) do
 			local is_message_sorted = false
 			for j, sorted_msg in ipairs(messages) do
-				if sortfield == 1 and unsorted_msg.from >= sorted_msg.from then
+				if sortfield == "1" and unsorted_msg.from >= sorted_msg.from then -- for inbox
 					table.insert(messages, j+1, unsorted_msg)
 					is_message_sorted = true
 					break
-				elseif sortfield == 2 and unsorted_msg.subject >= sorted_msg.subject then
+				elseif sortfield == "1" and unsorted_msg.to >= sorted_msg.to then -- for outbox
 					table.insert(messages, j+1, unsorted_msg)
 					is_message_sorted = true
 					break
-				elseif sortfield == 3 and unsorted_msg.time >= sorted_msg.time then
+				elseif sortfield == "2" and unsorted_msg.subject >= sorted_msg.subject then
+					table.insert(messages, j+1, unsorted_msg)
+					is_message_sorted = true
+					break
+				elseif sortfield == "3" and unsorted_msg.time >= sorted_msg.time then
 					table.insert(messages, j+1, unsorted_msg)
 					is_message_sorted = true
 					break
@@ -80,7 +84,18 @@ function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
 		end
 	end
 
-	return messages
+	-- reverse for descending
+
+	local sorted_messages = messages
+
+	if sortdirection == "2" then
+		sorted_messages = {}
+		for i=#messages, 1, -1 do
+			sorted_messages[#sorted_messages+1] = messages[i]
+		end
+	end
+
+	return sorted_messages
 end
 
 -- marks a mail read by its id
