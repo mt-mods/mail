@@ -10,6 +10,9 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         sortdirection = 1
     end
 
+    sortfield = tostring(sortfield)
+    sortdirection = tostring(sortdirection)
+
     if not filter then
         filter = ""
     end
@@ -30,8 +33,10 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         button[6,8.7;2.5,0.5;about;]] .. S("About") .. [[]
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
-        dropdown[0,9.4;2,0.5;sortfield;]] .. S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
-        dropdown[2.0,9.4;2,0.5;sortdirection;]] .. S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
+        dropdown[0,9.4;2,0.5;sortfield;]] ..
+        S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
+        dropdown[2.0,9.4;2,0.5;sortdirection;]] ..
+        S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
         field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
         button[5.14,9.52;0.85,0.5;search;Q]
 
@@ -39,7 +44,7 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         table[0,0.7;5.75,8.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
     local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(mail.filter_messages(entry.inbox, filter), tostring(sortfield), tostring(sortdirection))
+    local messages = mail.sort_messages(mail.filter_messages(entry.inbox, filter), sortfield, sortdirection)
 
     mail.message_drafts[name] = nil
 
