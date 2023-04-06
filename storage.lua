@@ -61,19 +61,19 @@ function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
 			local is_message_sorted = false
 			for j, sorted_msg in ipairs(messages) do
 				if sortfield == "1" and unsorted_msg.from >= sorted_msg.from then -- for inbox
-					table.insert(messages, j+1, unsorted_msg)
+					table.insert(messages, j, unsorted_msg)
 					is_message_sorted = true
 					break
 				elseif sortfield == "1" and unsorted_msg.to >= sorted_msg.to then -- for outbox
-					table.insert(messages, j+1, unsorted_msg)
+					table.insert(messages, j, unsorted_msg)
 					is_message_sorted = true
 					break
 				elseif sortfield == "2" and unsorted_msg.subject >= sorted_msg.subject then
-					table.insert(messages, j+1, unsorted_msg)
+					table.insert(messages, j, unsorted_msg)
 					is_message_sorted = true
 					break
 				elseif sortfield == "3" and unsorted_msg.time >= sorted_msg.time then
-					table.insert(messages, j+1, unsorted_msg)
+					table.insert(messages, j, unsorted_msg)
 					is_message_sorted = true
 					break
 				end
