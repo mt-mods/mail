@@ -3,8 +3,8 @@ local S = minetest.get_translator("mail")
 
 
 function mail.show_sent(name, sortfield, sortdirection, filter)
-    sortfield = sortfield or "3"
-    sortdirection = sortdirection or "1"
+    sortfield = sortfield or mail.selected_idxs.sortfield[name] or "3"
+    sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
 
     if not filter then
         filter = ""
