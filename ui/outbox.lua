@@ -4,14 +4,11 @@ local S = minetest.get_translator("mail")
 
 function mail.show_sent(name, sortfield, sortdirection, filter)
     if not sortfield or sortfield == "" or sortfield == "0" then
-        sortfield = 3
+        sortfield = "3"
     end
     if not sortdirection or sortdirection == "" or sortdirection == "0" then
-        sortdirection = 1
+        sortdirection = "1"
     end
-
-    sortfield = tostring(sortfield)
-    sortdirection = tostring(sortdirection)
 
     if not filter then
         filter = ""

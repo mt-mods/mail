@@ -4,14 +4,11 @@ local S = minetest.get_translator("mail")
 
 function mail.show_inbox(name, sortfield, sortdirection, filter)
     if not sortfield or sortfield == "" or sortfield == "0" then
-        sortfield = 3
+        sortfield = "3"
     end
     if not sortdirection or sortdirection == "" or sortdirection == "0" then
-        sortdirection = 1
+        sortdirection = "1"
     end
-
-    sortfield = tostring(sortfield)
-    sortdirection = tostring(sortdirection)
 
     if not filter then
         filter = ""
@@ -34,9 +31,9 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
         dropdown[0,9.4;2,0.5;sortfield;]] ..
-        S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
+        S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfield .. [[;true]
         dropdown[2.0,9.4;2,0.5;sortdirection;]] ..
-        S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
+        S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
         field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
         button[5.14,9.52;0.85,0.5;search;Q]
 
