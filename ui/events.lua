@@ -8,9 +8,33 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- split inbox and sent msgs for different tests
     local entry = mail.get_storage_entry(name)
 
-    local messagesInbox = entry.inbox
-    local messagesSent = entry.outbox
+    local messagesInboxUnAnalyzed = entry.inbox
+    local messagesOutBoxUnAnalyzed = entry.outbox
     local messagesDrafts = entry.drafts
+
+    -- filter inbox/outbox messages
+
+    local filter = fields.filter
+    if not filter then
+        filter = ""
+    end
+
+    local messagesInboxFiltered = mail.filter_messages(messagesInboxUnAnalyzed, filter)
+    local messagesOutboxFiltered = mail.filter_messages(messagesOutBoxUnAnalyzed, filter)
+
+    -- then sort them
+
+    local sortfield = tostring(fields.sortfield)
+    local sortdirection = tostring(fields.sortdirection)
+    if not sortfield or sortfield == "" or sortfield == "0" then
+        sortfield = "3"
+    end
+    if not sortdirection or sortdirection == "" or sortdirection == "0" then
+        sortdirection = "1"
+    end
+
+    local messagesInbox = mail.sort_messages(messagesInboxFiltered, sortfield, sortdirection, filter)
+    local messagesSent = mail.sort_messages(messagesOutboxFiltered, sortfield, sortdirection, filter)
 
     if fields.inbox then -- inbox table
         local evt = minetest.explode_table_event(fields.inbox)
@@ -48,11 +72,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if fields.boxtab == "1" then
         mail.selected_idxs.boxtab[name] = 1
-        mail.show_inbox(name)
+        mail.show_inbox(name, sortfield, sortdirection, filter)
 
     elseif fields.boxtab == "2" then
         mail.selected_idxs.boxtab[name] = 2
-        mail.show_sent(name)
+        mail.show_sent(name, sortfield, sortdirection, filter)
 
     elseif fields.boxtab == "3" then
         mail.selected_idxs.boxtab[name] = 3
@@ -86,7 +110,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
         end
 
-        mail.show_mail_menu(name)
+        mail.show_mail_menu(name, sortfield, sortdirection, filter)
 
     elseif fields.reply then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then
@@ -122,7 +146,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.mark_read(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
-        mail.show_mail_menu(name)
+        mail.show_mail_menu(name, sortfield, sortdirection, filter)
 
     elseif fields.markunread then
         if formname == "mail:inbox" and messagesInbox[mail.selected_idxs.inbox[name]] then
@@ -131,7 +155,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.mark_unread(name, messagesSent[mail.selected_idxs.sent[name]].id)
         end
 
-        mail.show_mail_menu(name)
+        mail.show_mail_menu(name, sortfield, sortdirection, filter)
 
     elseif fields.new then
         mail.show_compose(name)
@@ -145,6 +169,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.about then
         mail.show_about(name)
 
+    elseif fields.sortfield or fields.sortdirection or fields.filter then
+        mail.show_mail_menu(name, sortfield, sortdirection, filter)
     end
 
     return true
