@@ -44,7 +44,7 @@ function mail.get_message(playername, msg_id)
 end
 
 function mail.sort_messages(messages, sortfield, sortdirection)
-	function sorter(field, dir)
+	local function sorter(field, dir)
 		return dir == "2"
 			and (function(a, b) return a[field] > b[field] end)
 			or (function(a, b) return a[field] < b[field] end)
