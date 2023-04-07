@@ -24,18 +24,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- then sort them
 
-    if not fields.sortfield or fields.sortfield == "" then
-        sortfield = "3"
-    end
-    if not fields.sortdirection or fields.sortdirection == ""  then
-        sortdirection = "1"
-    end
-
     if not sortfield then
         local sortfield = fields.sortfield
     end
     if not sortdirection then
         local sortdirection = fields.sortdirection
+    end
+
+    if not fields.sortfield or fields.sortfield == "" then
+        sortfield = "3"
+    end
+    if not fields.sortdirection or fields.sortdirection == ""  then
+        sortdirection = "1"
     end
 
     local messagesInbox = mail.sort_messages(messagesInboxFiltered, sortfield, sortdirection, filter)
