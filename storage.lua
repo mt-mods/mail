@@ -43,59 +43,22 @@ function mail.get_message(playername, msg_id)
 	end
 end
 
-function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
-    local messages = {}
-    if not sortfield or sortfield == "" then
-        sortfield = "3"
-    end
-    if not sortdirection or sortdirection == "" then
-		sortdirection = "1"
+function mail.sort_messages(messages, sortfield, sortdirection)
+	function sorter(field, dir)
+		return dir == "2"
+			and (function(a, b) return a[field] > b[field] end)
+			or (function(a, b) return a[field] < b[field] end)
 	end
-
-	if unsorted_messages[1] then
-		-- add first message
-		table.insert(messages, unsorted_messages[1])
-		table.remove(unsorted_messages, 1)
-		-- sort messages
-		for _, unsorted_msg in ipairs(unsorted_messages) do
-			local is_message_sorted = false
-			for j, sorted_msg in ipairs(messages) do
-				if sortfield == "1" and unsorted_msg.from >= sorted_msg.from then -- for inbox
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "1" and unsorted_msg.to >= sorted_msg.to then -- for outbox
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "2" and unsorted_msg.subject >= sorted_msg.subject then
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "3" and unsorted_msg.time >= sorted_msg.time then
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				end
-			end
-			if not is_message_sorted then
-				table.insert(messages, 1, unsorted_msg)
-			end
-		end
+	if sortfield == "1" then -- for inbox
+		table.sort(messages, sorter("from", sortdirection))
+	elseif sortfield == "1" then -- for outbox
+		table.sort(messages, sorter("to", sortdirection))
+	elseif sortfield == "2" then
+		table.sort(messages, sorter("subject", sortdirection))
+	else -- default sorting, sortfield == "3"
+		table.sort(messages, sorter("time", sortdirection))
 	end
-
-	-- reverse for descending
-
-	local sorted_messages = messages
-
-	if sortdirection == "2" then
-		sorted_messages = {}
-		for i=#messages, 1, -1 do
-			sorted_messages[#sorted_messages+1] = messages[i]
-		end
-	end
-
-	return sorted_messages
+	return messages
 end
 
 function mail.filter_messages(unfiltered_messages, filter)
