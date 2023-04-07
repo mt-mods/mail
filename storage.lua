@@ -49,16 +49,17 @@ function mail.sort_messages(messages, sortfield, sortdirection)
 			and (function(a, b) return a[field] > b[field] end)
 			or (function(a, b) return a[field] < b[field] end)
 	end
+	local result = {unpack(messages)}
 	if sortfield == "1" then -- for inbox
-		table.sort(messages, sorter("from", sortdirection))
+		table.sort(result, sorter("from", sortdirection))
 	elseif sortfield == "1" then -- for outbox
-		table.sort(messages, sorter("to", sortdirection))
+		table.sort(result, sorter("to", sortdirection))
 	elseif sortfield == "2" then
-		table.sort(messages, sorter("subject", sortdirection))
+		table.sort(result, sorter("subject", sortdirection))
 	else -- default sorting, sortfield == "3"
-		table.sort(messages, sorter("time", sortdirection))
+		table.sort(result, sorter("time", sortdirection))
 	end
-	return messages
+	return result
 end
 
 function mail.filter_messages(unfiltered_messages, filter)
