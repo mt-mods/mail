@@ -3,12 +3,8 @@ local S = minetest.get_translator("mail")
 
 
 function mail.show_inbox(name, sortfield, sortdirection, filter)
-    if not sortfield or sortfield == "" or sortfield == "0" then
-        sortfield = "3"
-    end
-    if not sortdirection or sortdirection == "" or sortdirection == "0" then
-        sortdirection = "1"
-    end
+    sortfield = sortfield or "3"
+    sortdirection = sortdirection or "1"
 
     if not filter then
         filter = ""
