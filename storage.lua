@@ -43,23 +43,26 @@ function mail.get_message(playername, msg_id)
 	end
 end
 
-function mail.sort_messages(messages, sortfield, sortdirection)
-	local function sorter(field, dir)
-		return dir == "2"
-			and (function(a, b) return a[field] > b[field] end)
-			or (function(a, b) return a[field] < b[field] end)
+function mail.sort_messages(messages, sortfield, descending)
+	local results = {unpack(messages)}
+	if sortfield ~= nil then
+		if descending then
+			table.sort(results, function(a, b)
+				if a[sortfield] and b[sortfield] then
+					return a[sortfield] > b[sortfield]
+				end
+				minetest.log("warning", "mail.sort_messages: missing field "..sortfield)
+			end)
+		else
+			table.sort(results, function(a, b)
+				if a[sortfield] and b[sortfield] then
+					return a[sortfield] < b[sortfield]
+				end
+				minetest.log("warning", "mail.sort_messages: missing field "..sortfield)
+			end)
+		end
 	end
-	local result = {unpack(messages)}
-	if sortfield == "1" then -- for inbox
-		table.sort(result, sorter("from", sortdirection))
-	elseif sortfield == "1" then -- for outbox
-		table.sort(result, sorter("to", sortdirection))
-	elseif sortfield == "2" then
-		table.sort(result, sorter("subject", sortdirection))
-	else -- default sorting, sortfield == "3"
-		table.sort(result, sorter("time", sortdirection))
-	end
-	return result
+	return results
 end
 
 function mail.filter_messages(unfiltered_messages, filter)
