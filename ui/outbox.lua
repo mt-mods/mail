@@ -32,11 +32,8 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 		table[0,0.7;5.75,8.35;sent;#999,]] .. S("To") .. "," .. S("Subject")
 	local formspec = { sent_formspec }
 	local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(
-        mail.filter_messages(entry.outbox, filter),
-        ({"to","subject","time"})[sortfieldindex],
-        sortdirection == "2"
-    )
+	local sortfield = ({"to","subject","time"})[sortfieldindex]
+    local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
 
 	mail.message_drafts[name] = nil
 

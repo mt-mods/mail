@@ -4,7 +4,7 @@ local function messageGetter(messages, sortfield, ascending, filter)
     local results
     return function()
         if not results then
-            results = mail.sort_messages(mail.filter_messages(messages, filter), sortfield, ascending)
+            results = mail.sort_messages(messages, sortfield, ascending, filter)
         end
         return results
     end

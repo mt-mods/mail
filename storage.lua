@@ -43,8 +43,25 @@ function mail.get_message(playername, msg_id)
 	end
 end
 
-function mail.sort_messages(messages, sortfield, descending)
-	local results = {unpack(messages)}
+local function safe_find(str, sub)
+	return str and sub and str:find(sub, 1, true) or nil
+end
+
+function mail.sort_messages(messages, sortfield, descending, filter)
+	local results = {}
+	-- Filtering
+	if filter and filter ~= "" then
+		for _, msg in ipairs(messages) do
+			if safe_find(msg.from, filter) or safe_find(msg.to, filter) or safe_find(msg.subject, filter) then
+				table.insert(results, msg)
+			end
+		end
+	else
+		for i = 1, #messages do
+			results[i] = messages[i]
+		end
+	end
+	-- Sorting
 	if sortfield ~= nil then
 		if descending then
 			table.sort(results, function(a, b)
@@ -63,22 +80,6 @@ function mail.sort_messages(messages, sortfield, descending)
 		end
 	end
 	return results
-end
-
-function mail.filter_messages(unfiltered_messages, filter)
-	if not filter or filter == "" then
-		return unfiltered_messages
-	end
-
-	local filtered_messages = {}
-
-	for _, msg in ipairs(unfiltered_messages) do
-		if string.find(msg.from, filter) or string.find(msg.to, filter) or string.find(msg.subject, filter) then
-			table.insert(filtered_messages, msg)
-		end
-	end
-
-	return filtered_messages
 end
 
 -- marks a mail read by its id
