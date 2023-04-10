@@ -21,7 +21,9 @@ mail = {
 		to = {},
 		cc = {},
 		bcc = {},
-		boxtab = {}
+		boxtab = {},
+		sortfield = {},
+		sortdirection = {}
 	},
 
 	message_drafts = {}

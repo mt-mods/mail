@@ -2,20 +2,10 @@
 local S = minetest.get_translator("mail")
 
 
-function mail.show_inbox(name, sortfield, sortdirection, filter)
-    if not sortfield or sortfield == "" or sortfield == "0" then
-        sortfield = 3
-    end
-    if not sortdirection or sortdirection == "" or sortdirection == "0" then
-        sortdirection = 1
-    end
-
-    sortfield = tostring(sortfield)
-    sortdirection = tostring(sortdirection)
-
-    if not filter then
-        filter = ""
-    end
+function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
+    sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name]) or 3
+    sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
+    filter = filter or ""
 
     local inbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
         tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;1;false;false]
@@ -34,9 +24,9 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
         dropdown[0,9.4;2,0.5;sortfield;]] ..
-        S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. tostring(sortfield) .. [[;1]
+        S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfieldindex .. [[;true]
         dropdown[2.0,9.4;2,0.5;sortdirection;]] ..
-        S("Ascending") .. "," .. S("Descending") .. [[;]] .. tostring(sortdirection) .. [[;1]
+        S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
         field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
         button[5.14,9.52;0.85,0.5;search;Q]
 
@@ -44,11 +34,12 @@ function mail.show_inbox(name, sortfield, sortdirection, filter)
         table[0,0.7;5.75,8.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
     local entry = mail.get_storage_entry(name)
-    local messages = mail.sort_messages(mail.filter_messages(entry.inbox, filter), sortfield, sortdirection)
+    local sortfield = ({"from","subject","time"})[sortfieldindex]
+    local messages = mail.sort_messages(entry.inbox, sortfield, sortdirection == "2", filter)
 
     mail.message_drafts[name] = nil
 
-    if messages[1] then
+    if #messages > 0 then
         for _, message in ipairs(messages) do
             if not message.read then
                 if not mail.player_in_list(name, message.to) then

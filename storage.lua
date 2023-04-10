@@ -43,75 +43,33 @@ function mail.get_message(playername, msg_id)
 	end
 end
 
-function mail.sort_messages(unsorted_messages, sortfield, sortdirection)
-    local messages = {}
-    if not sortfield or sortfield == "" then
-        sortfield = "3"
-    end
-    if not sortdirection or sortdirection == "" then
-		sortdirection = "1"
-	end
-
-	if unsorted_messages[1] then
-		-- add first message
-		table.insert(messages, unsorted_messages[1])
-		table.remove(unsorted_messages, 1)
-		-- sort messages
-		for _, unsorted_msg in ipairs(unsorted_messages) do
-			local is_message_sorted = false
-			for j, sorted_msg in ipairs(messages) do
-				if sortfield == "1" and unsorted_msg.from >= sorted_msg.from then -- for inbox
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "1" and unsorted_msg.to >= sorted_msg.to then -- for outbox
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "2" and unsorted_msg.subject >= sorted_msg.subject then
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				elseif sortfield == "3" and unsorted_msg.time >= sorted_msg.time then
-					table.insert(messages, j, unsorted_msg)
-					is_message_sorted = true
-					break
-				end
-			end
-			if not is_message_sorted then
-				table.insert(messages, 1, unsorted_msg)
-			end
-		end
-	end
-
-	-- reverse for descending
-
-	local sorted_messages = messages
-
-	if sortdirection == "2" then
-		sorted_messages = {}
-		for i=#messages, 1, -1 do
-			sorted_messages[#sorted_messages+1] = messages[i]
-		end
-	end
-
-	return sorted_messages
+local function safe_find(str, sub)
+	return str and sub and str:find(sub, 1, true) or nil
 end
 
-function mail.filter_messages(unfiltered_messages, filter)
-	if not filter or filter == "" then
-		return unfiltered_messages
-	end
-
-	local filtered_messages = {}
-
-	for _, msg in ipairs(unfiltered_messages) do
-		if string.find(msg.from, filter) or string.find(msg.to, filter) or string.find(msg.subject, filter) then
-			table.insert(filtered_messages, msg)
+function mail.sort_messages(messages, sortfield, descending, filter)
+	local results = {}
+	-- Filtering
+	if filter and filter ~= "" then
+		for _, msg in ipairs(messages) do
+			if safe_find(msg.from, filter) or safe_find(msg.to, filter) or safe_find(msg.subject, filter) then
+				table.insert(results, msg)
+			end
+		end
+	else
+		for i = 1, #messages do
+			results[i] = messages[i]
 		end
 	end
-
-	return filtered_messages
+	-- Sorting
+	if sortfield ~= nil then
+		if descending then
+			table.sort(results, function(a, b) return a[sortfield] > b[sortfield] end)
+		else
+			table.sort(results, function(a, b) return a[sortfield] < b[sortfield] end)
+		end
+	end
+	return results
 end
 
 -- marks a mail read by its id
