@@ -26,6 +26,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Store common player configuration for reuse
     mail.selected_idxs.sortfield[name] = sortfieldindex
     mail.selected_idxs.sortdirection[name] = sortdirection
+    if fields.multipleselection then
+        mail.selected_idxs.multipleselection[name] = fields.multipleselection == "true"
+    end
 
     -- split inbox and sent msgs for different tests
     local entry = mail.get_storage_entry(name)
@@ -36,18 +39,60 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table
         local evt = minetest.explode_table_event(fields.inbox)
-        mail.selected_idxs.inbox[name] = evt.row - 1
-        if evt.type == "DCL" and getInbox()[mail.selected_idxs.inbox[name]] then
-            mail.show_message(name, getInbox()[mail.selected_idxs.inbox[name]].id)
+        if mail.selected_idxs.multipleselection[name] then
+            if not mail.selected_idxs.inbox[name] then
+                mail.selected_idxs.inbox[name] = {}
+            end
+            local selected_id = 0
+            if mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.inbox[name]) do
+                    if getInbox()[evt.row-1].id == selected_msg then
+                        selected_id = i
+                        table.remove(mail.selected_idxs.inbox[name], i)
+                        break
+                    end
+                end
+            end
+            if selected_id == 0 then
+                table.insert(mail.selected_idxs.inbox[name], getInbox()[evt.row-1].id)
+            end
+        else
+            mail.selected_idxs.inbox[name] = { getInbox()[evt.row-1].id }
+        end
+        if evt.type == "DCL" and getInbox()[evt.row-1] then
+            mail.show_message(name, getInbox()[evt.row-1].id)
+        else
+            mail.show_mail_menu(name)
         end
         return true
     end
 
     if fields.sent then -- sent table
         local evt = minetest.explode_table_event(fields.sent)
-        mail.selected_idxs.sent[name] = evt.row - 1
-        if evt.type == "DCL" and getOutbox()[mail.selected_idxs.sent[name]] then
-            mail.show_message(name, getOutbox()[mail.selected_idxs.sent[name]].id)
+        if mail.selected_idxs.multipleselection[name] then
+            if not mail.selected_idxs.sent[name] then
+                mail.selected_idxs.sent[name] = {}
+            end
+            local selected_id = 0
+            if mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.sent[name]) do
+                    if getOutbox()[evt.row-1].id == selected_msg then
+                        selected_id = i
+                        table.remove(mail.selected_idxs.sent[name], i)
+                        break
+                    end
+                end
+            end
+            if selected_id == 0 then
+                table.insert(mail.selected_idxs.sent[name], getOutbox()[evt.row-1].id)
+            end
+        else
+            mail.selected_idxs.sent[name] = { getOutbox()[evt.row-1].id }
+        end
+        if evt.type == "DCL" and getOutbox()[evt.row-1] then
+            mail.show_message(name, getOutbox()[evt.row-1].id)
+        else
+            mail.show_mail_menu(name)
         end
         return true
     end
@@ -81,10 +126,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_drafts(name)
 
     elseif fields.read then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then -- inbox table
-            mail.show_message(name, getInbox()[mail.selected_idxs.inbox[name]].id)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then -- sent table
-            mail.show_message(name, getOutbox()[mail.selected_idxs.sent[name]].id)
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
+            mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
+            mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
         end
 
     elseif fields.edit then
@@ -100,10 +145,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
 
     elseif fields.delete then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then -- inbox table
-            mail.delete_mail(name, getInbox()[mail.selected_idxs.inbox[name]].id)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then -- sent table
-            mail.delete_mail(name, getOutbox()[mail.selected_idxs.sent[name]].id)
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
+            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
+                mail.delete_mail(name, msg_id)
+            end
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
+            for _, msg_id in ipairs(mail.selected_idxs.sent[name]) do
+                mail.delete_mail(name, msg_id)
+            end
         elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
             mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
         end
@@ -111,46 +160,46 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.reply then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then
-            local message = getInbox()[mail.selected_idxs.inbox[name]]
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.reply(name, message)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then
-            local message = getOutbox()[mail.selected_idxs.sent[name]]
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+            local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.reply(name, message)
         end
 
     elseif fields.replyall then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then
-            local message = getInbox()[mail.selected_idxs.inbox[name]]
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.replyall(name, message)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then
-            local message = getOutbox()[mail.selected_idxs.sent[name]]
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+            local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.replyall(name, message)
         end
 
     elseif fields.forward then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then
-            local message = getInbox()[mail.selected_idxs.inbox[name]]
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.forward(name, message)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then
-            local message = getOutbox()[mail.selected_idxs.sent[name]]
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+            local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.forward(name, message)
         end
 
     elseif fields.markread then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then
-            mail.mark_read(name, getInbox()[mail.selected_idxs.inbox[name]].id)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then
-            mail.mark_read(name, getOutbox()[mail.selected_idxs.sent[name]].id)
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
+                mail.mark_read(name, msg_id)
+            end
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.markunread then
-        if formname == "mail:inbox" and getInbox()[mail.selected_idxs.inbox[name]] then
-            mail.mark_unread(name, getInbox()[mail.selected_idxs.inbox[name]].id)
-        elseif formname == "mail:sent" and getOutbox()[mail.selected_idxs.sent[name]] then
-            mail.mark_unread(name, getOutbox()[mail.selected_idxs.sent[name]].id)
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
+                mail.mark_unread(name, msg_id)
+            end
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
@@ -166,6 +215,35 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.about then
         mail.show_about(name)
+
+    elseif fields.selectall then
+        if formname == "mail:inbox" then
+            if not mail.selected_idxs.inbox[name] then
+                mail.selected_idxs.inbox[name] = {}
+            end
+            if #mail.selected_idxs.inbox[name] >= #getInbox() then -- if selection is full
+                mail.selected_idxs.inbox[name] = {}
+            else
+                mail.selected_idxs.multipleselection[name] = true
+                for _, msg in ipairs(getInbox()) do
+                    table.insert(mail.selected_idxs.inbox[name], msg.id)
+                end
+            end
+        elseif formname == "mail:sent" then
+            if not mail.selected_idxs.sent[name] then
+                mail.selected_idxs.sent[name] = {}
+            end
+            if #mail.selected_idxs.sent[name] >= #getOutbox() then -- if selection is full
+                mail.selected_idxs.sent[name] = {}
+            else
+                mail.selected_idxs.multipleselection[name] = true
+                for _, msg in ipairs(getOutbox()) do
+                    table.insert(mail.selected_idxs.sent[name], msg.id)
+                end
+            end
+        end
+
+        mail.show_mail_menu(name)
 
     elseif fields.sortfield or fields.sortdirection or fields.filter then
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)

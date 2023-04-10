@@ -23,7 +23,8 @@ mail = {
 		bcc = {},
 		boxtab = {},
 		sortfield = {},
-		sortdirection = {}
+		sortdirection = {},
+		multipleselection = {}
 	},
 
 	message_drafts = {}
