@@ -64,19 +64,9 @@ function mail.sort_messages(messages, sortfield, descending, filter)
 	-- Sorting
 	if sortfield ~= nil then
 		if descending then
-			table.sort(results, function(a, b)
-				if a[sortfield] and b[sortfield] then
-					return a[sortfield] > b[sortfield]
-				end
-				minetest.log("warning", "mail.sort_messages: missing field "..sortfield)
-			end)
+			table.sort(results, function(a, b) return a[sortfield] > b[sortfield] end)
 		else
-			table.sort(results, function(a, b)
-				if a[sortfield] and b[sortfield] then
-					return a[sortfield] < b[sortfield]
-				end
-				minetest.log("warning", "mail.sort_messages: missing field "..sortfield)
-			end)
+			table.sort(results, function(a, b) return a[sortfield] < b[sortfield] end)
 		end
 	end
 	return results
