@@ -56,18 +56,32 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                formspec[#formspec + 1] = ",#466432"
-            elseif not message.read then
-                if not mail.player_in_list(name, message.to) then
-                    formspec[#formspec + 1] = ",#FFD788"
+                if not message.read then
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#A39E5D"
+                    else
+                        formspec[#formspec + 1] = ",#A39E19"
+                    end
                 else
-                    formspec[#formspec + 1] = ",#FFD700"
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#899888"
+                    else
+                        formspec[#formspec + 1] = ",#466432"
+                    end
                 end
             else
-                if not mail.player_in_list(name, message.to) then
-                    formspec[#formspec + 1] = ",#CCCCDD"
+                if not message.read then
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#FFD788"
+                    else
+                        formspec[#formspec + 1] = ",#FFD700"
+                    end
                 else
-                    formspec[#formspec + 1] = ","
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#CCCCDD"
+                    else
+                        formspec[#formspec + 1] = ","
+                    end
                 end
             end
             formspec[#formspec + 1] = ","
