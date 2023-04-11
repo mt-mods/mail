@@ -17,7 +17,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- Get player name and handle / convert common input fields
     local name = player:get_player_name()
-    local filter = fields.filter or ""
+    local filter = fields.filter or mail.selected_idxs.filter[name] or ""
     local sortfieldindex = tonumber(fields.sortfield or mail.selected_idxs.sortfield[name]) or 3
     local sortdirection = fields.sortdirection or mail.selected_idxs.sortdirection[name] or "1"
     local inboxsortfield = ({"from","subject","time"})[sortfieldindex]
@@ -26,6 +26,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Store common player configuration for reuse
     mail.selected_idxs.sortfield[name] = sortfieldindex
     mail.selected_idxs.sortdirection[name] = sortdirection
+    mail.selected_idxs.filter[name] = filter
     if fields.multipleselection then
         mail.selected_idxs.multipleselection[name] = fields.multipleselection == "true"
     end

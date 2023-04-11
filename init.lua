@@ -24,6 +24,7 @@ mail = {
 		boxtab = {},
 		sortfield = {},
 		sortdirection = {},
+		filter = {},
 		multipleselection = {}
 	},
 

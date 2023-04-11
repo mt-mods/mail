@@ -90,10 +90,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-	local entry = mail.get_storage_entry(name)
-
-	local messagesInbox = entry.inbox
-	local messagesSent = entry.outbox
 
 	if fields.back then
 		mail.show_mail_menu(name)
@@ -101,36 +97,36 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.reply then
 		local message = ""
-		if messagesInbox[mail.selected_idxs.inbox[name]] then
-			message = messagesInbox[mail.selected_idxs.inbox[name]]
-		elseif messagesSent[mail.selected_idxs.sent[name]] then
-			message = messagesSent[mail.selected_idxs.sent[name]]
+		if mail.selected_idxs.inbox[name] then
+			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+		elseif mail.selected_idxs.sent[name] then
+			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.reply(name, message)
 
 	elseif fields.replyall then
 		local message = ""
-		if messagesInbox[mail.selected_idxs.inbox[name]] then
-			message = messagesInbox[mail.selected_idxs.inbox[name]]
-		elseif messagesSent[mail.selected_idxs.sent[name]] then
-			message = messagesSent[mail.selected_idxs.sent[name]]
+		if mail.selected_idxs.inbox[name] then
+			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+		elseif mail.selected_idxs.sent[name] then
+			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.replyall(name, message)
 
 	elseif fields.forward then
 		local message = ""
-		if messagesInbox[mail.selected_idxs.inbox[name]] then
-			message = messagesInbox[mail.selected_idxs.inbox[name]]
-		elseif messagesSent[mail.selected_idxs.sent[name]] then
-			message = messagesSent[mail.selected_idxs.sent[name]]
+		if mail.selected_idxs.inbox[name] then
+			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+		elseif mail.selected_idxs.sent[name] then
+			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.forward(name, message)
 
 	elseif fields.delete then
-		if messagesInbox[mail.selected_idxs.inbox[name]] then
-			mail.delete_mail(name, messagesInbox[mail.selected_idxs.inbox[name]].id)
-		elseif messagesSent[mail.selected_idxs.sent[name]] then
-			mail.delete_mail(name, messagesSent[mail.selected_idxs.sent[name]].id)
+		if mail.selected_idxs.inbox[name] then
+			mail.delete_mail(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+		elseif mail.selected_idxs.sent[name] then
+			mail.delete_mail(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.show_mail_menu(name)
 	end
