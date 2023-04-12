@@ -6,10 +6,7 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name]) or 3
     sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
 	filter = mail.selected_idxs.filter[name] or filter or ""
-    local nb_selected = 0
-    if mail.selected_idxs.sent[name] then
-        nb_selected = #mail.selected_idxs.sent[name]
-    end
+    mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
 
 	local sent_formspec = "size[8.5,10;]" .. mail.theme .. [[
 		tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;2;false;false]
@@ -34,7 +31,7 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 
         checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
-        label[0,9.65;]] .. tostring(nb_selected) .. " " .. S("selected") .. [[]
+        label[0,9.65;]] .. tostring(#mail.selected_idxs.sent[name]) .. " " .. S("selected") .. [[]
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
 		tablecolumns[color;text;text]

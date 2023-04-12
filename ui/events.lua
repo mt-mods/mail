@@ -23,12 +23,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local inboxsortfield = ({"from","subject","time"})[sortfieldindex]
     local outboxsortfield = ({"to","subject","time"})[sortfieldindex]
 
+    -- Be sure that inbox/outbox selected idxs aren't nil
+    mail.selected_idxs.inbox[name] = mail.selected_idxs.inbox[name] or {}
+    mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
+
     -- Store common player configuration for reuse
     mail.selected_idxs.sortfield[name] = sortfieldindex
     mail.selected_idxs.sortdirection[name] = sortdirection
     mail.selected_idxs.filter[name] = filter
     if fields.multipleselection then
         mail.selected_idxs.multipleselection[name] = fields.multipleselection == "true"
+    end
+
+    -- Avoid several selected after disabling the multiple selection
+    if not mail.selected_idxs.multipleselection[name] then
+        mail.selected_idxs.inbox[name] = { mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]] }
+        mail.selected_idxs.sent[name] = { mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]] }
     end
 
     -- split inbox and sent msgs for different tests
