@@ -5,7 +5,7 @@ local S = minetest.get_translator("mail")
 function mail.show_sent(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name]) or 3
     sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
-	filter = mail.selected_idxs.filter[name] or filter or ""
+	filter = filter or mail.selected_idxs.filter[name] or ""
     mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
 
 	local sent_formspec = "size[8.5,10;]" .. mail.theme .. [[
