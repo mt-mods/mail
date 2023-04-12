@@ -6,7 +6,7 @@ function mail.show_about(name)
 			button[9.35,0;0.75,0.5;back;X]
 			label[0,0;Mail]
 			label[0,0.4;Provided my mt-mods]
-			label[0,0.8;Version: 1.0.3]
+			label[0,0.8;Version: 1.1.0]
 			label[0,1.4;Licenses:]
 			label[0.2,1.8;Expat (code), WTFPL (textures)]
 			label[0,2.4;https://github.com/mt-mods/mail]
@@ -21,9 +21,9 @@ function mail.show_about(name)
 			[[#FFD700,Cheapie,Initial idea/project,]] ..
 			[[#FFF,Rubenwardy,Lua/UI improvements,]] ..
 			[[#FFF,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
-			[[#FFF,Athozus,Outbox\, Maillists\, UI fixes,]] ..
+			[[#FFF,Athozus,Outbox\, Maillists\, UI\, Drafts,]] ..
 			[[#FFF,fluxionary,Minor fixups,]] ..
-			[[#FFF,SX,Various fixes,]] ..
+			[[#FFF,SX,Various fixes\, UI,]] ..
 			[[#FFF,Toby1710,Ux fixes,]] ..
 			[[#FFF,Peter Nerlich,CC\, BCC]
 		]] .. mail.theme
