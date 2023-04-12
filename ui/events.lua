@@ -225,6 +225,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             if #mail.selected_idxs.inbox[name] >= #getInbox() then -- if selection is full
                 mail.selected_idxs.inbox[name] = {}
             else
+                mail.selected_idxs.inbox[name] = {} -- reset to avoid duplicates
                 mail.selected_idxs.multipleselection[name] = true
                 for _, msg in ipairs(getInbox()) do
                     table.insert(mail.selected_idxs.inbox[name], msg.id)
@@ -237,6 +238,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             if #mail.selected_idxs.sent[name] >= #getOutbox() then -- if selection is full
                 mail.selected_idxs.sent[name] = {}
             else
+                mail.selected_idxs.inbox[name] = {} -- reset to avoid duplicates
                 mail.selected_idxs.multipleselection[name] = true
                 for _, msg in ipairs(getOutbox()) do
                     table.insert(mail.selected_idxs.sent[name], msg.id)
