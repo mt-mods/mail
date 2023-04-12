@@ -5,7 +5,8 @@ local S = minetest.get_translator("mail")
 function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name]) or 3
     sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
-    filter = filter or ""
+    filter = filter or mail.selected_idxs.filter[name] or ""
+    mail.selected_idxs.inbox[name] = mail.selected_idxs.inbox[name] or {}
 
     local inbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
         tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;1;false;false]
@@ -23,15 +24,20 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         button[6,8.7;2.5,0.5;about;]] .. S("About") .. [[]
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
-        dropdown[0,9.4;2,0.5;sortfield;]] ..
+        dropdown[0,8.4;2,0.5;sortfield;]] ..
         S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfieldindex .. [[;true]
-        dropdown[2.0,9.4;2,0.5;sortdirection;]] ..
+        dropdown[2.0,8.4;2,0.5;sortdirection;]] ..
         S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
-        field[4.25,9.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
-        button[5.14,9.52;0.85,0.5;search;Q]
+        field[4.25,8.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
+        button[5.14,8.52;0.85,0.5;search;Q]
+
+        checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
+        tostring(mail.selected_idxs.multipleselection[name]) .. [[]
+        label[0,9.65;]] .. tostring(#mail.selected_idxs.inbox[name]) .. " " .. S("selected") .. [[]
+        button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
         tablecolumns[color;text;text]
-        table[0,0.7;5.75,8.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
+        table[0,0.7;5.75,7.35;inbox;#999,]] .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
     local entry = mail.get_storage_entry(name)
     local sortfield = ({"from","subject","time"})[sortfieldindex]
@@ -41,17 +47,43 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
 
     if #messages > 0 then
         for _, message in ipairs(messages) do
-            if not message.read then
-                if not mail.player_in_list(name, message.to) then
-                    formspec[#formspec + 1] = ",#FFD788"
+            local selected_id = 0
+            -- check if message is in selection list and return its id
+            if mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.inbox[name]) do
+                    if message.id == selected_msg then
+                        selected_id = i
+                        break
+                    end
+                end
+            end
+            if selected_id > 0 then
+                if not message.read then
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#A39E5D"
+                    else
+                        formspec[#formspec + 1] = ",#A39E19"
+                    end
                 else
-                    formspec[#formspec + 1] = ",#FFD700"
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#899888"
+                    else
+                        formspec[#formspec + 1] = ",#466432"
+                    end
                 end
             else
-                if not mail.player_in_list(name, message.to) then
-                    formspec[#formspec + 1] = ",#CCCCDD"
+                if not message.read then
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#FFD788"
+                    else
+                        formspec[#formspec + 1] = ",#FFD700"
+                    end
                 else
-                    formspec[#formspec + 1] = ","
+                    if not mail.player_in_list(name, message.to) then
+                        formspec[#formspec + 1] = ",#CCCCDD"
+                    else
+                        formspec[#formspec + 1] = ","
+                    end
                 end
             end
             formspec[#formspec + 1] = ","
@@ -67,10 +99,6 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
             else
                 formspec[#formspec + 1] = S("(No subject)")
             end
-        end
-        if mail.selected_idxs.inbox[name] then
-            formspec[#formspec + 1] = ";"
-            formspec[#formspec + 1] = tostring(mail.selected_idxs.inbox[name] + 1)
         end
         formspec[#formspec + 1] = "]"
     else

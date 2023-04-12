@@ -40,9 +40,9 @@ function mail.show_drafts(name)
 				formspec[#formspec + 1] = S("(No subject)")
 			end
 		end
-		if mail.selected_idxs.sent[name] then
+		if mail.selected_idxs.drafts[name] then
 			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = tostring(mail.selected_idxs.sent[name] + 1)
+			formspec[#formspec + 1] = tostring(mail.selected_idxs.drafts[name] + 1)
 		end
 		formspec[#formspec + 1] = "]"
 	else
