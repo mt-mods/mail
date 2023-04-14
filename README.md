@@ -47,14 +47,25 @@ See the "LICENSE" file
 
 # Contributors
 
-* Cheapie (initial idea/project)
-* Rubenwardy (lua/ui improvements)
-* BuckarooBanzay (cleanups, refactoring)
-* Athozus (outbox, maillists, ui fixes)
-* fluxionary (minor fixups)
-* SX (various fixes)
-* Toby1710 (ux fixes)
-* Peter Nerlich (cc, bcc)
+* Cheapie (Initial idea/project)
+* Rubenwardy (Lua/ui improvements)
+* BuckarooBanzay (Clean-ups, Refactoring)
+* Athozus (Outbox, Maillists, UI, Drafts)
+* SX (Various fixes, UI)
+* fluxionary (Minor fixups)
+* Toby1710 (UX fixes)
+* Peter Nerlich (CC, BCC)
+* Emojigit (Chinese translation)
+* Niklp09 (German translation)
+
+# Git branches
+
+* master : main branch, where are pushed releases and tags
+* dev : for new release works, A.B.C release to A.B+1.0
+* A.B.X : for fix releases (no new features), A.B.C release to A.B.C+1
+
+For a new fix release (A.B.C) : merge A.B.X branch to master
+For a new release (A.B+1.0) : merge dev to master, with previous A.B.C merges (include fixes in master, prioritize dev branch in case of conflicts)
 
 # Old/Historic stuff
 * Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
