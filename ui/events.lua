@@ -157,13 +157,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.delete then
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
-            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
-                mail.delete_mail(name, msg_id)
-            end
+            mail.delete_mail(name, mail.selected_idxs.inbox[name])
         elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
-            for _, msg_id in ipairs(mail.selected_idxs.sent[name]) do
-                mail.delete_mail(name, msg_id)
-            end
+            mail.delete_mail(name, mail.selected_idxs.sent[name])
         elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
             mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
         end
@@ -199,18 +195,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.markread then
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
-            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
-                mail.mark_read(name, msg_id)
-            end
+            mail.mark_read(name, mail.selected_idxs.inbox[name])
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.markunread then
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
-            for _, msg_id in ipairs(mail.selected_idxs.inbox[name]) do
-                mail.mark_unread(name, msg_id)
-            end
+            mail.mark_unread(name, mail.selected_idxs.inbox[name])
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
