@@ -94,6 +94,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
 
         minetest.after(0.5, function()
+            mail.selected_idxs.drafts[name] = nil
             mail.show_mail_menu(name)
         end)
 
