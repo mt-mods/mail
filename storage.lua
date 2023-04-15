@@ -73,54 +73,69 @@ function mail.sort_messages(messages, sortfield, descending, filter)
 end
 
 -- marks a mail read by its id
-function mail.mark_read(playername, msg_id)
+function mail.mark_read(playername, msg_ids)
 	local entry = mail.get_storage_entry(playername)
-	for _, msg in ipairs(entry.inbox) do
-		if msg.id == msg_id then
-			msg.read = true
-			mail.set_storage_entry(playername, entry)
-			mail.hud_update(playername, entry.inbox)
-			return
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
+	for _, read_msg_id in ipairs(msg_ids) do
+		for _, entry_msg in ipairs(entry.inbox) do
+			if entry_msg.id == read_msg_id then
+				entry_msg.read = true
+			end
 		end
 	end
+	mail.set_storage_entry(playername, entry)
+	mail.hud_update(playername, entry.inbox)
+	return
 end
 
 -- marks a mail unread by its id
-function mail.mark_unread(playername, msg_id)
+function mail.mark_unread(playername, msg_ids)
 	local entry = mail.get_storage_entry(playername)
-	for _, msg in ipairs(entry.inbox) do
-		if msg.id == msg_id then
-			msg.read = false
-			mail.set_storage_entry(playername, entry)
-			return
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
+	for _, unread_msg_id in ipairs(msg_ids) do
+		for _, entry_msg in ipairs(entry.inbox) do
+			if entry_msg.id == unread_msg_id then
+				entry_msg.read = false
+			end
 		end
 	end
+	mail.set_storage_entry(playername, entry)
+	return
 end
 
 -- deletes a mail by its id
-function mail.delete_mail(playername, msg_id)
+function mail.delete_mail(playername, msg_ids)
 	local entry = mail.get_storage_entry(playername)
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
 	for i, msg in ipairs(entry.inbox) do
-		if msg.id == msg_id then
-			table.remove(entry.inbox, i)
-			mail.set_storage_entry(playername, entry)
-			return
+		for _, deleted_msg in ipairs(msg_ids) do
+			if msg.id == deleted_msg then
+				table.remove(entry.inbox, i)
+			end
 		end
 	end
 	for i, msg in ipairs(entry.outbox) do
-		if msg.id == msg_id then
-			table.remove(entry.outbox, i)
-			mail.set_storage_entry(playername, entry)
-			return
+		for _, deleted_msg in ipairs(msg_ids) do
+			if msg.id == deleted_msg then
+				table.remove(entry.outbox, i)
+			end
 		end
 	end
 	for i, msg in ipairs(entry.drafts) do
-		if msg.id == msg_id then
-			table.remove(entry.drafts, i)
-			mail.set_storage_entry(playername, entry)
-			return
+		for _, deleted_msg in ipairs(msg_ids) do
+			if msg.id == deleted_msg then
+				table.remove(entry.drafts, i)
+			end
 		end
 	end
+	mail.set_storage_entry(playername, entry)
+	return
 end
 
 -- add or update a contact
