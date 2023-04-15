@@ -13,6 +13,8 @@ end
 minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "mail:inbox" and formname ~= "mail:sent" and formname ~= "mail:drafts" then
         return
+    elseif fields.quit then
+        return
     end
 
     -- Get player name and handle / convert common input fields
