@@ -13,6 +13,8 @@ end
 minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "mail:inbox" and formname ~= "mail:sent" and formname ~= "mail:drafts" then
         return
+    elseif fields.quit then
+        return
     end
 
     -- Get player name and handle / convert common input fields
@@ -50,6 +52,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table
         local evt = minetest.explode_table_event(fields.inbox)
+        if evt.row == 1 then -- header
+            if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
+                mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
+            end
+            mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
+            mail.show_mail_menu(name)
+            return
+        end
         if mail.selected_idxs.multipleselection[name] then
             if not mail.selected_idxs.inbox[name] then
                 mail.selected_idxs.inbox[name] = {}
@@ -80,6 +90,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if fields.sent then -- sent table
         local evt = minetest.explode_table_event(fields.sent)
+        if evt.row == 1 then -- header
+            if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
+                mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
+            end
+            mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
+            mail.show_mail_menu(name)
+            return
+        end
         if mail.selected_idxs.multipleselection[name] then
             if not mail.selected_idxs.sent[name] then
                 mail.selected_idxs.sent[name] = {}
@@ -110,6 +128,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if fields.drafts then -- drafts table
         local evt = minetest.explode_table_event(fields.drafts)
+        if evt.row == 1 then -- header
+            if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
+                mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
+            end
+            mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
+            mail.show_mail_menu(name)
+            return
+        end
         mail.selected_idxs.drafts[name] = evt.row - 1
         if evt.type == "DCL" and messagesDrafts[mail.selected_idxs.drafts[name]] then
             mail.show_compose(name,
@@ -248,7 +274,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             if #mail.selected_idxs.sent[name] >= #getOutbox() then -- if selection is full
                 mail.selected_idxs.sent[name] = {}
             else
-                mail.selected_idxs.inbox[name] = {} -- reset to avoid duplicates
+                mail.selected_idxs.sent[name] = {} -- reset to avoid duplicates
                 mail.selected_idxs.multipleselection[name] = true
                 for _, msg in ipairs(getOutbox()) do
                     table.insert(mail.selected_idxs.sent[name], msg.id)
