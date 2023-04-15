@@ -48,7 +48,7 @@ See the "LICENSE" file
 # Contributors
 
 * Cheapie (Initial idea/project)
-* Rubenwardy (Lua/ui improvements)
+* Rubenwardy (Lua/UI improvements)
 * BuckarooBanzay (Clean-ups, Refactoring)
 * Athozus (Outbox, Maillists, UI, Drafts)
 * SX (Various fixes, UI)
@@ -57,6 +57,19 @@ See the "LICENSE" file
 * Peter Nerlich (CC, BCC)
 * Emojigit (Chinese translation)
 * Niklp09 (German translation)
+
+# Contribute
+
+You can contribute by :
+* Reporting an issue
+* Give a review on Content DB
+* Adding new features
+* Fixing an issue
+* Translate into a new language
+* Add documentation
+* ...
+
+You're encouraged to create a fork of this repo, then make your changes and create a pull request when it's done. If you do so, please also check "Git branches" section.
 
 # Git branches
 
