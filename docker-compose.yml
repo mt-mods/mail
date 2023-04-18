@@ -5,7 +5,7 @@ services:
   build:
    context: ./test
    args:
-    ENGINE_VERSION: ${ENGINE_VERSION:-5.5.0}
+    ENGINE_VERSION: ${ENGINE_VERSION:-5.7.0}
   user: root
   volumes:
     - "./:/root/.minetest/worlds/world/worldmods/mail/"
