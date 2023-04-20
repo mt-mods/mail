@@ -44,7 +44,7 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 	mail.message_drafts[name] = nil
 
 	if #messages > 0 then
-		for _, message in ipairs(messages) do
+        for _, message in ipairs(messages) do
             local selected_id = 0
             -- check if message is in selection list and return its id
             if mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
@@ -56,27 +56,32 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                formspec[#formspec + 1] = ",#466432"
+				formspec[#formspec + 1] = ",#466432"
             else
 				formspec[#formspec + 1] = ","
-			end
-			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(message.to)
-			formspec[#formspec + 1] = ","
-			if message.subject ~= "" then
-				if string.len(message.subject) > 30 then
-					formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.subject, 1, 27))
-					formspec[#formspec + 1] = "..."
-				else
-					formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
-				end
+            end
+            formspec[#formspec + 1] = ","
+			if string.len(message.to) > 20 then
+				formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.to, 1, 17))
+				formspec[#formspec + 1] = "..."
 			else
-				formspec[#formspec + 1] = S("(No subject)")
+				formspec[#formspec + 1] = minetest.formspec_escape(message.to)
 			end
-		end
-		formspec[#formspec + 1] = "]"
-	else
-		formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
-	end
+            formspec[#formspec + 1] = ","
+            if message.subject ~= "" then
+                if string.len(message.subject) > 30 then
+                    formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.subject, 1, 27))
+                    formspec[#formspec + 1] = "..."
+                else
+                    formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
+                end
+            else
+                formspec[#formspec + 1] = S("(No subject)")
+            end
+        end
+        formspec[#formspec + 1] = "]"
+    else
+        formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
+    end
 	minetest.show_formspec(name, "mail:sent", table.concat(formspec, ""))
 end
