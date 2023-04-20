@@ -166,7 +166,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
             mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
         elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
-            mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+            mail.show_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
         end
 
     elseif fields.edit then
