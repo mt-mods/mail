@@ -97,35 +97,35 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.reply then
 		local message = ""
-		if mail.selected_idxs.inbox[name] then
+		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] then
+		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
 			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.reply(name, message)
 
 	elseif fields.replyall then
 		local message = ""
-		if mail.selected_idxs.inbox[name] then
+		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] then
+		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
 			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.replyall(name, message)
 
 	elseif fields.forward then
 		local message = ""
-		if mail.selected_idxs.inbox[name] then
+		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] then
+		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
 			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.forward(name, message)
 
 	elseif fields.delete then
-		if mail.selected_idxs.inbox[name] then
+		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			mail.delete_mail(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] then
+		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
 			mail.delete_mail(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
 		end
 		mail.show_mail_menu(name)
