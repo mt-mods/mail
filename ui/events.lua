@@ -193,28 +193,28 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.reply then
-        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.reply(name, message)
-        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.reply(name, message)
         end
 
     elseif fields.replyall then
-        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.replyall(name, message)
-        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.replyall(name, message)
         end
 
     elseif fields.forward then
-        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
             mail.forward(name, message)
-        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then
+        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
             local message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
             mail.forward(name, message)
         end
