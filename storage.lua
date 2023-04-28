@@ -135,6 +135,7 @@ function mail.delete_mail(playername, msg_ids)
 		end
 	end
 	mail.set_storage_entry(playername, entry)
+        mail.hud_update(playername, entry.inbox)
 	return
 end
 
