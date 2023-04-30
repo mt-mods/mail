@@ -10,6 +10,10 @@ local function messageGetter(messages, sortfield, ascending, filter)
     end
 end
 
+local function nonempty(x)
+ return ((type(x)=="table")and(#x>0))
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "mail:inbox" and formname ~= "mail:sent" and formname ~= "mail:drafts" then
         return
@@ -163,9 +167,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_drafts(name)
 
     elseif fields.read then
-        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
+        if formname == "mail:inbox" and nonempty(mail.selected_idxs.inbox[name]) then -- inbox table
             mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-        elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
+        elseif formname == "mail:sent" and nonempty(mail.selected_idxs.sent[name]) then -- sent table
             mail.show_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
         end
 
