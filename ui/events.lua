@@ -188,10 +188,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.delete then
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
             mail.delete_mail(name, mail.selected_idxs.inbox[name])
+            mail.selected_idxs.inbox[name] = {}
         elseif formname == "mail:sent" and mail.selected_idxs.sent[name] then -- sent table
             mail.delete_mail(name, mail.selected_idxs.sent[name])
+            mail.selected_idxs.sent[name] = {}
         elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
             mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+            mail.selected_idxs.drafts[name] = nil
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)

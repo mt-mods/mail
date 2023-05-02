@@ -83,5 +83,21 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
     else
         formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
     end
+
+    if mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
+        for i, selected_msg in ipairs(mail.selected_idxs.sent[name]) do
+            local is_present = false
+            for _, msg in ipairs(messages) do
+                if msg.id == selected_msg then
+                    is_present = true
+                    break
+                end
+            end
+            if not is_present then
+                table.remove(mail.selected_idxs.sent[name], i)
+            end
+        end
+    end
+
 	minetest.show_formspec(name, "mail:sent", table.concat(formspec, ""))
 end
