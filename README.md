@@ -57,6 +57,9 @@ See the "LICENSE" file
 * Peter Nerlich (CC, BCC)
 * Emojigit (Chinese translation)
 * Niklp09 (German translation)
+* Dennis Jenkins (UX fixes)
+* Thomas Rudin (Maintenance)
+* imre84 (UI fixes)
 
 # Contribute
 

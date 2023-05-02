@@ -6,7 +6,7 @@ function mail.show_about(name)
 			button[9.35,0;0.75,0.5;back;X]
 			label[0,0;Mail]
 			label[0,0.4;Provided my mt-mods]
-			label[0,0.8;Version: 1.1.3]
+			label[0,0.8;Version: 1.1.4]
 			label[0,1.4;Licenses:]
 			label[0.2,1.8;Expat (code), WTFPL (textures)]
 			label[0,2.4;https://github.com/mt-mods/mail]
@@ -30,7 +30,8 @@ function mail.show_about(name)
 			[[#FFF,Emojigit,Chinese translation,]] ..
 			[[#FFF,Dennis Jenkins,UX fixes,]] ..
 			[[#FFF,Thomas Rudin,Maintenance,]] ..
-			[[#FFF,NatureFreshMilk,Maintenance]
+			[[#FFF,NatureFreshMilk,Maintenance,]] ..
+			[[#FFF,imre84,UI fixes]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
