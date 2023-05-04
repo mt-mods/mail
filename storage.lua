@@ -274,21 +274,18 @@ function mail.get_setting(playername, setting_name)
 end
 
 -- add or update a setting
-function mail.set_setting(playername, setting)
+function mail.set_setting(playername, key, value)
 	local entry = mail.get_storage_entry(playername)
-	local existing_updated = false
-	for i, existing_setting in ipairs(entry.settings) do
-		if existing_setting.name == setting.name then
+	for _, existing_setting in ipairs(entry.settings) do
+		if existing_setting.name == key then
 			-- update
-			entry.settings[i] = setting
-			existing_updated = true
-			break
+			existing_setting.value = value
+			mail.set_storage_entry(playername, entry)
+			return
 		end
 	end
-	if not existing_updated then
-		-- insert
-		table.insert(entry.settings, setting)
-	end
+	-- insert
+	table.insert(entry.settings, { name = key, value = value })
 	mail.set_storage_entry(playername, entry)
 end
 

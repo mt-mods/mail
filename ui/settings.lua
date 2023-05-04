@@ -42,15 +42,8 @@ end
 local function update_sort_settings(playername, default_field, default_direction)
     local defaultsortfield = default_field or mail.get_setting("defaultsortfield")
     local defaultsortdirection = default_direction or mail.get_setting("defaultsortdirection")
-    mail.set_setting(playername, {
-            name = "defaultsortfield",
-            value = tonumber(defaultsortfield),
-    })
-
-    mail.set_setting(playername, {
-            name = "defaultsortdirection",
-            value = tonumber(defaultsortdirection),
-    })
+    mail.set_setting(playername, "defaultsortfield", tonumber(defaultsortfield))
+    mail.set_setting(playername, "defaultsortdirection", tonumber(defaultsortdirection))
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -79,44 +72,24 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return
 
     elseif fields.chat_notifications then
-        local setting = {
-            name = "chat_notifications",
-            value = fields.chat_notifications == "true",
-        }
-        mail.set_setting(playername, setting)
+        mail.set_setting(playername, "chat_notifications", fields.chat_notifications == "true")
         update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.onjoin_notifications then
-        local setting = {
-            name = "onjoin_notifications",
-            value = fields.onjoin_notifications == "true",
-        }
-        mail.set_setting(playername, setting)
+        mail.set_setting(playername, "onjoin_notifications", fields.onjoin_notifications == "true")
         update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.hud_notifications then
-        local setting = {
-            name = "hud_notifications",
-            value = fields.hud_notifications == "true",
-        }
-        mail.set_setting(playername, setting)
+        mail.set_setting(playername, "hud_notifications", fields.hud_notifications == "true")
         mail.hud_update(playername, mail.get_storage_entry(playername).inbox)
         update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.unreadcolorenable then
-        local setting = {
-            name = "unreadcolorenable",
-            value = fields.unreadcolorenable == "true",
-        }
-        mail.set_setting(playername, setting)
+        mail.set_setting(playername, "unreadcolorenable", fields.unreadcolorenable == "true")
         update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.cccolorenable then
-        local setting = {
-            name = "cccolorenable",
-            value = fields.cccolorenable == "true",
-        }
-        mail.set_setting(playername, setting)
+        mail.set_setting(playername, "cccolorenable", fields.cccolorenable == "true")
         update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 	end
 
