@@ -52,7 +52,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.back then
 		mail.show_mail_menu(playername)
 		return
-		
+
     elseif fields.reset then
         mail.reset_settings(playername)
 
@@ -100,7 +100,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         }
         mail.set_setting(playername, setting)
 	end
-	
+
 	mail.show_settings(playername)
 	return
 end)
