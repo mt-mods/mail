@@ -28,10 +28,10 @@ function mail.show_settings(name)
 			label[5,2.6;]] .. S("Default sorting fields") .. [[]
             dropdown[5.5,3.0;2,0.5;defaultsortfield;]] ..
             S("From/To") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] ..
-            mail.get_setting(name, "defaultsortfield") .. [[;true]
+            tostring(mail.get_setting(name, "defaultsortfield")) .. [[;true]
             dropdown[7.5,3.0;2,0.5;defaultsortdirection;]] ..
             S("Ascending") .. "," .. S("Descending") .. [[;]] ..
-            mail.get_setting(name, "defaultsortdirection") .. [[;true]
+            tostring(mail.get_setting(name, "defaultsortdirection")) .. [[;true]
 
             button[0,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
             ]] .. mail.theme
@@ -46,10 +46,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     local playername = player:get_player_name()
 
-    mail.set_setting(playername, { name = "defaultsortfield", value = tonumber(fields.defaultsortfield) } )
-    mail.set_setting(playername, { name = "defaultsortdirection", value = tonumber(fields.defaultsortdirection) } )
-
 	if fields.back then
+        local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
+        local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")
+        mail.set_setting(playername, {
+                name = "defaultsortfield",
+                value = tonumber(defaultsortfield),
+        })
+
+        mail.set_setting(playername, {
+                name = "defaultsortdirection",
+                value = tonumber(defaultsortdirection),
+        })
 		mail.show_mail_menu(playername)
 		return
 

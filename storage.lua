@@ -263,9 +263,9 @@ end
 function mail.get_setting(playername, setting_name)
 	local entry = mail.get_storage_entry(playername)
 	local setting = nil
-	for i, existing_setting in ipairs(entry.settings) do
+	for _, existing_setting in ipairs(entry.settings) do
 		if existing_setting.name == setting_name then
-			setting = entry.settings[i].value
+			setting = existing_setting.value
 			break
 		end
 	end
