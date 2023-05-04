@@ -4,8 +4,8 @@ local S = minetest.get_translator("mail")
 function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name])
     or mail.get_setting(name, "defaultsortfield") or 3
-    sortdirection = sortdirection or mail.selected_idxs.sortdirection[name]
-    or tostring(mail.get_setting(name, "defaultsortdirection")) or "1"
+    sortdirection = tostring(sortdirection or mail.selected_idxs.sortdirection[name]
+    or mail.get_setting(name, "defaultsortdirection") or "1")
     filter = filter or mail.selected_idxs.filter[name] or ""
     mail.selected_idxs.inbox[name] = mail.selected_idxs.inbox[name] or {}
 
