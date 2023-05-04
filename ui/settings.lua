@@ -11,12 +11,12 @@ function mail.show_settings(name)
 
 			box[0,0.8;3,0.45;#466432]
 			label[0.2,0.8;]] .. S("Notifications") .. [[]
-            checkbox[0,1.2;chatnotif;]] .. S("Chat notifications") .. [[;]] ..
-            tostring(mail.get_setting(name, "chatnotif")) .. [[]
-            checkbox[0,1.6;onjoinnotif;]] .. S("On join notifications") .. [[;]] ..
-            tostring(mail.get_setting(name, "onjoinnotif")) .. [[]
-            checkbox[0,2.0;hudnotif;]] .. S("HUD notifications") .. [[;]] ..
-            tostring(mail.get_setting(name, "hudnotif")) .. [[]
+            checkbox[0,1.2;chat_notifications;]] .. S("Chat notifications") .. [[;]] ..
+            tostring(mail.get_setting(name, "chat_notifications")) .. [[]
+            checkbox[0,1.6;onjoin_notifications;]] .. S("On join notifications") .. [[;]] ..
+            tostring(mail.get_setting(name, "onjoin_notifications")) .. [[]
+            checkbox[0,2.0;hud_notifications;]] .. S("HUD notifications") .. [[;]] ..
+            tostring(mail.get_setting(name, "hud_notifications")) .. [[]
 
 			box[5,0.8;3,0.45;#466432]
 			label[5.2,0.8;]] .. S("Message list") .. [[]
@@ -72,24 +72,24 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_about(playername)
         return
 
-    elseif fields.chatnotif then
+    elseif fields.chat_notifications then
         local setting = {
-            name = "chatnotif",
-            value = fields.chatnotif == "true",
+            name = "chat_notifications",
+            value = fields.chat_notifications == "true",
         }
         mail.set_setting(playername, setting)
 
-    elseif fields.onjoinnotif then
+    elseif fields.onjoin_notifications then
         local setting = {
-            name = "onjoinnotif",
-            value = fields.onjoinnotif == "true",
+            name = "onjoin_notifications",
+            value = fields.onjoin_notifications == "true",
         }
         mail.set_setting(playername, setting)
 
-    elseif fields.hudnotif then
+    elseif fields.hud_notifications then
         local setting = {
-            name = "hudnotif",
-            value = fields.hudnotif == "true",
+            name = "hud_notifications",
+            value = fields.hud_notifications == "true",
         }
         mail.set_setting(playername, setting)
         mail.hud_update(playername, mail.get_storage_entry(playername).inbox)

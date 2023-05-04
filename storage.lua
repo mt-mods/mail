@@ -249,9 +249,9 @@ end
 
 function mail.get_setting_default_value(setting_name)
 	local default_values = {
-		chatnotif = true,
-		onjoinnotif = true,
-		hudnotif = true,
+		chat_notifications = true,
+		onjoin_notifications = true,
+		hud_notifications = true,
 		unreadcolorenable = true,
 		cccolorenable = true,
 		defaultsortfield = 3,

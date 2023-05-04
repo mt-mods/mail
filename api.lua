@@ -98,7 +98,7 @@ function mail.send(m)
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if recipients[name] then
-			if mail.get_setting(name, "chatnotif") == true then
+			if mail.get_setting(name, "chat_notifications") == true then
 				minetest.chat_send_player(name, mail_alert)
 			end
 			local receiver_entry = mail.get_storage_entry(name)
