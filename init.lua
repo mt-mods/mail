@@ -25,7 +25,8 @@ mail = {
 		sortfield = {},
 		sortdirection = {},
 		filter = {},
-		multipleselection = {}
+		multipleselection = {},
+		optionstab = {}
 	},
 
 	message_drafts = {}
@@ -59,6 +60,8 @@ dofile(MP .. "/ui/select_contact.lua")
 dofile(MP .. "/ui/maillists.lua")
 dofile(MP .. "/ui/edit_maillists.lua")
 dofile(MP .. "/ui/compose.lua")
+dofile(MP .. "/ui/options.lua")
+dofile(MP .. "/ui/settings.lua")
 dofile(MP .. "/ui/about.lua")
 
 -- migrate storage

@@ -9,6 +9,7 @@ local function populate_entry(e)
 	e.outbox = e.outbox or {}
 	e.drafts = e.drafts or {}
 	e.lists = e.lists or {}
+	e.settings = e.settings or {}
 	return e
 end
 
@@ -244,6 +245,57 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 	end
 
 	return receivers
+end
+
+function mail.get_setting_default_value(setting_name)
+	local default_values = {
+		chatnotif = true,
+		onjoinnotif = true,
+		hudnotif = true,
+		unreadcolorenable = true,
+		cccolorenable = true,
+		defaultsortfield = 3,
+		defaultsortdirection = 1,
+	}
+	return default_values[setting_name]
+end
+
+function mail.get_setting(playername, setting_name)
+	local entry = mail.get_storage_entry(playername)
+	local setting = nil
+	for i, existing_setting in ipairs(entry.settings) do
+		if existing_setting.name == setting_name then
+			setting = entry.settings[i].value
+			break
+		end
+	end
+	if setting == nil then setting = mail.get_setting_default_value(setting_name) end
+	return setting
+end
+
+-- add or update a setting
+function mail.set_setting(playername, setting)
+	local entry = mail.get_storage_entry(playername)
+	local existing_updated = false
+	for i, existing_setting in ipairs(entry.settings) do
+		if existing_setting.name == setting.name then
+			-- update
+			entry.settings[i] = setting
+			existing_updated = true
+			break
+		end
+	end
+	if not existing_updated then
+		-- insert
+		table.insert(entry.settings, setting)
+	end
+	mail.set_storage_entry(playername, entry)
+end
+
+function mail.reset_settings(playername)
+	local entry = mail.get_storage_entry(playername)
+	entry.settings = {}
+	mail.set_storage_entry(playername, entry)
 end
 
 function mail.pairsByKeys(t, f)

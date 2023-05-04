@@ -249,8 +249,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.maillists then
         mail.show_maillists(name)
 
-    elseif fields.about then
-        mail.show_about(name)
+    elseif fields.options then
+        mail.show_options(name)
 
     elseif fields.selectall then
         if formname == "mail:inbox" then
