@@ -39,6 +39,20 @@ function mail.show_settings(name)
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
 
+local function update_sort_settings(playername, default_field, default_direction)
+    local defaultsortfield = default_field or mail.get_setting("defaultsortfield")
+    local defaultsortdirection = default_direction or mail.get_setting("defaultsortdirection")
+    mail.set_setting(playername, {
+            name = "defaultsortfield",
+            value = tonumber(defaultsortfield),
+    })
+
+    mail.set_setting(playername, {
+            name = "defaultsortdirection",
+            value = tonumber(defaultsortdirection),
+    })
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
@@ -47,17 +61,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local playername = player:get_player_name()
 
 	if fields.back then
-        local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
-        local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")
-        mail.set_setting(playername, {
-                name = "defaultsortfield",
-                value = tonumber(defaultsortfield),
-        })
-
-        mail.set_setting(playername, {
-                name = "defaultsortdirection",
-                value = tonumber(defaultsortdirection),
-        })
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 		mail.show_mail_menu(playername)
 		return
 
@@ -65,9 +69,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.reset_settings(playername)
 
     elseif fields.optionstab == "1" then
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
         mail.selected_idxs.optionstab[playername] = 1
 
     elseif fields.optionstab == "2" then
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
         mail.selected_idxs.optionstab[playername] = 2
         mail.show_about(playername)
         return
@@ -78,6 +84,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             value = fields.chat_notifications == "true",
         }
         mail.set_setting(playername, setting)
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.onjoin_notifications then
         local setting = {
@@ -85,6 +92,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             value = fields.onjoin_notifications == "true",
         }
         mail.set_setting(playername, setting)
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.hud_notifications then
         local setting = {
@@ -93,6 +101,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         }
         mail.set_setting(playername, setting)
         mail.hud_update(playername, mail.get_storage_entry(playername).inbox)
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.unreadcolorenable then
         local setting = {
@@ -100,6 +109,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             value = fields.unreadcolorenable == "true",
         }
         mail.set_setting(playername, setting)
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 
     elseif fields.cccolorenable then
         local setting = {
@@ -107,6 +117,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             value = fields.cccolorenable == "true",
         }
         mail.set_setting(playername, setting)
+        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 	end
 
 	mail.show_settings(playername)
