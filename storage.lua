@@ -262,30 +262,17 @@ end
 
 function mail.get_setting(playername, setting_name)
 	local entry = mail.get_storage_entry(playername)
-	local setting = nil
-	for _, existing_setting in ipairs(entry.settings) do
-		if existing_setting.name == setting_name then
-			setting = existing_setting.value
-			break
-		end
+	if entry.settings[setting_name] ~= nil then
+		return entry.settings[setting_name]
+	else
+		return mail.get_setting_default_value(setting_name)
 	end
-	if setting == nil then setting = mail.get_setting_default_value(setting_name) end
-	return setting
 end
 
 -- add or update a setting
 function mail.set_setting(playername, key, value)
 	local entry = mail.get_storage_entry(playername)
-	for _, existing_setting in ipairs(entry.settings) do
-		if existing_setting.name == key then
-			-- update
-			existing_setting.value = value
-			mail.set_storage_entry(playername, entry)
-			return
-		end
-	end
-	-- insert
-	table.insert(entry.settings, { name = key, value = value })
+	entry.settings[key] = value
 	mail.set_storage_entry(playername, entry)
 end
 
