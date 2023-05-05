@@ -1,14 +1,14 @@
 -- see: mail.md
 
+-- translation
+local S = minetest.get_translator("mail")
+
 local f = string.format
 
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
 	mail.registered_on_receives[#mail.registered_on_receives + 1] = func
 end
-
-mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
-mail.read_later_message = "You can read your messages later by using the /mail command"
 
 function mail.send(m)
 	if type(m.from) ~= "string" then return false, "'from' is not a string" end
@@ -94,12 +94,17 @@ function mail.send(m)
 	end
 
 	-- notify recipients that happen to be online
-	local mail_alert = f(mail.receive_mail_message, m.from, m.subject)
+	local mail_alert = S("You have a new message from @1! Subject: @2",  m.from, m.subject) ..
+	"\n" .. S("To view it, type /mail")
+	local unified_inventory_alert = S("You could also use the button in your inventory.")
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if recipients[name] then
 			if mail.get_setting(name, "chat_notifications") == true then
 				minetest.chat_send_player(name, mail_alert)
+				if minetest.get_modpath("unified_inventory") then
+					minetest.chat_send_player(name, unified_inventory_alert)
+				end
 			end
 			local receiver_entry = mail.get_storage_entry(name)
 			local receiver_messages = receiver_entry.inbox

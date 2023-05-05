@@ -32,7 +32,7 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 
         checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
-        label[0,9.65;]] .. tostring(#mail.selected_idxs.sent[name]) .. " " .. S("selected") .. [[]
+        label[0,9.65;]] .. S("@1 selected", tostring(#mail.selected_idxs.sent[name])) .. [[]
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
 		tablecolumns[color;text;text]

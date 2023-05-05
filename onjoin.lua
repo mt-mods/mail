@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)
 		local entry = mail.get_storage_entry(name)
@@ -14,7 +17,7 @@ minetest.register_on_joinplayer(function(player)
 
 		if unreadcount > 0 and mail.get_setting(name, "onjoin_notifications") then
 			minetest.chat_send_player(name,
-				minetest.colorize("#00f529", "(" ..  unreadcount .. ") You have mail! Type /mail to read"))
+				minetest.colorize("#00f529", "(" ..  unreadcount .. ") " .. S("You have mail! Type /mail to read")))
 		end
 	end, player:get_player_name())
 end)
