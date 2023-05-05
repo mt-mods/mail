@@ -26,7 +26,12 @@ mail = {
 		sortdirection = {},
 		filter = {},
 		multipleselection = {},
-		optionstab = {}
+		optionstab = {},
+		chat_notifications = {},
+		onjoin_notifications = {},
+		hud_notifications = {},
+		unreadcolorenable = {},
+		cccolorenable = {}
 	},
 
 	message_drafts = {}

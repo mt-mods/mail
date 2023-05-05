@@ -33,17 +33,11 @@ function mail.show_settings(name)
             S("Ascending") .. "," .. S("Descending") .. [[;]] ..
             tostring(mail.get_setting(name, "defaultsortdirection")) .. [[;true]
 
-            button[0,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
+            button[0,5.5;2.5,0.5;save;]] .. S("Save") .. [[]
+            button[2.7,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
             ]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
-end
-
-local function update_sort_settings(playername, default_field, default_direction)
-    local defaultsortfield = default_field or mail.get_setting("defaultsortfield")
-    local defaultsortdirection = default_direction or mail.get_setting("defaultsortdirection")
-    mail.set_setting(playername, "defaultsortfield", tonumber(defaultsortfield))
-    mail.set_setting(playername, "defaultsortdirection", tonumber(defaultsortdirection))
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -54,45 +48,51 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local playername = player:get_player_name()
 
 	if fields.back then
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
 		mail.show_mail_menu(playername)
 		return
 
-    elseif fields.reset then
-        mail.reset_settings(playername)
-
     elseif fields.optionstab == "1" then
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
         mail.selected_idxs.optionstab[playername] = 1
 
     elseif fields.optionstab == "2" then
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
         mail.selected_idxs.optionstab[playername] = 2
         mail.show_about(playername)
         return
 
     elseif fields.chat_notifications then
-        mail.set_setting(playername, "chat_notifications", fields.chat_notifications == "true")
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
+        mail.selected_idxs.chat_notifications[playername] = fields.chat_notifications == "true"
 
     elseif fields.onjoin_notifications then
-        mail.set_setting(playername, "onjoin_notifications", fields.onjoin_notifications == "true")
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
+        mail.selected_idxs.onjoin_notifications[playername] = fields.onjoin_notifications == "true"
 
     elseif fields.hud_notifications then
-        mail.set_setting(playername, "hud_notifications", fields.hud_notifications == "true")
-        mail.hud_update(playername, mail.get_storage_entry(playername).inbox)
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
+        mail.selected_idxs.hud_notifications[playername] = fields.hud_notifications == "true"
 
     elseif fields.unreadcolorenable then
-        mail.set_setting(playername, "unreadcolorenable", fields.unreadcolorenable == "true")
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
+        mail.selected_idxs.unreadcolorenable[playername] = fields.unreadcolorenable == "true"
 
     elseif fields.cccolorenable then
-        mail.set_setting(playername, "cccolorenable", fields.cccolorenable == "true")
-        update_sort_settings(playername, fields.defaultsortfield, fields.defaultsortdirection)
-	end
+        mail.selected_idxs.cccolorenable[playername] = fields.cccolorenable == "true"
 
-	mail.show_settings(playername)
+    elseif fields.save then
+        -- checkboxes
+        mail.set_setting(playername, "chat_notifications", mail.selected_idxs.chat_notifications[playername])
+        mail.set_setting(playername, "onjoin_notifications", mail.selected_idxs.onjoin_notifications[playername])
+        mail.set_setting(playername, "hud_notifications", mail.selected_idxs.hud_notifications[playername])
+        mail.set_setting(playername, "unreadcolorenable", mail.selected_idxs.unreadcolorenable[playername])
+        mail.set_setting(playername, "cccolorenable", mail.selected_idxs.cccolorenable[playername])
+        -- dropdowns
+        local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
+        local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")
+        mail.set_setting(playername, "defaultsortfield", tonumber(defaultsortfield))
+        mail.set_setting(playername, "defaultsortdirection", tonumber(defaultsortdirection))
+        -- update visuals
+        mail.hud_update(playername, mail.get_storage_entry(playername).inbox)
+        mail.show_settings(playername)
+
+    elseif fields.reset then
+        mail.reset_settings(playername)
+        mail.show_settings(playername)
+	end
 	return
 end)
