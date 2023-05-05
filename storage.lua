@@ -9,6 +9,7 @@ local function populate_entry(e)
 	e.outbox = e.outbox or {}
 	e.drafts = e.drafts or {}
 	e.lists = e.lists or {}
+	e.settings = e.settings or {}
 	return e
 end
 
@@ -244,6 +245,41 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 	end
 
 	return receivers
+end
+
+function mail.get_setting_default_value(setting_name)
+	local default_values = {
+		chat_notifications = true,
+		onjoin_notifications = true,
+		hud_notifications = true,
+		unreadcolorenable = true,
+		cccolorenable = true,
+		defaultsortfield = 3,
+		defaultsortdirection = 1,
+	}
+	return default_values[setting_name]
+end
+
+function mail.get_setting(playername, setting_name)
+	local entry = mail.get_storage_entry(playername)
+	if entry.settings[setting_name] ~= nil then
+		return entry.settings[setting_name]
+	else
+		return mail.get_setting_default_value(setting_name)
+	end
+end
+
+-- add or update a setting
+function mail.set_setting(playername, key, value)
+	local entry = mail.get_storage_entry(playername)
+	entry.settings[key] = value
+	mail.set_storage_entry(playername, entry)
+end
+
+function mail.reset_settings(playername)
+	local entry = mail.get_storage_entry(playername)
+	entry.settings = {}
+	mail.set_storage_entry(playername, entry)
 end
 
 function mail.pairsByKeys(t, f)

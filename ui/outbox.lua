@@ -1,10 +1,11 @@
 -- translation
 local S = minetest.get_translator("mail")
 
-
 function mail.show_sent(name, sortfieldindex, sortdirection, filter)
-    sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name]) or 3
-    sortdirection = sortdirection or mail.selected_idxs.sortdirection[name] or "1"
+    sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name])
+    or mail.get_setting(name, "defaultsortfield") or 3
+    sortdirection = tostring(sortdirection or mail.selected_idxs.sortdirection[name]
+    or mail.get_setting(name, "defaultsortdirection") or "1")
 	filter = filter or mail.selected_idxs.filter[name] or ""
     mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
 
@@ -19,7 +20,7 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 		button[6,3.95;2.5,0.5;delete;]] .. S("Delete") .. [[]
 		button[6,6.8;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
 		button[6,7.6;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
-		button[6,8.7;2.5,0.5;about;]] .. S("About") .. [[]
+        button[6,8.7;2.5,0.5;options;]] .. S("Options") .. [[]
 		button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
         dropdown[0,8.4;2,0.5;sortfield;]] ..

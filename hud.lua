@@ -48,7 +48,7 @@ function mail.hud_update(playername, messages)
 		end
 	end
 
-	if unreadcount == 0 then
+	if unreadcount == 0 or (not mail.get_setting(playername, "hud_notifications")) then
 		player:hud_change(data.imageid, "text", "")
 		player:hud_change(data.textid, "text", "")
 	else
