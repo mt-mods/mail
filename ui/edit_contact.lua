@@ -13,15 +13,13 @@ function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 		]]
 	if illegal_name_hint == "collision" then
 		formspec = formspec .. [[
-				label[4,1;]] .. S("That name") .. [[]
-				label[4,1.5;]] .. S("is already in") .. [[]
-				label[4,2;]] .. S("your contacts.") .. [[]
+			textarea[4.25,1;2.5,6;;;]] ..
+			S("That name is already in your contacts") .. [[]
 			]]
 	elseif illegal_name_hint == "empty" then
 		formspec = formspec .. [[
-				label[4,1;]] .. S("The contact") .. [[]
-				label[4,1.5;]] .. S("name cannot") .. [[]
-				label[4,2;]] .. S("be empty.") .. [[]
+			textarea[4.25,1;2.5,6;;;]] ..
+			S("The contact name cannot be empty.") .. [[]
 			]]
 	end
 	formspec = formspec .. mail.theme
@@ -40,19 +38,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local contacts = mail.get_contacts(name)
 
 	if fields.save then
-		if mail.selected_idxs.contacts[name] and mail.selected_idxs.contacts[name] ~= "#NEW#" then
-			local contact = contacts[mail.selected_idxs.contacts[name]]
-			if mail.selected_idxs.contacts[name] ~= string.lower(fields.name) then
+		if mail.selected_idxs.contacts[name] then
+			local contact = contacts[mail.selected_idxs.contacts[name]] or {name = ""}
+			if contact.name ~= fields.name or fields.name == "" then
 				-- name changed!
 				if #fields.name == 0 then
 					mail.show_edit_contact(name, contact.name, fields.note, "empty")
 					return true
 
-				elseif contacts[string.lower(fields.name)] ~= nil then
+				elseif mail.get_contact(name, fields.name) then
 					mail.show_edit_contact(name, contact.name, fields.note, "collision")
 					return true
 
 				else
+					contact.name = fields.name
+					contact.note = fields.note
 					mail.update_contact(name, contact)
 					contacts[mail.selected_idxs.contacts[name]] = nil
 				end

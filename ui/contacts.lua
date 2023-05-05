@@ -29,7 +29,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local evt = minetest.explode_table_event(fields.contacts)
 		for k, _, i in mail.pairsByKeys(contacts) do
 			if i == evt.row - 1 then
-				mail.selected_idxs.contacts[name] = k
+				mail.selected_idxs.contacts[name] = tonumber(k)
 				break
 			end
 		end
@@ -60,14 +60,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			local last = nil
 			for k in mail.pairsByKeys(contacts) do
 				if found then
-					mail.selected_idxs.contacts[name] = k
+					mail.selected_idxs.contacts[name] = tonumber(k)
 					break
 				elseif k == mail.selected_idxs.contacts[name] then
 					mail.delete_contact(name, contacts[mail.selected_idxs.contacts[name]].name)
 					mail.selected_idxs.contacts[name] = nil
 					found = true
 				else
-					last = k
+					last = tonumber(k)
 				end
 			end
 			if found and not mail.selected_idxs.contacts[name] then

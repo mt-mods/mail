@@ -16,15 +16,13 @@ function mail.show_edit_maillist(playername, maillist_name, desc, players, illeg
 		]]
 	if illegal_name_hint == "collision" then
 		formspec = formspec .. [[
-				label[4,1;]] .. S("That name") .. [[]
-				label[4,1.5;]] .. S("is already in") .. [[]
-				label[4,2;]] .. S("your maillists.") .. [[]
+			textarea[4.25,1;2.5,6;;;]] ..
+			S("That name is already in your mailing lists.") .. [[]
 			]]
 	elseif illegal_name_hint == "empty" then
 		formspec = formspec .. [[
-				label[4,1;]] .. S("The maillist") .. [[]
-				label[4,1.5;]] .. S("name cannot") .. [[]
-				label[4,2;]] .. S("be empty.") .. [[]
+			textarea[4.25,1;2.5,6;;;]] ..
+			S("The mailing list name cannot be empty.") .. [[]
 			]]
 	end
 	formspec = formspec .. mail.theme
@@ -41,13 +39,46 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
+	local maillists = mail.get_maillists(name)
+
 	if fields.save then
-		mail.update_maillist(name, {
-			owner = name,
-			name = fields.name,
-			desc = fields.desc,
-			players = mail.parse_player_list(fields.players)
-		}, old_lists_names[name])
+		if mail.selected_idxs.maillists[name] then
+			local maillist = maillists[mail.selected_idxs.maillists[name]] or {name = ""}
+			if maillist.name ~= fields.name or fields.name == "" then
+				-- name changed!
+				if #fields.name == 0 then
+					mail.show_edit_maillist(name, maillist.name, fields.desc, fields.players, "empty")
+					return true
+
+				elseif mail.get_maillist_by_name(name, fields.name) then
+					mail.show_edit_maillist(name, maillist.name, fields.desc, fields.players, "collision")
+					return true
+
+				else
+					mail.update_maillist(name, {
+						owner = name,
+						name = fields.name,
+						desc = fields.desc,
+						players = mail.parse_player_list(fields.players)
+					}, old_lists_names[name])
+					maillists[mail.selected_idxs.maillists[name]] = nil
+				end
+			else
+				mail.update_maillist(name, {
+					owner = name,
+					name = fields.name,
+					desc = fields.desc,
+					players = mail.parse_player_list(fields.players)
+				}, old_lists_names[name])
+			end
+		else
+			mail.update_maillist(name, {
+				owner = name,
+				name = fields.name,
+				desc = fields.desc,
+				players = mail.parse_player_list(fields.players)
+			}, old_lists_names[name])
+		end
 		mail.show_maillists(name)
 
 	elseif fields.back then

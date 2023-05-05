@@ -178,6 +178,17 @@ function mail.get_contacts(playername)
 	return entry.contacts
 end
 
+-- get a contact
+function mail.get_contact(playername, contactname)
+	local entry = mail.get_storage_entry(playername)
+	for _, existing_contact in ipairs(entry.contacts) do
+		if existing_contact.name == contactname then
+			return existing_contact
+		end
+	end
+	return false
+end
+
 -- returns the maillists of a player
 function mail.get_maillists(playername)
 	local entry = mail.get_storage_entry(playername)
