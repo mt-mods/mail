@@ -35,7 +35,8 @@ function mail.show_about(name)
 			[[#FFF,Dennis Jenkins,UX fixes,]] ..
 			[[#FFF,Thomas Rudin,Maintenance,]] ..
 			[[#FFF,NatureFreshMilk,Maintenance,]] ..
-			[[#FFF,imre84,UI fixes]
+			[[#FFF,imre84,UI fixes,]] ..
+			[[#FFF,Chache,Spanish translation]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

@@ -60,6 +60,7 @@ See the "LICENSE" file
 * Dennis Jenkins (UX fixes)
 * Thomas Rudin (Maintenance)
 * imre84 (UI fixes)
+* Chache (Spanish translation)
 
 # Contribute
 
