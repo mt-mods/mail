@@ -17,6 +17,8 @@ function mail.show_settings(name)
             tostring(mail.get_setting(name, "onjoin_notifications")) .. [[]
             checkbox[0,2.0;hud_notifications;]] .. S("HUD notifications") .. [[;]] ..
             tostring(mail.get_setting(name, "hud_notifications")) .. [[]
+            checkbox[0,2.4;sound_notifications;]] .. S("Sound notifications") .. [[;]] ..
+            tostring(mail.get_setting(name, "sound_notifications")) .. [[]
 
 			box[5,0.8;3,0.45;#466432]
 			label[5.2,0.8;]] .. S("Message list") .. [[]
@@ -68,6 +70,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.hud_notifications then
         mail.selected_idxs.hud_notifications[playername] = fields.hud_notifications == "true"
 
+    elseif fields.sound_notifications then
+        mail.selected_idxs.sound_notifications[playername] = fields.sound_notifications == "true"
+
     elseif fields.unreadcolorenable then
         mail.selected_idxs.unreadcolorenable[playername] = fields.unreadcolorenable == "true"
 
@@ -79,6 +84,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.set_setting(playername, "chat_notifications", mail.selected_idxs.chat_notifications[playername])
         mail.set_setting(playername, "onjoin_notifications", mail.selected_idxs.onjoin_notifications[playername])
         mail.set_setting(playername, "hud_notifications", mail.selected_idxs.hud_notifications[playername])
+        mail.set_setting(playername, "sound_notifications", mail.selected_idxs.sound_notifications[playername])
         mail.set_setting(playername, "unreadcolorenable", mail.selected_idxs.unreadcolorenable[playername])
         mail.set_setting(playername, "cccolorenable", mail.selected_idxs.cccolorenable[playername])
         -- dropdowns

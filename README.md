@@ -62,6 +62,7 @@ See the "LICENSE" file
 * imre84 (UI fixes)
 * Chache (Spanish translation)
 * APercy (Brazilian Portuguese translation)
+* Nuno Filipe Povoa (mail_notif.ogg - https://invent.kde.org/plasma/oxygen-sounds/-/blob/master/sounds/Oxygen-Im-Nudge.ogg)
 
 # Contribute
 

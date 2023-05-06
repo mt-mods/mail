@@ -106,6 +106,9 @@ function mail.send(m)
 					minetest.chat_send_player(name, unified_inventory_alert)
 				end
 			end
+			if mail.get_setting(name, "sound_notifications") == true then
+				minetest.sound_play("mail_notif", {to_player=name})
+			end
 			local receiver_entry = mail.get_storage_entry(name)
 			local receiver_messages = receiver_entry.inbox
 			mail.hud_update(name, receiver_messages)
