@@ -30,6 +30,7 @@ mail = {
 		chat_notifications = {},
 		onjoin_notifications = {},
 		hud_notifications = {},
+		sound_notifications = {},
 		unreadcolorenable = {},
 		cccolorenable = {}
 	},

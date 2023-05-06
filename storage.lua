@@ -263,6 +263,7 @@ function mail.get_setting_default_value(setting_name)
 		chat_notifications = true,
 		onjoin_notifications = true,
 		hud_notifications = true,
+		sound_notifications = true,
 		unreadcolorenable = true,
 		cccolorenable = true,
 		defaultsortfield = 3,

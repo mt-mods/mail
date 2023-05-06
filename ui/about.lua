@@ -37,7 +37,8 @@ function mail.show_about(name)
 			[[#FFF,NatureFreshMilk,Maintenance,]] ..
 			[[#FFF,imre84,UI fixes,]] ..
 			[[#FFF,Chache,Spanish translation,]] ..
-			[[#FFF,APercy,Brazilian Portuguese trans.]
+			[[#FFF,APercy,Brazilian Portuguese trans.,]] ..
+			[[#FFF,bennstir,mail_notif.ogg]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
