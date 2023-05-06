@@ -61,6 +61,7 @@ See the "LICENSE" file
 * Thomas Rudin (Maintenance)
 * imre84 (UI fixes)
 * Chache (Spanish translation)
+* APercy (Brazilian Portuguese translation)
 
 # Contribute
 
