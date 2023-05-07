@@ -5,9 +5,9 @@ Mail mod for Minetest (ingame mod)
 ![](https://github.com/mt-mods/mail/workflows/luacheck/badge.svg)
 [![ContentDB](https://content.minetest.net/packages/mt-mods/mail/shields/downloads/)](https://content.minetest.net/packages/mt-mods/mail/)
 
-This is a fork of cheapies mail mod
+This is a fork of @cheapie's mail mod.
 
-It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
+It adds a mail-system that allows players to send each other messages in-game and via webmail (optional).
 
 # Screenshot
 
@@ -17,23 +17,40 @@ It adds a mail-system that allows players to send each other messages in-game an
 
 ## In-game mail mod
 
-Install it like any other mod: copy the directory `mail_mod` to your "worldmods" folder or use the [contentdb](https://content.minetest.net)
+Install it like any other mod: copy the directory `mail_mod` to your "worldmods" folder or use the [ContentDB](https://content.minetest.net)
 
 ## Webmail
 
-To provide a web-based interface to receive/send mails you can use the [mtui](https://github.com/minetest-go/mtui) project
+To provide a web-based interface to receive/send mails you can use the [mtui](https://github.com/minetest-go/mtui) project.
 
 # Commands/Howto
 
-To access your mail click on the inventory mail button or use the "/mail" command
-Mails can be deleted, marked as read or unread, replied to and forwarded to another player
+To access your mail type `/mail` command or click on the mail button in your inventory (`unified_inventory`).
+
+Mails can be deleted, marked as read or unread, replied to and forwarded to another player. You can also manage your contacts and your mailing lists.
+
+# Features
+
+* Inbox page
+* Outbox page
+* Saved drafts
+* Read/unread marks
+* To/Cc/Bcc system
+* Intuitive UI
+* Contacts book
+* Mailing lists
+* Sorters/filters (new in 1.1.0)
+* Multiple selection (new in 1.1.0)
+* Settings
+* Chat, on join, HUD and sound notifications
+* Translated in : English, French, German, Chinese (both traditional and simplified), Spanish, Brazilian Portuguese.
 
 # Compatibility / Migration
 
 Overview:
 * `v1` all the data is in the `<worldfolder>/mails.db` file
 * `v2` every player has its own (in-) mailbox in the `<worldfolder>/mails/<playername>.json` file
-* `v3` every player has an entry in the `<playername>` modstorage (inbox, outbox, contacts)
+* `v3` every player has an entry in the `<playername>` `mod_storage/` (inbox, outbox, drafts, contacts, mailing lists, settings)
 
 # Dependencies
 * None
@@ -45,7 +62,7 @@ See the "LICENSE" file
 # Textures
 * textures/email_mail.png (https://github.com/rubenwardy/email.git WTFPL)
 
-# Contributors
+# Contributors / Credits
 
 * Cheapie (Initial idea/project)
 * Rubenwardy (Lua/UI improvements)
@@ -68,17 +85,22 @@ See the "LICENSE" file
 # Contribute
 
 You can contribute by :
-* Reporting an issue
-* Give a review on Content DB
-* Adding new features
-* Fixing an issue
-* Translate into a new language
-* Add documentation
+* Reporting an issue : Go to the [Issues](https://github.com/mt-mods/mail/issues) tab, click on the button **New issue** and type a short title then give many informations (Minetest version, tab where the bug occured, steps to reproduce the crash, etc.)
+* Give a review on ContentDB : [Just write ;)](https://content.minetest.net/packages/mt-mods/mail/review/)
+* Requesting new features : [Open an issue](https://github.com/mt-mods/mail/issues) and indicate what you need more in details.
+* Adding those new features : [Open a pull request](https://github.com/mt-mods/mail/pulls), and if issue(s) are linked, ping them (#number).
+* Fixing an issue : Same as before, open a pull request.
+* Translate into a new language : copy `locale/template.txt` into `locale/mail.<codelang>.tr`, and add translated strings (syntax : `not translated=translated`). Then, open a pull request. We're also working on opening a [Weblate](https://weblate.org) (free web interface) to translate strings easier.
+* Add documentation : adds `.md` (markdown) or `.txt` files and open a pull request.
 * ...
 
-You're encouraged to create a fork of this repo, then make your changes and create a pull request when it's done. If you do so, please also check "Git branches" section.
+You're encouraged to create a fork of this repo, then make your changes and create a pull request when it's done. ~~If you do so, please also check "Git branches" section.~~ (obsolete). Request for merging into `master`, if needed we will push into another branch.
+
+If you don't have a GitHub account, you can also contact maintainers to add manually your contributions.
 
 # Git branches
+
+***Caution : might be obsolete***
 
 * master : main branch, where are pushed releases and tags
 * dev : for new release works, A.B.C release to A.B+1.0
