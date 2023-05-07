@@ -31,14 +31,15 @@ function mail.show_about(name)
 			[[#FFF,Toby1710,UX fixes,]] ..
 			[[#FFF,Peter Nerlich,CC\, BCC,]] ..
 			[[#FFF,Niklp,German translation,]] ..
-			[[#FFF,Emojigit,Chinese translation,]] ..
+			[[#FFF,Emojigit,Traditional Chinese trans.,]] ..
 			[[#FFF,Dennis Jenkins,UX fixes,]] ..
 			[[#FFF,Thomas Rudin,Maintenance,]] ..
 			[[#FFF,NatureFreshMilk,Maintenance,]] ..
 			[[#FFF,imre84,UI fixes,]] ..
 			[[#FFF,Chache,Spanish translation,]] ..
 			[[#FFF,APercy,Brazilian Portuguese trans.,]] ..
-			[[#FFF,Nuno Filipe Povoa,mail_notif.ogg]
+			[[#FFF,Nuno Filipe Povoa,mail_notif.ogg,]] ..
+			[[#FFF,TheTrueBeginner,Simplified Chinese trans.]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

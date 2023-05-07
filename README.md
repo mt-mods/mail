@@ -55,7 +55,7 @@ See the "LICENSE" file
 * fluxionary (Minor fixups)
 * Toby1710 (UX fixes)
 * Peter Nerlich (CC, BCC)
-* Emojigit (Chinese translation)
+* Emojigit (Traditional Chinese translation)
 * Niklp09 (German translation)
 * Dennis Jenkins (UX fixes)
 * Thomas Rudin (Maintenance)
@@ -63,6 +63,7 @@ See the "LICENSE" file
 * Chache (Spanish translation)
 * APercy (Brazilian Portuguese translation)
 * Nuno Filipe Povoa (mail_notif.ogg - https://invent.kde.org/plasma/oxygen-sounds/-/blob/master/sounds/Oxygen-Im-Nudge.ogg)
+* TheTrueBeginner (Simplified Chinese translation)
 
 # Contribute
 
