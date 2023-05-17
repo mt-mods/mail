@@ -45,11 +45,24 @@ function mail.show_message(name, id)
 end
 
 function mail.reply(name, message)
+	if not message then
+		-- TODO: workaround for https://github.com/mt-mods/mail/issues/84
+		minetest.log("error", "[mail] reply called with nil message for player: " .. name)
+		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
+		return
+	end
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 	mail.show_compose(name, message.from, "Re: "..message.subject, replyfooter)
 end
 
 function mail.replyall(name, message)
+	if not message then
+		-- TODO: workaround for https://github.com/mt-mods/mail/issues/84
+		minetest.log("error", "[mail] replyall called with nil message for player: " .. name)
+		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
+		return
+	end
+
 	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 
 	-- new recipients are the sender plus the original recipients, minus ourselves
