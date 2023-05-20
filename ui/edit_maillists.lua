@@ -1,11 +1,9 @@
 -- translation
 local S = minetest.get_translator("mail")
-local old_lists_names = {}
 
 local FORMNAME = "mail:editmaillist"
 
 function mail.show_edit_maillist(playername, maillist_name, desc, players, illegal_name_hint)
-	old_lists_names[playername] = maillist_name
 	local formspec = [[
 			size[6,7]
 			button[4,6.25;2,0.5;back;]] .. S("Back") .. [[]
@@ -42,16 +40,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local maillists = mail.get_maillists(name)
 
 	if fields.save then
+		local old_maillist = maillists[mail.selected_idxs.maillists[name]] or {name = ""}
 		if mail.selected_idxs.maillists[name] then
-			local maillist = maillists[mail.selected_idxs.maillists[name]] or {name = ""}
-			if maillist.name ~= fields.name or fields.name == "" then
+			if old_maillist.name ~= fields.name or fields.name == "" then
 				-- name changed!
 				if #fields.name == 0 then
-					mail.show_edit_maillist(name, maillist.name, fields.desc, fields.players, "empty")
+					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "empty")
 					return true
 
 				elseif mail.get_maillist_by_name(name, fields.name) then
-					mail.show_edit_maillist(name, maillist.name, fields.desc, fields.players, "collision")
+					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "collision")
 					return true
 
 				else
@@ -60,7 +58,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 						name = fields.name,
 						desc = fields.desc,
 						players = mail.parse_player_list(fields.players)
-					}, old_lists_names[name])
+					}, old_maillist.name)
 					maillists[mail.selected_idxs.maillists[name]] = nil
 				end
 			else
@@ -69,7 +67,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					name = fields.name,
 					desc = fields.desc,
 					players = mail.parse_player_list(fields.players)
-				}, old_lists_names[name])
+				}, old_maillist.name)
 			end
 		else
 			mail.update_maillist(name, {
@@ -77,7 +75,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				name = fields.name,
 				desc = fields.desc,
 				players = mail.parse_player_list(fields.players)
-			}, old_lists_names[name])
+			}, old_maillist.name)
 		end
 		mail.show_maillists(name)
 
