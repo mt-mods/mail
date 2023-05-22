@@ -2,7 +2,7 @@
 local S = minetest.get_translator("mail")
 
 local drafts_formspec = "size[8.5,10;]" .. mail.theme .. [[
-    tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;3;false;false]
+    tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Outbox").. "," .. S("Drafts") .. [[;3;false;false]
 
     button[6,0.10;2.5,0.5;new;]] .. S("New") .. [[]
     button[6,0.95;2.5,0.5;edit;]] .. S("Edit") .. [[]
