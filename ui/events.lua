@@ -254,27 +254,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.selectall then
         if formname == "mail:inbox" then
-            if not mail.selected_idxs.inbox[name] then
-                mail.selected_idxs.inbox[name] = {}
-            end
-            if #mail.selected_idxs.inbox[name] >= #getInbox() then -- if selection is full
-                mail.selected_idxs.inbox[name] = {}
-            else
-                mail.selected_idxs.inbox[name] = {} -- reset to avoid duplicates
-                mail.selected_idxs.multipleselection[name] = true
+            mail.selected_idxs.inbox[name] = {} -- reset for select, unselect and not existing
+            mail.selected_idxs.multipleselection[name] = true -- enable as the button were pressed
+            if #mail.selected_idxs.inbox[name] < #getInbox() then -- then populate it if selection isn't full
                 for _, msg in ipairs(getInbox()) do
                     table.insert(mail.selected_idxs.inbox[name], msg.id)
                 end
             end
         elseif formname == "mail:sent" then
-            if not mail.selected_idxs.sent[name] then
-                mail.selected_idxs.sent[name] = {}
-            end
-            if #mail.selected_idxs.sent[name] >= #getOutbox() then -- if selection is full
-                mail.selected_idxs.sent[name] = {}
-            else
-                mail.selected_idxs.sent[name] = {} -- reset to avoid duplicates
-                mail.selected_idxs.multipleselection[name] = true
+            mail.selected_idxs.sent[name] = {} -- reset for select, unselect and not existing
+            mail.selected_idxs.multipleselection[name] = true -- enable as the button were pressed
+            if #mail.selected_idxs.sent[name] < #getOutbox() then -- then populate it if selection isn't full
                 for _, msg in ipairs(getOutbox()) do
                     table.insert(mail.selected_idxs.sent[name], msg.id)
                 end
