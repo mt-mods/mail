@@ -114,23 +114,23 @@ function mail.delete_mail(playername, msg_ids)
 	if type(msg_ids) ~= "table" then -- if this is not a table
 		msg_ids = { msg_ids }
 	end
-	for i, msg in ipairs(entry.inbox) do
+	for i = #entry.inbox, 1, -1 do
 		for _, deleted_msg in ipairs(msg_ids) do
-			if msg.id == deleted_msg then
+			if entry.inbox[i].id == deleted_msg then
 				table.remove(entry.inbox, i)
 			end
 		end
 	end
-	for i, msg in ipairs(entry.outbox) do
+	for i = #entry.outbox, 1, -1 do
 		for _, deleted_msg in ipairs(msg_ids) do
-			if msg.id == deleted_msg then
+			if entry.outbox[i].id == deleted_msg then
 				table.remove(entry.outbox, i)
 			end
 		end
 	end
-	for i, msg in ipairs(entry.drafts) do
+	for i = #entry.drafts, 1, -1 do
 		for _, deleted_msg in ipairs(msg_ids) do
-			if msg.id == deleted_msg then
+			if entry.drafts[i].id == deleted_msg then
 				table.remove(entry.drafts, i)
 			end
 		end
