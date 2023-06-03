@@ -9,6 +9,10 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 	filter = filter or mail.selected_idxs.filter[name] or ""
     mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
 
+	local entry = mail.get_storage_entry(name)
+	local sortfield = ({"to","subject","time"})[sortfieldindex]
+    local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
+
 	local sent_formspec = "size[8.5,10;]" .. mail.theme .. [[
 		tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;2;false;false]
 
@@ -23,24 +27,21 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
         button[6,8.7;2.5,0.5;options;]] .. S("Options") .. [[]
 		button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
-        dropdown[0,8.4;2,0.5;sortfield;]] ..
+        dropdown[0,8.5;2,0.5;sortfield;]] ..
         S("To") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfieldindex .. [[;true]
-        dropdown[2.0,8.4;2,0.5;sortdirection;]] ..
+        dropdown[2.0,8.5;2,0.5;sortdirection;]] ..
         S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
-        field[4.25,8.85;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
-        button[5.14,8.52;0.85,0.5;search;Q]
+        field[4.25,8.95;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
+        button[5.14,8.62;0.85,0.5;search;Q]
 
         checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
-        label[0,9.65;]] .. S("@1 selected", tostring(#mail.selected_idxs.sent[name])) .. [[]
+        label[0,9.65;]] .. S("@1 of @2 selected", tostring(#mail.selected_idxs.sent[name]), tostring(#messages)) .. [[]
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,7.35;sent;#999,]] .. S("To") .. "," .. S("Subject")
+		table[0,0.7;5.75,7.45;sent;#999,]] .. S("To") .. "," .. S("Subject")
 	local formspec = { sent_formspec }
-	local entry = mail.get_storage_entry(name)
-	local sortfield = ({"to","subject","time"})[sortfieldindex]
-    local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
 
 	mail.message_drafts[name] = nil
 
