@@ -1,19 +1,19 @@
 -- translation
 local S = minetest.get_translator("mail")
 
-function mail.show_sent(name, sortfieldindex, sortdirection, filter)
+function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name])
     or mail.get_setting(name, "defaultsortfield") or 3
     sortdirection = tostring(sortdirection or mail.selected_idxs.sortdirection[name]
     or mail.get_setting(name, "defaultsortdirection") or "1")
 	filter = filter or mail.selected_idxs.filter[name] or ""
-    mail.selected_idxs.sent[name] = mail.selected_idxs.sent[name] or {}
+    mail.selected_idxs.outbox[name] = mail.selected_idxs.outbox[name] or {}
 
 	local entry = mail.get_storage_entry(name)
 	local sortfield = ({"to","subject","time"})[sortfieldindex]
     local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
 
-	local sent_formspec = "size[8.5,10;]" .. mail.theme .. [[
+	local outbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
 		tabheader[0.3,1;boxtab;]] .. S("Inbox") .. "," .. S("Sent messages").. "," .. S("Drafts") .. [[;2;false;false]
 
 		button[6,0.10;2.5,0.5;new;]] .. S("New") .. [[]
@@ -36,12 +36,12 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
 
         checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
-        label[0,9.65;]] .. S("@1 of @2 selected", tostring(#mail.selected_idxs.sent[name]), tostring(#messages)) .. [[]
+        label[0,9.65;]] .. S("@1 of @2 selected", tostring(#mail.selected_idxs.outbox[name]), tostring(#messages)) ..[[]
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,7.45;sent;#999,]] .. S("To") .. "," .. S("Subject")
-	local formspec = { sent_formspec }
+		table[0,0.7;5.75,7.45;outbox;#999,]] .. S("To") .. "," .. S("Subject")
+	local formspec = { outbox_formspec }
 
 	mail.message_drafts[name] = nil
 
@@ -49,8 +49,8 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
         for _, message in ipairs(messages) do
             local selected_id = 0
             -- check if message is in selection list and return its id
-            if mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
-                for i, selected_msg in ipairs(mail.selected_idxs.sent[name]) do
+            if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
                     if message.id == selected_msg then
                         selected_id = i
                         break
@@ -86,8 +86,8 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
         formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
     end
 
-    if mail.selected_idxs.sent[name] and #mail.selected_idxs.sent[name] > 0 then
-        for i, selected_msg in ipairs(mail.selected_idxs.sent[name]) do
+    if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
+        for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
             local is_present = false
             for _, msg in ipairs(messages) do
                 if msg.id == selected_msg then
@@ -96,10 +96,10 @@ function mail.show_sent(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if not is_present then
-                table.remove(mail.selected_idxs.sent[name], i)
+                table.remove(mail.selected_idxs.outbox[name], i)
             end
         end
     end
 
-	minetest.show_formspec(name, "mail:sent", table.concat(formspec, ""))
+	minetest.show_formspec(name, "mail:outbox", table.concat(formspec, ""))
 end

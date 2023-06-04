@@ -112,8 +112,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local message = ""
 		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
+		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
+			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
 		end
 		mail.reply(name, message)
 
@@ -121,8 +121,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local message = ""
 		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
+		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
+			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
 		end
 		mail.replyall(name, message)
 
@@ -130,16 +130,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local message = ""
 		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
+		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
+			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
 		end
 		mail.forward(name, message)
 
 	elseif fields.delete then
 		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 			mail.delete_mail(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.sent[name] and mail.selected_idxs.boxtab[name] == 2 then
-			mail.delete_mail(name, mail.selected_idxs.sent[name][#mail.selected_idxs.sent[name]])
+		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
+			mail.delete_mail(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
 		end
 		mail.show_mail_menu(name)
 	end

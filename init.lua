@@ -14,7 +14,7 @@ mail = {
 	-- per-user ephemeral data
 	selected_idxs = {
 		inbox = {},
-		sent = {},
+		outbox = {},
 		drafts = {},
 		contacts = {},
 		maillists = {},

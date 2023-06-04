@@ -8,7 +8,7 @@ function mail.show_mail_menu(playername, sortfield, sortdirection, filter)
     if index == 1 then
         mail.show_inbox(playername, sortfield, sortdirection, filter)
     elseif index == 2 then
-        mail.show_sent(playername, sortfield, sortdirection, filter)
+        mail.show_outbox(playername, sortfield, sortdirection, filter)
     elseif index == 3 then
         mail.show_drafts(playername)
     end
