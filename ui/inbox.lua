@@ -47,6 +47,9 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
 
     mail.message_drafts[name] = nil
 
+    local unread_color_enable = mail.get_setting(name, "unreadcolorenable")
+    local cc_color_enable = mail.get_setting(name, "cccolorenable")
+
     if #messages > 0 then
         for _, message in ipairs(messages) do
             local selected_id = 0
@@ -60,28 +63,28 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                if not message.read and mail.get_setting(name, "unreadcolorenable") then
-                    if not mail.player_in_list(name, message.to) and mail.get_setting(name, "cccolorenable") then
+                if not message.read and unread_color_enable then
+                    if not mail.player_in_list(name, message.to) and cc_color_enable then
                         formspec[#formspec + 1] = ",#A39E5D"
                     else
                         formspec[#formspec + 1] = ",#A39E19"
                     end
                 else
-                    if not mail.player_in_list(name, message.to) and mail.get_setting(name, "cccolorenable") then
+                    if not mail.player_in_list(name, message.to) and cc_color_enable then
                         formspec[#formspec + 1] = ",#899888"
                     else
                         formspec[#formspec + 1] = ",#466432"
                     end
                 end
             else
-                if not message.read and mail.get_setting(name, "unreadcolorenable") then
-                    if not mail.player_in_list(name, message.to) and mail.get_setting(name, "cccolorenable") then
+                if not message.read and unread_color_enable then
+                    if not mail.player_in_list(name, message.to) and cc_color_enable then
                         formspec[#formspec + 1] = ",#FFD788"
                     else
                         formspec[#formspec + 1] = ",#FFD700"
                     end
                 else
-                    if not mail.player_in_list(name, message.to) and mail.get_setting(name, "cccolorenable") then
+                    if not mail.player_in_list(name, message.to) and cc_color_enable then
                         formspec[#formspec + 1] = ",#CCCCDD"
                     else
                         formspec[#formspec + 1] = ","
