@@ -29,6 +29,8 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 
     if id then
         msg_id[name] = id
+    else
+        msg_id[name] = nil
     end
 
 	minetest.show_formspec(name, FORMNAME, formspec)
