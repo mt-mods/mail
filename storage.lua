@@ -118,6 +118,7 @@ function mail.delete_mail(playername, msg_ids)
 		for _, deleted_msg in ipairs(msg_ids) do
 			if entry.inbox[i].id == deleted_msg then
 				table.remove(entry.inbox, i)
+				break
 			end
 		end
 	end
@@ -125,6 +126,7 @@ function mail.delete_mail(playername, msg_ids)
 		for _, deleted_msg in ipairs(msg_ids) do
 			if entry.outbox[i].id == deleted_msg then
 				table.remove(entry.outbox, i)
+				break
 			end
 		end
 	end
@@ -132,6 +134,7 @@ function mail.delete_mail(playername, msg_ids)
 		for _, deleted_msg in ipairs(msg_ids) do
 			if entry.drafts[i].id == deleted_msg then
 				table.remove(entry.drafts, i)
+				break
 			end
 		end
 	end
