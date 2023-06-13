@@ -35,6 +35,11 @@ function mail.show_settings(name)
             S("Ascending") .. "," .. S("Descending") .. [[;]] ..
             tostring(mail.get_setting(name, "defaultsortdirection")) .. [[;true]
 
+			box[0,3.2;3,0.45;#466432]
+			label[0.2,3.2;]] .. S("Other") .. [[]
+            checkbox[0,3.6;trash_move_enable;]] .. S("Move deleted messages to trash") .. [[;]] ..
+            tostring(mail.get_setting(name, "trash_move_enable")) .. [[]
+
             button[0,5.5;2.5,0.5;save;]] .. S("Save") .. [[]
             button[2.7,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
             ]] .. mail.theme
@@ -79,6 +84,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.cccolorenable then
         mail.selected_idxs.cccolorenable[playername] = fields.cccolorenable == "true"
 
+    elseif fields.trash_move_enable then
+        mail.selected_idxs.trash_move_enable[playername] = fields.trash_move_enable == "true"
+
     elseif fields.save then
         -- checkboxes
         mail.set_setting(playername, "chat_notifications", mail.selected_idxs.chat_notifications[playername])
@@ -87,6 +95,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.set_setting(playername, "sound_notifications", mail.selected_idxs.sound_notifications[playername])
         mail.set_setting(playername, "unreadcolorenable", mail.selected_idxs.unreadcolorenable[playername])
         mail.set_setting(playername, "cccolorenable", mail.selected_idxs.cccolorenable[playername])
+        mail.set_setting(playername, "trash_move_enable", mail.selected_idxs.trash_move_enable[playername])
         -- dropdowns
         local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
         local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")

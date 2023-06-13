@@ -16,6 +16,7 @@ mail = {
 		inbox = {},
 		outbox = {},
 		drafts = {},
+		trash = {},
 		contacts = {},
 		maillists = {},
 		to = {},
@@ -32,7 +33,8 @@ mail = {
 		hud_notifications = {},
 		sound_notifications = {},
 		unreadcolorenable = {},
-		cccolorenable = {}
+		cccolorenable = {},
+		trash_move_enable = {}
 	},
 
 	message_drafts = {}
@@ -58,6 +60,7 @@ dofile(MP .. "/ui/mail.lua")
 dofile(MP .. "/ui/inbox.lua")
 dofile(MP .. "/ui/outbox.lua")
 dofile(MP .. "/ui/drafts.lua")
+dofile(MP .. "/ui/trash.lua")
 dofile(MP .. "/ui/message.lua")
 dofile(MP .. "/ui/events.lua")
 dofile(MP .. "/ui/contacts.lua")

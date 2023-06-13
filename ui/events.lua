@@ -15,7 +15,8 @@ local function nonempty(x)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "mail:inbox" and formname ~= "mail:outbox" and formname ~= "mail:drafts" then
+    if formname ~= "mail:inbox" and formname ~= "mail:outbox"
+    and formname ~= "mail:drafts" and formname ~= "mail:trash" then
         return
     elseif fields.quit then
         return
@@ -50,6 +51,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- split inbox and outbox msgs for different tests
     local entry = mail.get_storage_entry(name)
     local messagesDrafts = entry.drafts
+    local messagesTrash = entry.trash
     local getInbox = messageGetter(entry.inbox, inboxsortfield, sortdirection == "2", filter)
     local getOutbox = messageGetter(entry.outbox, outboxsortfield, sortdirection == "2", filter)
 
@@ -154,6 +156,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
+    if fields.trash then -- trash table
+        local evt = minetest.explode_table_event(fields.trash)
+        if evt.row == 1 then -- header
+            if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
+                mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
+            end
+            mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
+            mail.show_mail_menu(name)
+            return
+        end
+        mail.selected_idxs.trash[name] = evt.row - 1
+        if evt.type == "DCL" and messagesTrash[mail.selected_idxs.trash[name]] then
+            mail.show_message(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+        end
+        return true
+    end
+
     if fields.boxtab == "1" then
         mail.selected_idxs.boxtab[name] = 1
         mail.show_inbox(name, sortfieldindex, sortdirection, filter)
@@ -166,11 +185,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.selected_idxs.boxtab[name] = 3
         mail.show_drafts(name)
 
+    elseif fields.boxtab == "4" then
+        mail.selected_idxs.boxtab[name] = 4
+        mail.show_trash(name)
+
     elseif fields.read then
         if formname == "mail:inbox" and nonempty(mail.selected_idxs.inbox[name]) then -- inbox table
             mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
         elseif formname == "mail:outbox" and nonempty(mail.selected_idxs.outbox[name]) then -- outbox table
             mail.show_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
+        elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then
+            mail.show_message(name, messagesTrash[mail.selected_idxs.trash[name]].id)
         end
 
     elseif fields.edit then
@@ -186,17 +211,37 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
 
     elseif fields.delete then
+        local trash_enabled = mail.get_setting(name, "trash_move_enable")
         if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then -- inbox table
-            mail.delete_mail(name, mail.selected_idxs.inbox[name])
+            if trash_enabled then
+                mail.trash_mail(name, mail.selected_idxs.inbox[name])
+            else
+                mail.delete_mail(name, mail.selected_idxs.inbox[name])
+            end
             mail.selected_idxs.inbox[name] = {}
         elseif formname == "mail:outbox" and mail.selected_idxs.outbox[name] then -- outbox table
-            mail.delete_mail(name, mail.selected_idxs.outbox[name])
+            if trash_enabled then
+                mail.trash_mail(name, mail.selected_idxs.outbox[name])
+            else
+                mail.delete_mail(name, mail.selected_idxs.outbox[name])
+            end
             mail.selected_idxs.outbox[name] = {}
         elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
-            mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+            if trash_enabled then
+                mail.trash_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+            else
+                mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+            end
             mail.selected_idxs.drafts[name] = nil
+
+        elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then -- trash table
+            mail.delete_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id, true)
         end
 
+        mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
+
+    elseif fields.restore then
+        mail.restore_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id)
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.reply then

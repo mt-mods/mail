@@ -8,6 +8,7 @@ local function populate_entry(e)
 	e.inbox = e.inbox or {}
 	e.outbox = e.outbox or {}
 	e.drafts = e.drafts or {}
+	e.trash = e.trash or {}
 	e.lists = e.lists or {}
 	e.settings = e.settings or {}
 	return e
@@ -42,6 +43,43 @@ function mail.get_message(playername, msg_id)
 			return msg
 		end
 	end
+	for _, msg in ipairs(entry.drafts) do
+		if msg.id == msg_id then
+			return msg
+		end
+	end
+	for _, msg in ipairs(entry.trash) do
+		if msg.id == msg_id then
+			return msg
+		end
+	end
+end
+
+-- get player boxes where a message appears
+function mail.get_message_boxes(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	local boxes = {}
+	for _, msg in ipairs(entry.inbox) do
+		if msg.id == msg_id then
+			table.insert(boxes, "inbox")
+		end
+	end
+	for _, msg in ipairs(entry.outbox) do
+		if msg.id == msg_id then
+			table.insert(boxes, "outbox")
+		end
+	end
+	for _, msg in ipairs(entry.drafts) do
+		if msg.id == msg_id then
+			table.insert(boxes, "drafts")
+		end
+	end
+	for _, msg in ipairs(entry.trash) do
+		if msg.id == msg_id then
+			table.insert(boxes, "trash")
+		end
+	end
+	return boxes
 end
 
 local function safe_find(str, sub)
@@ -109,7 +147,7 @@ function mail.mark_unread(playername, msg_ids)
 end
 
 -- deletes a mail by its id
-function mail.delete_mail(playername, msg_ids)
+function mail.delete_mail(playername, msg_ids, delete_in_trash)
 	local entry = mail.get_storage_entry(playername)
 	if type(msg_ids) ~= "table" then -- if this is not a table
 		msg_ids = { msg_ids }
@@ -135,8 +173,53 @@ function mail.delete_mail(playername, msg_ids)
 			end
 		end
 	end
+	if delete_in_trash then
+		for i = #entry.trash, 1, -1 do
+			for _, deleted_msg in ipairs(msg_ids) do
+				if entry.trash[i].id == deleted_msg then
+					table.remove(entry.trash, i)
+				end
+			end
+		end
+	end
 	mail.set_storage_entry(playername, entry)
-        mail.hud_update(playername, entry.inbox)
+	mail.hud_update(playername, entry.inbox)
+	return
+end
+
+-- move to trash mails by id
+function mail.trash_mail(playername, msg_ids)
+	local entry = mail.get_storage_entry(playername)
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
+	for _, id in ipairs(msg_ids) do
+		local msg = mail.get_message(playername, id)
+		msg.previous_boxes = mail.get_message_boxes(playername, id)
+		table.insert(entry.trash, 1, msg)
+	end
+	mail.set_storage_entry(playername, entry)
+	mail.delete_mail(playername, msg_ids)
+	return
+end
+
+-- restore a mail from trash
+function mail.restore_mail(playername, msg_id)
+	local entry = mail.get_storage_entry(playername)
+	for i, msg in ipairs(entry.trash) do
+		if msg.id == msg_id then
+			-- not anymore store previous boxes in json
+			local previous_boxes = msg.previous_boxes
+			msg.previous_boxes = nil
+			-- restore it in all previous boxes
+			for _, box in ipairs(previous_boxes) do
+				table.insert(entry[box], msg)
+			end
+			-- then delete it from trash
+			table.remove(entry.trash, i)
+		end
+	end
+	mail.set_storage_entry(playername, entry)
 	return
 end
 
@@ -268,6 +351,7 @@ function mail.get_setting_default_value(setting_name)
 		cccolorenable = true,
 		defaultsortfield = 3,
 		defaultsortdirection = 1,
+		trash_move_enable = true,
 	}
 	return default_values[setting_name]
 end

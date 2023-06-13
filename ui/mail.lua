@@ -11,5 +11,7 @@ function mail.show_mail_menu(playername, sortfield, sortdirection, filter)
         mail.show_outbox(playername, sortfield, sortdirection, filter)
     elseif index == 3 then
         mail.show_drafts(playername)
+    elseif index == 4 then
+        mail.show_trash(playername)
     end
 end
