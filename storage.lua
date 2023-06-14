@@ -178,6 +178,7 @@ function mail.delete_mail(playername, msg_ids, delete_in_trash)
 			for _, deleted_msg in ipairs(msg_ids) do
 				if entry.trash[i].id == deleted_msg then
 					table.remove(entry.trash, i)
+					break
 				end
 			end
 		end
