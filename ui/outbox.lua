@@ -13,9 +13,14 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
 	local sortfield = ({"to","subject","time"})[sortfieldindex]
     local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
 
+    local trash_tab = ""
+    if mail.get_setting(name, "trash_move_enable") then
+        trash_tab = "," .. S("Trash")
+    end
+
 	local outbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
 		tabheader[0.3,1;boxtab;]] ..
-		S("Inbox") .. "," .. S("Outbox").. "," .. S("Drafts") .. "," .. S("Trash") .. [[;2;false;false]
+		S("Inbox") .. "," .. S("Outbox").. "," .. S("Drafts") .. trash_tab .. [[;2;false;false]
 
 		button[6,0.10;2.5,0.5;new;]] .. S("New") .. [[]
 		button[6,0.95;2.5,0.5;read;]] .. S("Read") .. [[]
