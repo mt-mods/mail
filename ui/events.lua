@@ -24,7 +24,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- Get player name and handle / convert common input fields
     local name = player:get_player_name()
-    local filter = fields.filter or mail.selected_idxs.filter[name] or ""
+    local filter = (fields.search and fields.filter) or mail.selected_idxs.filter[name] or ""
     local sortfieldindex = tonumber(fields.sortfield or mail.selected_idxs.sortfield[name]) or 3
     local sortdirection = fields.sortdirection or mail.selected_idxs.sortdirection[name] or "1"
     local inboxsortfield = ({"from","subject","time"})[sortfieldindex]
@@ -84,7 +84,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 table.insert(mail.selected_idxs.inbox[name], getInbox()[evt.row-1].id)
             end
         else
-            mail.selected_idxs.inbox[name] = { getInbox()[evt.row-1].id }
+            mail.selected_idxs.inbox[name] = { (getInbox()[evt.row-1] or {}).id }
         end
         if evt.type == "DCL" and getInbox()[evt.row-1] then
             mail.show_message(name, getInbox()[evt.row-1].id)
@@ -122,7 +122,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 table.insert(mail.selected_idxs.outbox[name], getOutbox()[evt.row-1].id)
             end
         else
-            mail.selected_idxs.outbox[name] = { getOutbox()[evt.row-1].id }
+            mail.selected_idxs.outbox[name] = { (getOutbox()[evt.row-1] or {}).id }
         end
         if evt.type == "DCL" and getOutbox()[evt.row-1] then
             mail.show_message(name, getOutbox()[evt.row-1].id)
