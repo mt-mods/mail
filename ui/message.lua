@@ -103,12 +103,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
+    local entry = mail.get_storage_entry(name)
 
 	local message = ""
 	if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
 		message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
 	elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
 		message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
+	elseif mail.selected_idxs.trash[name] and mail.selected_idxs.boxtab[name] == 4 then
+		message = mail.get_message(name, entry.trash[mail.selected_idxs.trash[name]].id)
 	end
 
 	if fields.back then
@@ -125,10 +128,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		mail.forward(name, message)
 
 	elseif fields.delete then
-        if mail.get_setting(name, "trash_move_enable") then
+        if mail.get_setting(name, "trash_move_enable") and mail.selected_idxs.boxtab[name] ~= 4 then
 			mail.trash_mail(name, message.id)
 		else
-			mail.delete_mail(name, message.id)
+			mail.delete_mail(name, message.id, true)
 		end
 		mail.show_mail_menu(name)
 	end
