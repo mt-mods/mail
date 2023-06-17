@@ -25,7 +25,7 @@ function mail.show_about(name)
 			[[#FFD700,Cheapie,Initial idea/project,]] ..
 			[[#FFF,Rubenwardy,Lua/UI improvements,]] ..
 			[[#FFF,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
-			[[#FFF,Athozus,Outbox\, Maillists\, UI\, Drafts,]] ..
+			[[#FFF,Athozus,Boxes\, Maillists\, UI\, Settings,]] ..
 			[[#FFF,fluxionary,Minor fixups,]] ..
 			[[#FFF,SX,Various fixes\, UI,]] ..
 			[[#FFF,Toby1710,UX fixes,]] ..
@@ -39,7 +39,9 @@ function mail.show_about(name)
 			[[#FFF,Chache,Spanish translation,]] ..
 			[[#FFF,APercy,Brazilian Portuguese trans.,]] ..
 			[[#FFF,Nuno Filipe Povoa,mail_notif.ogg,]] ..
-			[[#FFF,TheTrueBeginner,Simplified Chinese trans.]
+			[[#FFF,TheTrueBeginner,Simplified Chinese trans.,]] ..
+			[[#FFF,nyomi,Hungarian translation,]] ..
+			[[#FFF,whosit,UI fixes]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

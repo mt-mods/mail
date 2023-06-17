@@ -67,7 +67,7 @@ See the "LICENSE" file
 * Cheapie (Initial idea/project)
 * Rubenwardy (Lua/UI improvements)
 * BuckarooBanzay (Clean-ups, Refactoring)
-* Athozus (Outbox, Maillists, UI, Drafts)
+* Athozus (Outbox, Maillists, UI, Drafts, Trash, Settings)
 * SX (Various fixes, UI)
 * fluxionary (Minor fixups)
 * Toby1710 (UX fixes)
@@ -81,6 +81,8 @@ See the "LICENSE" file
 * APercy (Brazilian Portuguese translation)
 * Nuno Filipe Povoa (mail_notif.ogg - https://invent.kde.org/plasma/oxygen-sounds/-/blob/master/sounds/Oxygen-Im-Nudge.ogg)
 * TheTrueBeginner (Simplified Chinese translation)
+* nyomi (Hungarian translation)
+* whosit (UI fixes)
 
 # Contribute
 
