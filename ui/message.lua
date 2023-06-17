@@ -104,42 +104,31 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local name = player:get_player_name()
 
+	local message = ""
+	if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
+		message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+	elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
+		message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
+	end
+
 	if fields.back then
 		mail.show_mail_menu(name)
 		return true	-- don't uselessly set messages
 
 	elseif fields.reply then
-		local message = ""
-		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
-			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
-		end
 		mail.reply(name, message)
 
 	elseif fields.replyall then
-		local message = ""
-		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
-			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
-		end
 		mail.replyall(name, message)
 
 	elseif fields.forward then
-		local message = ""
-		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
-			message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
-			message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
-		end
 		mail.forward(name, message)
 
 	elseif fields.delete then
-		if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
-			mail.delete_mail(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-		elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
-			mail.delete_mail(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
+        if mail.get_setting(name, "trash_move_enable") then
+			mail.trash_mail(name, message.id)
+		else
+			mail.delete_mail(name, message.id)
 		end
 		mail.show_mail_menu(name)
 	end
