@@ -304,17 +304,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.selectall then
         if formname == "mail:inbox" then
+            local selected_number = #mail.selected_idxs.inbox[name]
             mail.selected_idxs.inbox[name] = {} -- reset for select, unselect and not existing
             mail.selected_idxs.multipleselection[name] = true -- enable as the button were pressed
-            if #mail.selected_idxs.inbox[name] < #getInbox() then -- then populate it if selection isn't full
+            if selected_number < #getInbox() then -- then populate it if selection isn't full
                 for _, msg in ipairs(getInbox()) do
                     table.insert(mail.selected_idxs.inbox[name], msg.id)
                 end
             end
         elseif formname == "mail:outbox" then
+            local selected_number = #mail.selected_idxs.outbox[name]
             mail.selected_idxs.outbox[name] = {} -- reset for select, unselect and not existing
             mail.selected_idxs.multipleselection[name] = true -- enable as the button were pressed
-            if #mail.selected_idxs.outbox[name] < #getOutbox() then -- then populate it if selection isn't full
+            if selected_number < #getOutbox() then -- then populate it if selection isn't full
                 for _, msg in ipairs(getOutbox()) do
                     table.insert(mail.selected_idxs.outbox[name], msg.id)
                 end
