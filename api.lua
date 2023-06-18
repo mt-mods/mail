@@ -18,11 +18,6 @@ function mail.send(m)
 	-- defaults
 	m.subject = m.subject or "(No subject)"
 
-	-- limit subject line
-	if string.len(m.subject) > 30 then
-		m.subject = string.sub(m.subject,1,27) .. "..."
-	end
-
 	-- normalize to, cc and bcc while compiling a list of all recipients
 	local recipients = {}
 	local undeliverable = {}
@@ -131,11 +126,6 @@ function mail.save_draft(m)
 
 	-- defaults
 	m.subject = m.subject or "(No subject)"
-
-	-- limit subject line
-	if string.len(m.subject) > 30 then
-		m.subject = string.sub(m.subject,1,27) .. "..."
-	end
 
 	minetest.log("verbose", f("[mail] %q saves draft with subject %q and body %q",
 		m.from, m.subject, m.body
