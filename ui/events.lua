@@ -241,7 +241,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.restore then
-        mail.restore_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+        if messagesTrash[mail.selected_idxs.trash[name]] then
+            mail.restore_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+        end
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.reply then
