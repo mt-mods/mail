@@ -9,9 +9,8 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
     filter = filter or mail.selected_idxs.filter[name] or ""
     mail.selected_idxs.inbox[name] = mail.selected_idxs.inbox[name] or {}
 
-    local entry = mail.get_storage_entry(name)
     local sortfield = ({"from","subject","time"})[sortfieldindex]
-    local messages = mail.sort_messages(entry.inbox, sortfield, sortdirection == "2", filter)
+    local messages = mail.sort_messages(mail.messages_context.inbox[name], sortfield, sortdirection == "2", filter)
 
     local trash_tab = ""
     if mail.get_setting(name, "trash_move_enable") then

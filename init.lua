@@ -37,6 +37,13 @@ mail = {
 		trash_move_enable = {}
 	},
 
+	messages_context = {
+		inbox = {},
+		outbox = {},
+		drafts = {},
+		trash = {}
+	},
+
 	message_drafts = {}
 }
 

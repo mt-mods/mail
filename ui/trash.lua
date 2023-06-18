@@ -20,8 +20,7 @@ local trash_formspec = "size[8.5,10;]" .. mail.theme .. [[
 
 function mail.show_trash(name)
     local formspec = { trash_formspec }
-    local entry = mail.get_storage_entry(name)
-    local messages = entry.trash
+    local messages = mail.messages_context.trash[name]
 
     if messages[1] then
 		for _, message in ipairs(messages) do

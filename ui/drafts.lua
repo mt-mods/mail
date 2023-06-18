@@ -24,8 +24,7 @@ function mail.show_drafts(name)
 		table[0,0.7;5.75,9.35;drafts;#999,]] .. S("To") .. "," .. S("Subject")
 
     local formspec = { drafts_formspec }
-    local entry = mail.get_storage_entry(name)
-    local messages = entry.drafts
+    local messages = mail.messages_context.drafts[name]
 
     mail.message_drafts[name] = nil
 

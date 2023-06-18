@@ -1,4 +1,3 @@
-
 -- Getter to filter and sort messages on demand
 local function messageGetter(messages, sortfield, ascending, filter)
     local results
@@ -15,15 +14,21 @@ local function nonempty(x)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+    -- Get player name
+    local name = player:get_player_name()
+
     if formname ~= "mail:inbox" and formname ~= "mail:outbox"
     and formname ~= "mail:drafts" and formname ~= "mail:trash" then
         return
     elseif fields.quit then
+        mail.messages_context.inbox[name] = nil
+        mail.messages_context.outbox[name] = nil
+        mail.messages_context.drafts[name] = nil
+        mail.messages_context.trash[name] = nil
         return
     end
 
-    -- Get player name and handle / convert common input fields
-    local name = player:get_player_name()
+    -- Convert common input fields
     local filter = (fields.search and fields.filter) or mail.selected_idxs.filter[name] or ""
     local sortfieldindex = tonumber(fields.sortfield or mail.selected_idxs.sortfield[name]) or 3
     local sortdirection = fields.sortdirection or mail.selected_idxs.sortdirection[name] or "1"
@@ -50,10 +55,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- split inbox and outbox msgs for different tests
     local entry = mail.get_storage_entry(name)
-    local messagesDrafts = entry.drafts
-    local messagesTrash = entry.trash
-    local getInbox = messageGetter(entry.inbox, inboxsortfield, sortdirection == "2", filter)
-    local getOutbox = messageGetter(entry.outbox, outboxsortfield, sortdirection == "2", filter)
+    local messagesDrafts = mail.messages_context.drafts[name]
+    local messagesTrash = mail.messages_context.trash[name]
+    local getInbox = messageGetter(mail.messages_context.inbox[name], inboxsortfield, sortdirection == "2", filter)
+    local getOutbox = messageGetter(mail.messages_context.outbox[name], outboxsortfield, sortdirection == "2", filter)
 
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table
@@ -219,6 +224,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.delete_mail(name, mail.selected_idxs.inbox[name])
             end
             mail.selected_idxs.inbox[name] = {}
+            mail.messages_context.inbox[name] = entry.inbox
         elseif formname == "mail:outbox" and mail.selected_idxs.outbox[name] then -- outbox table
             if trash_enabled then
                 mail.trash_mail(name, mail.selected_idxs.outbox[name])
@@ -226,6 +232,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.delete_mail(name, mail.selected_idxs.outbox[name])
             end
             mail.selected_idxs.outbox[name] = {}
+            mail.messages_context.outbox[name] = entry.outbox
         elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
             if trash_enabled then
                 mail.trash_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
@@ -233,9 +240,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
             end
             mail.selected_idxs.drafts[name] = nil
+            mail.messages_context.drafts[name] = entry.drafts
 
         elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then -- trash table
             mail.delete_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id, true)
+            mail.messages_context.trash[name] = entry.trash
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
@@ -244,6 +253,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if messagesTrash[mail.selected_idxs.trash[name]] then
             mail.restore_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id)
         end
+        -- update messages lists
+        mail.messages_context.inbox[name] = entry.inbox
+        mail.messages_context.outbox[name] = entry.outbox
+        mail.messages_context.drafts[name] = entry.drafts
+        mail.messages_context.trash[name] = entry.trash
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.reply then
