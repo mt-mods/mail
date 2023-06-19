@@ -293,6 +293,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.new then
         mail.show_compose(name)
 
+    elseif fields.empty then
+        mail.empty_trash(name)
+        mail.show_mail_menu(name)
+
     elseif fields.contacts then
         mail.show_contacts(name)
 

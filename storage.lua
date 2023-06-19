@@ -267,6 +267,14 @@ function mail.restore_mail(playername, msg_id)
 	return
 end
 
+-- clear the trash
+function mail.empty_trash(playername)
+	local entry = mail.get_storage_entry(playername)
+	entry.trash = {}
+	mail.set_storage_entry(playername, entry)
+	return
+end
+
 -- add or update a contact
 function mail.update_contact(playername, contact)
 	local entry = mail.get_storage_entry(playername)
