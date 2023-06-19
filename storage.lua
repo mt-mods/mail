@@ -14,21 +14,61 @@ local function populate_entry(e)
 	return e
 end
 
+local cache = {}
+
+-- retrieve the storage entry for the player
 function mail.get_storage_entry(playername)
-	local str = mail.storage:get_string(STORAGE_PREFIX .. playername)
+	local key = STORAGE_PREFIX .. playername
+	if cache[key] then
+		-- use cached entry
+		return cache[key]
+	end
+
+	local str = mail.storage:get_string(key)
+	local entry
 	if str == "" then
 		-- new entry
-		return populate_entry()
+		entry = populate_entry()
 	else
 		-- deserialize existing entry
 		local e = minetest.parse_json(str)
-		return populate_entry(e)
+		entry = populate_entry(e)
 	end
+
+	-- cache for next time
+	cache[key] = entry
+	return entry
 end
 
+-- entries queued for saving
+local save_queued_entries = {}
+
+-- save the storage entry for the player
 function mail.set_storage_entry(playername, entry)
-	mail.storage:set_string(STORAGE_PREFIX .. playername, minetest.write_json(entry))
+	local key = STORAGE_PREFIX .. playername
+	-- cache
+	cache[key] = entry
+	-- enqueue for writing
+	save_queued_entries[key] = entry
 end
+
+local function save_worker()
+	for key, entry in pairs(save_queued_entries) do
+		-- write to backend
+		mail.storage:set_string(key, minetest.write_json(entry))
+	end
+
+	-- clear queue
+	save_queued_entries = {}
+
+	-- save every second
+	minetest.after(1, save_worker)
+end
+
+-- start save-worker loop
+save_worker()
+-- save on shutdown
+minetest.register_on_shutdown(save_worker)
 
 -- get a mail by id from the players in- or outbox
 function mail.get_message(playername, msg_id)
