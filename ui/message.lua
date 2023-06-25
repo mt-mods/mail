@@ -17,6 +17,7 @@ function mail.show_message(name, id)
 			label[0.2,0.5;]] .. S("To") .. [[: %s]
 			label[0.2,0.9;]] .. S("CC") .. [[: %s]
 			label[0.2,1.3;]] .. S("Date") .. [[: %s]
+			button[5.1,1;2,1;receivers;]] .. S("Receivers") .. [[]
 
 			label[0,2.1;]] .. S("Subject") .. [[: %s]
 			textarea[0.25,2.6;8,7.0;;;%s]
@@ -29,7 +30,9 @@ function mail.show_message(name, id)
 
 	local from = minetest.formspec_escape(message.from) or ""
 	local to = minetest.formspec_escape(message.to) or ""
+	if string.len(to) > 70 then to = string.sub(to, 1, 67) .. "..." end
 	local cc = minetest.formspec_escape(message.cc) or ""
+	if string.len(cc) > 50 then cc = string.sub(cc, 1, 47) .. "..." end
 	local date = type(message.time) == "number"
 		and minetest.formspec_escape(os.date("%Y-%m-%d %X", message.time)) or ""
 	local subject = minetest.formspec_escape(message.subject) or ""
@@ -134,6 +137,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			mail.delete_mail(name, message.id, true)
 		end
 		mail.show_mail_menu(name)
+
+	elseif fields.receivers then
+		mail.show_receivers(name, message.id)
 	end
 
 	return true
