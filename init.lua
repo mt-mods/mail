@@ -18,7 +18,8 @@ mail = {
 		drafts = {},
 		trash = {},
 		contacts = {},
-		maillists = {},
+		mailliststab = {},
+		owned_maillists = {},
 		to = {},
 		cc = {},
 		bcc = {},
@@ -67,6 +68,8 @@ dofile(MP .. "/ui/contacts.lua")
 dofile(MP .. "/ui/edit_contact.lua")
 dofile(MP .. "/ui/select_contact.lua")
 dofile(MP .. "/ui/maillists.lua")
+dofile(MP .. "/ui/owned_maillists.lua")
+dofile(MP .. "/ui/public_maillists.lua")
 dofile(MP .. "/ui/edit_maillists.lua")
 dofile(MP .. "/ui/compose.lua")
 dofile(MP .. "/ui/options.lua")

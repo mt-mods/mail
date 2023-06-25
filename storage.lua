@@ -327,7 +327,7 @@ end
 -- returns the maillists of a player
 function mail.get_maillists(playername)
 	local entry = mail.get_storage_entry(playername)
-	return entry.lists
+	return entry.lists or {}
 end
 
 -- returns the maillists of a player
@@ -338,6 +338,10 @@ function mail.get_maillist_by_name(playername, listname)
 			return list
 		end
 	end
+end
+
+function mail.get_public_maillists()
+	return {} -- before implementing the scan
 end
 
 -- updates or creates a maillist

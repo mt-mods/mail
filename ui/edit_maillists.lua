@@ -3,12 +3,20 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:editmaillist"
 
-function mail.show_edit_maillist(playername, maillist_name, desc, players, illegal_name_hint)
+function mail.show_edit_maillist(playername, maillist_name, desc, players, is_public, illegal_name_hint)
+	local maillist = mail.get_maillist_by_name(playername, maillist_name) or {}
+	local public_list = 1
+	if not is_public and not maillist.is_public then
+		public_list = 2
+	end
+
 	local formspec = [[
 			size[6,7]
 			button[4,6.25;2,0.5;back;]] .. S("Back") .. [[]
 			field[0.25,0.5;4,1;name;]] .. S("Maillist name") .. [[:;%s]
 			textarea[0.25,1.6;4,2;desc;]] .. S("Desc") .. [[:;%s]
+			dropdown[4,1.62;2,0.5;public_list;]] ..
+			S("Public") .. "," .. S("Private") .. [[;]] .. public_list .. [[;true]
 			textarea[0.25,3.6;4,4.25;players;]] .. S("Players") .. [[:;%s]
 			button[4,0.10;2,1;save;]] .. S("Save") .. [[]
 		]]
@@ -40,16 +48,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local maillists = mail.get_maillists(name)
 
 	if fields.save then
-		local old_maillist = maillists[mail.selected_idxs.maillists[name]] or {name = ""}
-		if mail.selected_idxs.maillists[name] then
+		local old_maillist = maillists[mail.selected_idxs.owned_maillists[name]] or {name = ""}
+		local is_public = fields.public_list == "1"
+		if mail.selected_idxs.owned_maillists[name] then
 			if old_maillist.name ~= fields.name or fields.name == "" then
 				-- name changed!
 				if #fields.name == 0 then
-					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "empty")
+					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, is_public, "empty")
 					return true
 
 				elseif mail.get_maillist_by_name(name, fields.name) then
-					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "collision")
+					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, is_public, "collision")
 					return true
 
 				else
@@ -57,15 +66,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 						owner = name,
 						name = fields.name,
 						desc = fields.desc,
+						is_public = is_public,
 						players = mail.parse_player_list(fields.players)
 					}, old_maillist.name)
-					maillists[mail.selected_idxs.maillists[name]] = nil
+					maillists[mail.selected_idxs.owned_maillists[name]] = nil
 				end
 			else
 				mail.update_maillist(name, {
 					owner = name,
 					name = fields.name,
 					desc = fields.desc,
+					is_public = is_public,
 					players = mail.parse_player_list(fields.players)
 				}, old_maillist.name)
 			end
@@ -74,6 +85,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				owner = name,
 				name = fields.name,
 				desc = fields.desc,
+				is_public = is_public,
 				players = mail.parse_player_list(fields.players)
 			}, old_maillist.name)
 		end
