@@ -21,27 +21,27 @@ function mail.show_about(name)
 
 			tablecolumns[color;text;text]
 			table[5,0.75;4.9,5.5;contributors;]] ..
-			[[#999,]] .. S("Contributors") .. [[,,]] ..
-			[[#FFD700,Cheapie,Initial idea/project,]] ..
-			[[#FFF,Rubenwardy,Lua/UI improvements,]] ..
-			[[#FFF,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
-			[[#FFF,Athozus,Boxes\, Maillists\, UI\, Settings,]] ..
-			[[#FFF,fluxionary,Minor fixups,]] ..
-			[[#FFF,SX,Various fixes\, UI,]] ..
-			[[#FFF,Toby1710,UX fixes,]] ..
-			[[#FFF,Peter Nerlich,CC\, BCC,]] ..
-			[[#FFF,Niklp,German translation,]] ..
-			[[#FFF,Emojigit,Traditional Chinese trans.,]] ..
-			[[#FFF,Dennis Jenkins,UX fixes,]] ..
-			[[#FFF,Thomas Rudin,Maintenance,]] ..
-			[[#FFF,NatureFreshMilk,Maintenance,]] ..
-			[[#FFF,imre84,UI fixes,]] ..
-			[[#FFF,Chache,Spanish translation,]] ..
-			[[#FFF,APercy,Brazilian Portuguese trans.,]] ..
-			[[#FFF,Nuno Filipe Povoa,mail_notif.ogg,]] ..
-			[[#FFF,TheTrueBeginner,Simplified Chinese trans.,]] ..
-			[[#FFF,nyomi,Hungarian translation,]] ..
-			[[#FFF,whosit,UI fixes]
+			mail.colors.header .. [[,]] .. S("Contributors") .. [[,,]] ..
+			mail.colors.important .. [[,Cheapie,Initial idea/project,]] ..
+			[[,Rubenwardy,Lua/UI improvements,]] ..
+			[[,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
+			[[,Athozus,Boxes\, Maillists\, UI\, Settings,]] ..
+			[[,fluxionary,Minor fixups,]] ..
+			[[,SX,Various fixes\, UI,]] ..
+			[[,Toby1710,UX fixes,]] ..
+			[[,Peter Nerlich,CC\, BCC,]] ..
+			[[,Niklp,German translation,]] ..
+			[[,Emojigit,Traditional Chinese trans.,]] ..
+			[[,Dennis Jenkins,UX fixes,]] ..
+			[[,Thomas Rudin,Maintenance,]] ..
+			[[,NatureFreshMilk,Maintenance,]] ..
+			[[,imre84,UI fixes,]] ..
+			[[,Chache,Spanish translation,]] ..
+			[[,APercy,Brazilian Portuguese trans.,]] ..
+			[[,Nuno Filipe Povoa,mail_notif.ogg,]] ..
+			[[,TheTrueBeginner,Simplified Chinese trans.,]] ..
+			[[,nyomi,Hungarian translation,]] ..
+			[[,whosit,UI fixes]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

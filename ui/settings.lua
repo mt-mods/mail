@@ -9,7 +9,7 @@ function mail.show_settings(name)
 			tabheader[0.3,1;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;1;false;false]
 			button[9.35,0;0.75,0.5;back;X]
 
-			box[0,0.8;3,0.45;#466432]
+			box[0,0.8;3,0.45;]] .. mail.colors.highlighted .. [[]
 			label[0.2,0.8;]] .. S("Notifications") .. [[]
             checkbox[0,1.2;chat_notifications;]] .. S("Chat notifications") .. [[;]] ..
             tostring(mail.get_setting(name, "chat_notifications")) .. [[]
@@ -20,7 +20,7 @@ function mail.show_settings(name)
             checkbox[0,2.4;sound_notifications;]] .. S("Sound notifications") .. [[;]] ..
             tostring(mail.get_setting(name, "sound_notifications")) .. [[]
 
-			box[5,0.8;3,0.45;#466432]
+			box[5,0.8;3,0.45;]] .. mail.colors.highlighted .. [[]
 			label[5.2,0.8;]] .. S("Message list") .. [[]
             checkbox[5,1.2;unreadcolorenable;]] .. S("Show unread in different color") .. [[;]] ..
             tostring(mail.get_setting(name, "unreadcolorenable")) .. [[]
@@ -35,7 +35,7 @@ function mail.show_settings(name)
             S("Ascending") .. "," .. S("Descending") .. [[;]] ..
             tostring(mail.get_setting(name, "defaultsortdirection")) .. [[;true]
 
-			box[0,3.2;3,0.45;#466432]
+			box[0,3.2;3,0.45;]] .. mail.colors.highlighted .. [[]
 			label[0.2,3.2;]] .. S("Other") .. [[]
             checkbox[0,3.6;trash_move_enable;]] .. S("Move deleted messages to trash") .. [[;]] ..
             tostring(mail.get_setting(name, "trash_move_enable")) .. [[]

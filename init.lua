@@ -37,6 +37,19 @@ mail = {
 		trash_move_enable = {}
 	},
 
+	colors = {
+		header = "#999",
+		selected = "#72FF63",
+		important = "#FFD700",
+		additional = "#CCCCDD",
+		imp_sel = "#B9EB32",
+		add_sel = "#9FE6A0",
+		imp_add = "#E6D26F",
+		imp_add_sel = "#BFE16B",
+		highlighted = "#466432",
+		new = "#00F529"
+	},
+
 	message_drafts = {}
 }
 

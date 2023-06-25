@@ -16,7 +16,7 @@ local trash_formspec = "size[8.5,10;]" .. mail.theme .. [[
 	button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
 	tablecolumns[color;text;text]
-	table[0,0.7;5.75,9.35;trash;#999,]] .. S("From/To") .. "," .. S("Subject")
+	table[0,0.7;5.75,9.35;trash;]] .. mail.colors.header .. "," .. S("From/To") .. "," .. S("Subject")
 
 
 function mail.show_trash(name)
