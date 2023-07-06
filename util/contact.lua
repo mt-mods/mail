@@ -1,3 +1,5 @@
+-- translation
+local S = minetest.get_translator("mail")
 
 function mail.compile_contact_list(name, selected, playernames)
 	-- TODO: refactor this - not just compiles *a* list, but *the* list for the contacts screen (too inflexible)
@@ -32,7 +34,7 @@ function mail.compile_contact_list(name, selected, playernames)
 			end
 			formspec[#formspec + 1] = "]"
 		else
-			formspec[#formspec + 1] = "]label[2,4.5;No contacts]"
+			formspec[#formspec + 1] = "]label[2,4.5;" .. S("No contacts") .. "]"
 		end
 	else
 		if type(playernames) == "string" then
