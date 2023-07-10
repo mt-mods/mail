@@ -13,6 +13,21 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
 	local sortfield = ({"to","subject","time"})[sortfieldindex]
     local messages = mail.sort_messages(entry.outbox, sortfield, sortdirection == "2", filter)
 
+    if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
+        for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
+            local is_present = false
+            for _, msg in ipairs(messages) do
+                if msg.id == selected_msg then
+                    is_present = true
+                    break
+                end
+            end
+            if not is_present then
+                table.remove(mail.selected_idxs.outbox[name], i)
+            end
+        end
+    end
+
     local trash_tab = ""
     if mail.get_setting(name, "trash_move_enable") then
         trash_tab = "," .. S("Trash")
@@ -90,21 +105,6 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
         formspec[#formspec + 1] = "]"
     else
         formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
-    end
-
-    if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
-        for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
-            local is_present = false
-            for _, msg in ipairs(messages) do
-                if msg.id == selected_msg then
-                    is_present = true
-                    break
-                end
-            end
-            if not is_present then
-                table.remove(mail.selected_idxs.outbox[name], i)
-            end
-        end
     end
 
 	minetest.show_formspec(name, "mail:outbox", table.concat(formspec, ""))
