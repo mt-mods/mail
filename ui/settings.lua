@@ -40,6 +40,11 @@ function mail.show_settings(name)
             checkbox[0,3.6;trash_move_enable;]] .. S("Move deleted messages to trash") .. [[;]] ..
             tostring(mail.get_setting(name, "trash_move_enable")) .. [[]
 
+            tooltip[chat_notifications;]] .. S("Receive a message in the chat when there is a new message") .. [[]
+            tooltip[onjoin_notifications;]] .. S("Receive a message at login when inbox isn't empty") .. [[]
+            tooltip[hud_notifications;]] .. S("Show an HUD notification when inbox isn't empty") .. [[]
+            tooltip[sound_notifications;]] .. S("Play a sound when there is a new message") .. [[]
+
             button[0,5.5;2.5,0.5;save;]] .. S("Save") .. [[]
             button[2.7,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
             ]] .. mail.theme

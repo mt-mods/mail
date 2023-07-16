@@ -50,6 +50,10 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         button[6,8.7;2.5,0.5;options;]] .. S("Options") .. [[]
         button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
+        tooltip[reply;]] .. S("Reply only to the sender") .. [[]
+        tooltip[replyall;]] .. S("Reply to all involved people") .. [[]
+        tooltip[forward;]] .. S("Transfer message to other people") .. [[]
+
         dropdown[0,8.5;2,0.5;sortfield;]] ..
         S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfieldindex .. [[;true]
         dropdown[2.0,8.5;2,0.5;sortdirection;]] ..

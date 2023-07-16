@@ -27,6 +27,10 @@ function mail.show_message(name, id)
 			button[2,8.5;2,1;replyall;]] .. S("Reply all") .. [[]
 			button[4,8.5;2,1;forward;]] .. S("Forward") .. [[]
 			button[6,8.5;2,1;delete;]] .. S("Delete") .. [[]
+
+			tooltip[reply;]] .. S("Reply only to the sender") .. [[]
+			tooltip[replyall;]] .. S("Reply to all involved people") .. [[]
+			tooltip[forward;]] .. S("Transfer message to other people") .. [[]
 		]] .. mail.theme
 
 	local from = minetest.formspec_escape(message.from) or ""
