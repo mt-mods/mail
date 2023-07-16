@@ -17,6 +17,7 @@ function mail.show_message(name, id)
 			label[0.2,0.5;]] .. S("To") .. [[: %s]
 			label[0.2,0.9;]] .. S("CC") .. [[: %s]
 			label[0.2,1.3;]] .. S("Date") .. [[: %s]
+			tooltip[0.2,1.3;4.8,0.4;]] .. mail.time_ago(message.time) .. [[]
 			button[5.1,1;2,1;receivers;]] .. S("Receivers") .. [[]
 
 			label[0,2.1;]] .. S("Subject") .. [[: %s]
