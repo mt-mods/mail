@@ -44,7 +44,7 @@ function mail.show_message(name, id)
 	local body = minetest.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
-	if not message.read then
+	if not message.read and mail.get_setting(name, "auto_marking_read") then
 		-- mark as read
 		mail.mark_read(name, id)
 	end

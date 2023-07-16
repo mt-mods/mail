@@ -39,11 +39,14 @@ function mail.show_settings(name)
 			label[0.2,3.2;]] .. S("Other") .. [[]
             checkbox[0,3.6;trash_move_enable;]] .. S("Move deleted messages to trash") .. [[;]] ..
             tostring(mail.get_setting(name, "trash_move_enable")) .. [[]
+            checkbox[0,4.0;auto_marking_read;]] .. S("Automatic marking read") .. [[;]] ..
+            tostring(mail.get_setting(name, "auto_marking_read")) .. [[]
 
             tooltip[chat_notifications;]] .. S("Receive a message in the chat when there is a new message") .. [[]
             tooltip[onjoin_notifications;]] .. S("Receive a message at login when inbox isn't empty") .. [[]
             tooltip[hud_notifications;]] .. S("Show an HUD notification when inbox isn't empty") .. [[]
             tooltip[sound_notifications;]] .. S("Play a sound when there is a new message") .. [[]
+            tooltip[auto_marking_read;]] .. S("Mark a message as read when opened") .. [[]
 
             button[0,5.5;2.5,0.5;save;]] .. S("Save") .. [[]
             button[2.7,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
@@ -92,6 +95,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.trash_move_enable then
         mail.selected_idxs.trash_move_enable[playername] = fields.trash_move_enable == "true"
 
+    elseif fields.auto_marking_read then
+        mail.selected_idxs.auto_marking_read[playername] = fields.auto_marking_read == "true"
+
     elseif fields.save then
         -- checkboxes
         mail.set_setting(playername, "chat_notifications", mail.selected_idxs.chat_notifications[playername])
@@ -101,6 +107,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.set_setting(playername, "unreadcolorenable", mail.selected_idxs.unreadcolorenable[playername])
         mail.set_setting(playername, "cccolorenable", mail.selected_idxs.cccolorenable[playername])
         mail.set_setting(playername, "trash_move_enable", mail.selected_idxs.trash_move_enable[playername])
+        mail.set_setting(playername, "auto_marking_read", mail.selected_idxs.auto_marking_read[playername])
         -- dropdowns
         local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
         local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")

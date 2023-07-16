@@ -34,7 +34,8 @@ mail = {
 		sound_notifications = {},
 		unreadcolorenable = {},
 		cccolorenable = {},
-		trash_move_enable = {}
+		trash_move_enable = {},
+		auto_marking_read = {},
 	},
 
 	colors = {
