@@ -11,7 +11,7 @@ It adds a mail-system that allows players to send each other messages in-game an
 
 # Screenshot
 
-![](screenshot_1.1.0.png)
+![](screenshot_1.2.0.png)
 
 # Installation
 
