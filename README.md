@@ -83,6 +83,7 @@ See the "LICENSE" file
 * TheTrueBeginner (Simplified Chinese translation)
 * nyomi (Hungarian translation)
 * whosit (UI fixes)
+* Wuzzy (German translation)
 
 # Contribute
 

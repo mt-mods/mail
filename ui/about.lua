@@ -41,7 +41,8 @@ function mail.show_about(name)
 			[[,Nuno Filipe Povoa,mail_notif.ogg,]] ..
 			[[,TheTrueBeginner,Simplified Chinese trans.,]] ..
 			[[,nyomi,Hungarian translation,]] ..
-			[[,whosit,UI fixes]
+			[[,whosit,UI fixes,]] ..
+			[[,Wuzzy,German translation]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
