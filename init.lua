@@ -47,7 +47,7 @@ mail = {
 		add_sel = "#9FE6A0",
 		imp_add = "#E6D26F",
 		imp_add_sel = "#BFE16B",
-		highlighted = "#466432",
+		highlighted = "#608631",
 		new = "#00F529"
 	},
 
