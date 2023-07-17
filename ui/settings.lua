@@ -3,7 +3,19 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:settings"
 
+local date_formats = {"%Y-%m-%d %X", "%d/%m/%y %X", "%A %d %B %Y %X"}
+
 function mail.show_settings(name)
+    -- date formats prepare
+    local dates_now = {}
+    local previous_date_format = mail.get_setting(name, "date_format")
+    local date_dropdown_index = 1
+    for i, f in pairs(date_formats) do
+        table.insert(dates_now, os.date(f, os.time()))
+        if f == previous_date_format then date_dropdown_index = i end
+    end
+    local date_dropdown_str = table.concat(dates_now, ",")
+
 	local formspec = [[
 			size[10,6;]
 			tabheader[0.3,1;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;1;false;false]
@@ -41,6 +53,9 @@ function mail.show_settings(name)
             tostring(mail.get_setting(name, "trash_move_enable")) .. [[]
             checkbox[0,4.0;auto_marking_read;]] .. S("Automatic marking read") .. [[;]] ..
             tostring(mail.get_setting(name, "auto_marking_read")) .. [[]
+			label[0.31,4.7;]] .. S("Date format:") .. [[]
+            dropdown[2.7,4.6;4,0.5;date_format;]] .. date_dropdown_str .. [[;]] ..
+            tostring(date_dropdown_index) .. [[;true]
 
             tooltip[chat_notifications;]] .. S("Receive a message in the chat when there is a new message") .. [[]
             tooltip[onjoin_notifications;]] .. S("Receive a message at login when inbox isn't empty") .. [[]
@@ -109,10 +124,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.set_setting(playername, "trash_move_enable", mail.selected_idxs.trash_move_enable[playername])
         mail.set_setting(playername, "auto_marking_read", mail.selected_idxs.auto_marking_read[playername])
         -- dropdowns
-        local defaultsortfield = fields.defaultsortfield or mail.get_setting("defaultsortfield")
-        local defaultsortdirection = fields.defaultsortdirection or mail.get_setting("defaultsortdirection")
+        local defaultsortfield = fields.defaultsortfield or mail.get_setting(playername, "defaultsortfield")
+        local defaultsortdirection = fields.defaultsortdirection or mail.get_setting(playername, "defaultsortdirection")
+        local date_format = date_formats[tonumber(fields.date_format)] or mail.get_setting(playername, "date_format")
         mail.set_setting(playername, "defaultsortfield", tonumber(defaultsortfield))
         mail.set_setting(playername, "defaultsortdirection", tonumber(defaultsortdirection))
+        mail.set_setting(playername, "date_format", date_format)
         -- update visuals
         mail.hud_update(playername, mail.get_storage_entry(playername).inbox)
         mail.show_settings(playername)

@@ -405,6 +405,7 @@ function mail.get_setting_default_value(setting_name)
 		defaultsortdirection = 1,
 		trash_move_enable = true,
 		auto_marking_read = true,
+		date_format = "%Y-%m-%d %X",
 	}
 	return default_values[setting_name]
 end
