@@ -18,7 +18,7 @@ function mail.show_settings(name)
 
 	local formspec = [[
 			size[10,6;]
-			tabheader[0.3,1;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;1;false;false]
+			tabheader[0.3,0.875;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;1;false;false]
 			button[9.35,0;0.75,0.5;back;X]
 
 			box[0,0.8;3,0.45;]] .. mail.colors.highlighted .. [[]
@@ -63,8 +63,8 @@ function mail.show_settings(name)
             tooltip[sound_notifications;]] .. S("Play a sound when there is a new message") .. [[]
             tooltip[auto_marking_read;]] .. S("Mark a message as read when opened") .. [[]
 
-            button[0,5.5;2.5,0.5;save;]] .. S("Save") .. [[]
-            button[2.7,5.5;2.5,0.5;reset;]] .. S("Reset") .. [[]
+            button[0,5.65;2.5,0.5;reset;]] .. S("Reset") .. [[]
+            button[7.5,5.65;2.5,0.5;save;]] .. S("Save") .. [[]
             ]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

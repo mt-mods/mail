@@ -6,13 +6,13 @@ local FORMNAME = "mail:about"
 function mail.show_about(name)
 	local formspec = [[
 			size[10,6;]
-			tabheader[0.3,1;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
+			tabheader[0.3,0.875;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
 			button[9.35,0;0.75,0.5;back;X]
-			label[0,0.8;Mail]
-			label[0,1.2;]] .. S("Provided by mt-mods") .. [[]
-			label[0,1.6;]] .. S("Version") .. [[ : 1.3.0]
-			label[0,2.2;]] .. S("Licenses") .. [[ :]
-			label[0.2,2.6;]] .. S("Expat (code), WTFPL (textures)") .. [[]
+			label[0,0.7;Mail]
+			label[0,1.1;]] .. S("Provided by mt-mods") .. [[]
+			label[0,1.5;]] .. S("Version") .. [[ : 1.3.0]
+			label[0,2.0;]] .. S("Licenses") .. [[ :]
+			label[0.2,2.4;]] .. S("Expat (code), WTFPL (textures)") .. [[]
 			label[0,3.2;https://github.com/mt-mods/mail]
 			label[0,3.6;https://content.minetest.net/packages/mt-mods/mail]
 			textarea[0.5,4.8;4,5.5;;]] .. S("Note") .. [[;]] ..
