@@ -12,7 +12,10 @@ end
 
 function mail.send(m)
 	if type(m.from) ~= "string" then return false, "'from' is not a string" end
-	if type(m.to) ~= "string" then return false, "'to' is not a string" end
+	if type(m.to or "") ~= "string" then return false, "'to' is not a string" end
+	if type(m.cc or "") ~= "string" then return false, "'cc' is not a string" end
+	if type(m.bcc or "") ~= "string" then return false, "'bcc' is not a string" end
+	if type(m.subject or "") ~= "string" then return false, "'subject' is not a string" end
 	if type(m.body) ~= "string" then return false, "'body' is not a string" end
 
 	-- defaults
@@ -121,7 +124,10 @@ end
 
 function mail.save_draft(m)
 	if type(m.from) ~= "string" then return false, "'from' is not a string" end
-	if type(m.to) ~= "string" then return false, "'to' is not a string" end
+	if type(m.to or "") ~= "string" then return false, "'to' is not a string" end
+	if type(m.cc or "") ~= "string" then return false, "'cc' is not a string" end
+	if type(m.bcc or "") ~= "string" then return false, "'bcc' is not a string" end
+	if type(m.subject or "") ~= "string" then return false, "'subject' is not a string" end
 	if type(m.body) ~= "string" then return false, "'body' is not a string" end
 
 	-- defaults
