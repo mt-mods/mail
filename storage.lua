@@ -394,20 +394,7 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 end
 
 function mail.get_setting_default_value(setting_name)
-	local default_values = {
-		chat_notifications = true,
-		onjoin_notifications = true,
-		hud_notifications = true,
-		sound_notifications = true,
-		unreadcolorenable = true,
-		cccolorenable = true,
-		defaultsortfield = 3,
-		defaultsortdirection = 1,
-		trash_move_enable = true,
-		auto_marking_read = true,
-		date_format = "%Y-%m-%d %X",
-	}
-	return default_values[setting_name]
+	return mail.settings[setting_name].default
 end
 
 function mail.get_setting(playername, setting_name)

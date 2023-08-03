@@ -51,6 +51,20 @@ mail = {
 		new = "#00F529"
 	},
 
+	settings = {
+		chat_notifications = { type = "bool", default = true },
+		onjoin_notifications = { type = "bool", default = true },
+		hud_notifications = { type = "bool", default = true },
+		sound_notifications = { type = "bool", default = true },
+		unreadcolorenable = { type = "bool", default = true },
+		cccolorenable = { type = "bool", default = true },
+		defaultsortfield = { type = "number", default = 3 },
+		defaultsortdirection = { type = "number", default = 1 },
+		trash_move_enable = { type = "bool", default = true },
+		auto_marking_read = { type = "bool", default = true },
+		date_format = { type = "string", default = "%Y-%m-%d %X" },
+	},
+
 	message_drafts = {}
 }
 
