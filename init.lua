@@ -1,3 +1,6 @@
+-- translation
+local S = minetest.get_translator("mail")
+
 mail = {
 	-- version
 	version = 3,
@@ -52,18 +55,24 @@ mail = {
 	},
 
 	settings = {
-		chat_notifications = { type = "bool", default = true },
-		onjoin_notifications = { type = "bool", default = true },
-		hud_notifications = { type = "bool", default = true },
-		sound_notifications = { type = "bool", default = true },
-		unreadcolorenable = { type = "bool", default = true },
-		cccolorenable = { type = "bool", default = true },
-		defaultsortfield = { type = "number", default = 3 },
-		defaultsortdirection = { type = "number", default = 1 },
-		trash_move_enable = { type = "bool", default = true },
-		auto_marking_read = { type = "bool", default = true },
-		date_format = { type = "string", default = "%Y-%m-%d %X" },
+		chat_notifications		= { type = "bool",		default = true,				group = "notifications" },
+		onjoin_notifications	= { type = "bool",		default = true,				group = "notifications" },
+		hud_notifications		= { type = "bool",		default = true,				group = "notifications" },
+		sound_notifications		= { type = "bool",		default = true,				group = "notifications" },
+		unreadcolorenable		= { type = "bool",		default = true,				group = "message_list" },
+		cccolorenable			= { type = "bool",		default = true,				group = "message_list" },
+		defaultsortfield		= { type = "number",	default = 3,				group = "message_list" },
+		defaultsortdirection	= { type = "number",	default = 1,				group = "message_list" },
+		trash_move_enable		= { type = "bool",		default = true,				group = "other" },
+		auto_marking_read		= { type = "bool",		default = true,				group = "other" },
+		date_format				= { type = "string",	default = "%Y-%m-%d %X",	group = "other" },
 	},
+
+	settings_groups = {
+		notifications	= S("Notifications"),
+		message_list	= S("Message list"),
+		other			= S("Other")
+	}
 
 	message_drafts = {}
 }
