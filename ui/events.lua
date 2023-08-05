@@ -111,6 +111,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.show_mail_menu(name)
             return true
         end
+        local outbox = getOutbox()[evt.row-1]
+        if not outbox then
+            mail.show_mail_menu(name)
+            return true
+        end
         if mail.selected_idxs.multipleselection[name] then
             if not mail.selected_idxs.outbox[name] then
                 mail.selected_idxs.outbox[name] = {}
@@ -118,7 +123,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             local selected_id = 0
             if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
-                    if getOutbox()[evt.row-1].id == selected_msg then
+                    if outbox.id == selected_msg then
                         selected_id = i
                         table.remove(mail.selected_idxs.outbox[name], i)
                         break
@@ -126,13 +131,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
             if selected_id == 0 then
-                table.insert(mail.selected_idxs.outbox[name], getOutbox()[evt.row-1].id)
+                table.insert(mail.selected_idxs.outbox[name], outbox.id)
             end
         else
-            mail.selected_idxs.outbox[name] = { (getOutbox()[evt.row-1] or {}).id }
+            mail.selected_idxs.outbox[name] = { outbox.id }
         end
-        if evt.type == "DCL" and getOutbox()[evt.row-1] then
-            mail.show_message(name, getOutbox()[evt.row-1].id)
+        if evt.type == "DCL" then
+            mail.show_message(name, outbox.id)
         else
             mail.show_mail_menu(name)
         end
