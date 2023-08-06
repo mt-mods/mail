@@ -18,8 +18,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "mail:inbox" and formname ~= "mail:outbox"
     and formname ~= "mail:drafts" and formname ~= "mail:trash" then
         return
-    elseif fields.quit then
-        return
+    end
+
+    if fields.quit then
+        return true
     end
 
     -- Get player name and handle / convert common input fields
@@ -64,7 +66,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
             mail.show_mail_menu(name)
-            return
+            return true
+        end
+        local inbox = getInbox()[evt.row-1]
+        if not inbox then
+            mail.show_mail_menu(name)
+            return true
         end
         if mail.selected_idxs.multipleselection[name] then
             if not mail.selected_idxs.inbox[name] then
@@ -73,7 +80,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             local selected_id = 0
             if mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.inbox[name]) do
-                    if getInbox()[evt.row-1].id == selected_msg then
+                    if inbox.id == selected_msg then
                         selected_id = i
                         table.remove(mail.selected_idxs.inbox[name], i)
                         break
@@ -81,13 +88,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
             if selected_id == 0 then
-                table.insert(mail.selected_idxs.inbox[name], getInbox()[evt.row-1].id)
+                table.insert(mail.selected_idxs.inbox[name], inbox.id)
             end
         else
-            mail.selected_idxs.inbox[name] = { (getInbox()[evt.row-1] or {}).id }
+            mail.selected_idxs.inbox[name] = { inbox.id }
         end
-        if evt.type == "DCL" and getInbox()[evt.row-1] then
-            mail.show_message(name, getInbox()[evt.row-1].id)
+        if evt.type == "DCL" then
+            mail.show_message(name, inbox.id)
         else
             mail.show_mail_menu(name)
         end
@@ -102,7 +109,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
             mail.show_mail_menu(name)
-            return
+            return true
+        end
+        local outbox = getOutbox()[evt.row-1]
+        if not outbox then
+            mail.show_mail_menu(name)
+            return true
         end
         if mail.selected_idxs.multipleselection[name] then
             if not mail.selected_idxs.outbox[name] then
@@ -111,7 +123,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             local selected_id = 0
             if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
-                    if getOutbox()[evt.row-1].id == selected_msg then
+                    if outbox.id == selected_msg then
                         selected_id = i
                         table.remove(mail.selected_idxs.outbox[name], i)
                         break
@@ -119,13 +131,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
             if selected_id == 0 then
-                table.insert(mail.selected_idxs.outbox[name], getOutbox()[evt.row-1].id)
+                table.insert(mail.selected_idxs.outbox[name], outbox.id)
             end
         else
-            mail.selected_idxs.outbox[name] = { (getOutbox()[evt.row-1] or {}).id }
+            mail.selected_idxs.outbox[name] = { outbox.id }
         end
-        if evt.type == "DCL" and getOutbox()[evt.row-1] then
-            mail.show_message(name, getOutbox()[evt.row-1].id)
+        if evt.type == "DCL" then
+            mail.show_message(name, outbox.id)
         else
             mail.show_mail_menu(name)
         end
