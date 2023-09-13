@@ -3,21 +3,6 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:settings"
 
-local function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
 function mail.show_settings(name)
     local groups_labels = {}
     local group_index = 1
@@ -82,7 +67,7 @@ function mail.show_settings(name)
                 ]]
             end
             if data.dataset then
-                local formatted_dataset = deepcopy(data.dataset)
+                local formatted_dataset = table.copy(data.dataset)
                 if data.format then
                     for i, d in ipairs(formatted_dataset) do
                         formatted_dataset[i] = data.format(d)
@@ -104,7 +89,7 @@ function mail.show_settings(name)
 
         elseif data.type == "index" then
             y = y + 0.55
-            local formatted_dataset = deepcopy(data.dataset)
+            local formatted_dataset = table.copy(data.dataset)
             if data.format then
                 for i, d in ipairs(formatted_dataset) do
                     formatted_dataset[i] = data.format(d)
