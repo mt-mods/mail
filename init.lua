@@ -94,9 +94,9 @@ mail = {
 	},
 
 	settings_groups = {
-		{ name = "notifications",	label = S("Notifications")},
-		{ name = "message_list",	label = S("Message list")},
-		{ name = "other",			label = S("Other")}
+		{ name = "notifications", label = S("Notifications")},
+		{ name = "message_list",  label = S("Message list")},
+		{ name = "other",         label = S("Other")}
 	},
 
 	message_drafts = {}
