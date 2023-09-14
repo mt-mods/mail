@@ -62,9 +62,7 @@ function mail.show_settings(name)
             field_default .. [[]
             ]]
             if data.tooltip then
-                formspec = formspec .. [[
-                tooltip[]] .. setting .. ";" .. data.tooltip .. [[]
-                ]]
+                formspec = formspec .. "tooltip[" .. setting .. ";" .. data.tooltip .. "]"
             end
             if data.dataset then
                 local formatted_dataset = table.copy(data.dataset)
