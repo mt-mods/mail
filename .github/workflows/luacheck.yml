@@ -4,5 +4,7 @@ jobs:
   luacheck:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: lunarmodules/luacheck@master
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Luacheck
+        uses: lunarmodules/luacheck@master
