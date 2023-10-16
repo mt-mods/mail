@@ -20,6 +20,7 @@ mail = {
 		outbox = {},
 		drafts = {},
 		trash = {},
+		message = {},
 		contacts = {},
 		maillists = {},
 		to = {},

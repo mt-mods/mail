@@ -89,11 +89,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             if selected_id == 0 then
                 table.insert(mail.selected_idxs.inbox[name], inbox.id)
+                mail.selected_idxs.message[name] = inbox.id
             end
         else
             mail.selected_idxs.inbox[name] = { inbox.id }
+            mail.selected_idxs.message[name] = inbox.id
         end
         if evt.type == "DCL" then
+            mail.selected_idxs.message[name] = inbox.id
             mail.show_message(name, inbox.id)
         else
             mail.show_mail_menu(name)
@@ -132,11 +135,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             if selected_id == 0 then
                 table.insert(mail.selected_idxs.outbox[name], outbox.id)
+                mail.selected_idxs.message[name] = outbox.id
             end
         else
             mail.selected_idxs.outbox[name] = { outbox.id }
+            mail.selected_idxs.message[name] = outbox.id
         end
         if evt.type == "DCL" then
+            mail.selected_idxs.message[name] = outbox.id
             mail.show_message(name, outbox.id)
         else
             mail.show_mail_menu(name)
@@ -156,6 +162,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         mail.selected_idxs.drafts[name] = evt.row - 1
         if evt.type == "DCL" and messagesDrafts[mail.selected_idxs.drafts[name]] then
+            mail.selected_idxs.message[name] = messagesDrafts[mail.selected_idxs.drafts[name]].id
             mail.show_compose(name,
             messagesDrafts[mail.selected_idxs.drafts[name]].to,
             messagesDrafts[mail.selected_idxs.drafts[name]].subject,
@@ -180,6 +187,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         mail.selected_idxs.trash[name] = evt.row - 1
         if evt.type == "DCL" and messagesTrash[mail.selected_idxs.trash[name]] then
+            mail.selected_idxs.message[name] = messagesTrash[mail.selected_idxs.trash[name]].id
             mail.show_message(name, messagesTrash[mail.selected_idxs.trash[name]].id)
         end
         return true
@@ -203,12 +211,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.read then
         if formname == "mail:inbox" and nonempty(mail.selected_idxs.inbox[name]) then -- inbox table
-            mail.show_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
+            mail.selected_idxs.message[name] = mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]]
         elseif formname == "mail:outbox" and nonempty(mail.selected_idxs.outbox[name]) then -- outbox table
-            mail.show_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
+            mail.selected_idxs.message[name] = mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]]
         elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then
-            mail.show_message(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+            mail.selected_idxs.message[name] = messagesTrash[mail.selected_idxs.trash[name]].id
         end
+        mail.show_message(name, mail.selected_idxs.message[name])
 
     elseif fields.edit then
         if formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then

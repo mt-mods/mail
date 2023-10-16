@@ -5,6 +5,7 @@ local FORMNAME = "mail:message"
 
 function mail.show_message(name, id)
 	local message = mail.get_message(name, id)
+	mail.selected_idxs.message[name] = id
 
 	local formspec = [[
 			size[8,9]
@@ -111,16 +112,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-    local entry = mail.get_storage_entry(name)
 
-	local message = ""
-	if mail.selected_idxs.inbox[name] and mail.selected_idxs.boxtab[name] == 1 then
-		message = mail.get_message(name, mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]])
-	elseif mail.selected_idxs.outbox[name] and mail.selected_idxs.boxtab[name] == 2 then
-		message = mail.get_message(name, mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]])
-	elseif mail.selected_idxs.trash[name] and mail.selected_idxs.boxtab[name] == 4 then
-		message = mail.get_message(name, entry.trash[mail.selected_idxs.trash[name]].id)
-	end
+	local message = mail.get_message(name, mail.selected_idxs.message[name])
 
 	if fields.back then
 		mail.show_mail_menu(name)

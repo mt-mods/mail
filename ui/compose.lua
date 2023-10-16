@@ -2,7 +2,6 @@
 local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:compose"
-local msg_id = {}
 
 function mail.show_compose(name, to, subject, body, cc, bcc, id)
 	local formspec = [[
@@ -28,9 +27,7 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 		minetest.formspec_escape(body) or "")
 
     if id then
-        msg_id[name] = id
-    else
-        msg_id[name] = nil
+        mail.selected_idxs.message[name] = id
     end
 
 	minetest.show_formspec(name, FORMNAME, formspec)
@@ -44,8 +41,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
     if fields.send then
         local id = mail.new_uuid()
-        if msg_id[name] then
-            id = msg_id[name]
+        if mail.selected_idxs.message[name] then
+            id = mail.selected_idxs.message[name]
         end
         if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
             -- if mail is invalid then store it as a draft
@@ -117,8 +114,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     elseif fields.draft then
         local id = mail.new_uuid()
-        if msg_id[name] then
-            id = msg_id[name]
+        if mail.selected_idxs.message[name] then
+            id = mail.selected_idxs.message[name]
         end
         mail.save_draft({
             id = id,
