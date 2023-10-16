@@ -22,7 +22,7 @@ function mail.show_maillists(name)
 			formspec[#formspec + 1] = "@" .. minetest.formspec_escape(maillist.name)
 			formspec[#formspec + 1] = ","
 			if maillist.desc ~= "" then
-				if string.len(maillist.desc) > 30 then
+				if string.len(maillist.desc or "") > 30 then
 					formspec[#formspec + 1] = minetest.formspec_escape(string.sub(maillist.desc, 1, 27))
 					formspec[#formspec + 1] = "..."
 				else
