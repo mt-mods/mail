@@ -5,6 +5,11 @@ local FORMNAME = "mail:message"
 
 function mail.show_message(name, id)
 	local message = mail.get_message(name, id)
+	if not message then
+		-- message not found or vanished
+		return
+	end
+
 	mail.selected_idxs.message[name] = id
 
 	local formspec = [[
