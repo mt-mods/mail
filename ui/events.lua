@@ -217,7 +217,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then
             mail.selected_idxs.message[name] = messagesTrash[mail.selected_idxs.trash[name]].id
         end
-        mail.show_message(name, mail.selected_idxs.message[name])
+        if mail.selected_idxs.message[name] then
+            mail.show_message(name, mail.selected_idxs.message[name])
+        end
 
     elseif fields.edit then
         if formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then
