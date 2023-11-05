@@ -35,19 +35,6 @@ mail = {
 		settings_group = {},
 	},
 
-	colors = {
-		header = "#999",
-		selected = "#72FF63",
-		important = "#FFD700",
-		additional = "#CCCCDD",
-		imp_sel = "#B9EB32",
-		add_sel = "#9FE6A0",
-		imp_add = "#E6D26F",
-		imp_add_sel = "#BFE16B",
-		highlighted = "#608631",
-		new = "#00F529"
-	},
-
 	settings = {
 		chat_notifications = {
 			type = "bool", default = true, group = "notifications", index = 1,
@@ -113,6 +100,7 @@ end
 
 -- sub files
 local MP = minetest.get_modpath(minetest.get_current_modname())
+dofile(MP .. "/util/init.lua")
 dofile(MP .. "/chatcommands.lua")
 dofile(MP .. "/migrate.lua")
 dofile(MP .. "/hud.lua")
@@ -122,7 +110,6 @@ dofile(MP .. "/gui.lua")
 dofile(MP .. "/onjoin.lua")
 -- sub directories
 dofile(MP .. "/ui/init.lua")
-dofile(MP .. "/util/init.lua")
 
 -- migrate storage
 mail.migrate()

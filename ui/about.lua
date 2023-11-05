@@ -21,8 +21,8 @@ function mail.show_about(name)
 
 			tablecolumns[color;text;text]
 			table[5,0.75;4.9,5.5;contributors;]] ..
-			mail.colors.header .. [[,]] .. S("Contributors") .. [[,,]] ..
-			mail.colors.important .. [[,Cheapie,Initial idea/project,]] ..
+			mail.get_color("h") .. [[,]] .. S("Contributors") .. [[,,]] ..
+			mail.get_color("i") .. [[,Cheapie,Initial idea/project,]] ..
 			[[,Rubenwardy,Lua/UI improvements,]] ..
 			[[,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
 			[[,Athozus,Boxes\, Maillists\, UI\, Settings,]] ..

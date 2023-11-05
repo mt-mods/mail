@@ -23,7 +23,7 @@ function mail.show_settings(name)
 			tablecolumns[text]
             table[0,0.775;3,4.5;groups;]] .. groups_str .. [[;]] .. group_index .. [[]
 
-			box[3.5,0.8;3,0.45;]] .. mail.colors.highlighted .. [[]
+			box[3.5,0.8;3,0.45;]] .. mail.get_color("H") .. [[]
 			label[3.7,0.8;]] .. mail.settings_groups[group_index].label .. [[]
 
             button[0,5.65;2.5,0.5;reset;]] .. S("Reset") .. [[]

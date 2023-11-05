@@ -15,7 +15,7 @@ function mail.show_message(name, id)
 	local formspec = [[
 			size[8,9]
 
-			box[0,0;7,1.9;]] .. mail.colors.highlighted .. [[]
+			box[0,0;7,1.9;]] .. mail.get_color("H") .. [[]
 
 			button[7.25,0.15;0.75,0.5;back;X]
 

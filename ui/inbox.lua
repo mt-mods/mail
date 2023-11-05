@@ -67,7 +67,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
         tablecolumns[color;text;text]
-        table[0,0.7;5.75,7.45;inbox;]] .. mail.colors.header .. "," .. S("From") .. "," .. S("Subject")
+        table[0,0.7;5.75,7.45;inbox;]] .. mail.get_color("h") .. "," .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
 
     mail.message_drafts[name] = nil
@@ -90,27 +90,27 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
             if selected_id > 0 then
                 if not message.read and unread_color_enable then
                     if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_add_sel
+                        formspec[#formspec + 1] = "," .. mail.get_color("ias")
                     else
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_sel
+                        formspec[#formspec + 1] = "," .. mail.get_color("is")
                     end
                 else
                     if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.add_sel
+                        formspec[#formspec + 1] = "," .. mail.get_color("as")
                     else
-                        formspec[#formspec + 1] = "," .. mail.colors.selected
+                        formspec[#formspec + 1] = "," .. mail.get_color("s")
                     end
                 end
             else
                 if not message.read and unread_color_enable then
                     if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_add
+                        formspec[#formspec + 1] = "," .. mail.get_color("ia")
                     else
-                        formspec[#formspec + 1] = "," .. mail.colors.important
+                        formspec[#formspec + 1] = "," .. mail.get_color("i")
                     end
                 else
                     if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.additional
+                        formspec[#formspec + 1] = "," .. mail.get_color("a")
                     else
                         formspec[#formspec + 1] = ","
                     end
