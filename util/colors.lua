@@ -32,9 +32,9 @@ local function rgbColorsMix(colors)
         G = G + c.g
         B = B + c.b
     end
-    R = R / #colors
-    G = G / #colors
-    B = B / #colors
+    R = math.floor(R / #colors + 0.5)
+    G = math.floor(G / #colors + 0.5)
+    B = math.floor(B / #colors + 0.5)
     return {r=R,g=G,b=B}
 end
 
