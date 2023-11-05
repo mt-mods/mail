@@ -78,6 +78,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
     if #messages > 0 then
         for _, message in ipairs(messages) do
             local selected_id = 0
+            local displayed_color = ""
             -- check if message is in selection list and return its id
             if mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.inbox[name]) do
@@ -88,34 +89,15 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                if not message.read and unread_color_enable then
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.get_color("ias")
-                    else
-                        formspec[#formspec + 1] = "," .. mail.get_color("is")
-                    end
-                else
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.get_color("as")
-                    else
-                        formspec[#formspec + 1] = "," .. mail.get_color("s")
-                    end
-                end
-            else
-                if not message.read and unread_color_enable then
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.get_color("ia")
-                    else
-                        formspec[#formspec + 1] = "," .. mail.get_color("i")
-                    end
-                else
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.get_color("a")
-                    else
-                        formspec[#formspec + 1] = ","
-                    end
-                end
+                displayed_color = displayed_color .. "s"
             end
+            if not message.read and unread_color_enable then
+                displayed_color = displayed_color .. "i"
+            end
+            if not mail.player_in_list(name, message.to) and cc_color_enable then
+                displayed_color = displayed_color .. "a"
+            end
+            formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
             formspec[#formspec + 1] = minetest.formspec_escape(message.from)
             formspec[#formspec + 1] = ","

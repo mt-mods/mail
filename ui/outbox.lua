@@ -73,6 +73,7 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
 	if #messages > 0 then
         for _, message in ipairs(messages) do
             local selected_id = 0
+            local displayed_color = ""
             -- check if message is in selection list and return its id
             if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
@@ -83,10 +84,9 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-				formspec[#formspec + 1] = "," .. mail.get_color("s")
-            else
-				formspec[#formspec + 1] = ","
+                displayed_color = displayed_color .. "s"
             end
+            formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
 			if string.len(message.to) > 20 then
 				formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.to, 1, 17))
