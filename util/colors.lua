@@ -1,6 +1,6 @@
 local function get_base_color(id)
     local colors = {
-		h = "#999", -- header
+		h = "#999999", -- header
 		s = "#72FF63", -- selected
 		i = "#FFD700", -- important
 		a = "#CCCCDD", -- additional
