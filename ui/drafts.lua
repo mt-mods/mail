@@ -21,7 +21,7 @@ function mail.show_drafts(name)
 		button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
 		tablecolumns[color;text;text]
-		table[0,0.7;5.75,9.35;drafts;]] .. mail.get_color("h") .. "," .. S("To") .. "," .. S("Subject")
+		table[0,0.7;5.75,9.35;drafts;]] .. mail.get_color("header") .. "," .. S("To") .. "," .. S("Subject")
 
     local formspec = { drafts_formspec }
     local entry = mail.get_storage_entry(name)

@@ -1,13 +1,14 @@
-local function get_base_color(id)
-    local colors = {
-		h = "#999999", -- header
-		s = "#72FF63", -- selected
-		i = "#FFD700", -- important
-		a = "#CCCCDD", -- additional
-		H = "#608631", -- highlighted
-		n = "#00F529" -- new
-	}
-	return colors[id]
+local generic_colors = {
+	header         = "#999999",
+	selected       = "#72FF63",
+	important      = "#FFD700",
+	additional     = "#CCCCDD",
+	highlighted    = "#608631",
+	new            = "#00F529",
+}
+
+local function get_base_color(c)
+    return generic_colors[c] or ""
 end
 
 local function hex2rgb(hex)
@@ -39,15 +40,16 @@ local function rgbColorsMix(colors)
 end
 
 function mail.get_color(mix)
-    if #mix == 1 then
+    if type(mix) == "string" then
         return get_base_color(mix)
+    elseif #mix == 1 then
+        return get_base_color(mix[1])
     else
-        local colors = {}
-        for i = 1, #mix do
-            local c = mix:sub(i,i)
-            colors[#colors+1] = hex2rgb(get_base_color(c))
+        local colors2mix = {}
+        for _, c in ipairs(mix) do
+            colors2mix[#colors2mix+1] = hex2rgb(get_base_color(c))
         end
-        local mixed_color = rgbColorsMix(colors)
+        local mixed_color = rgbColorsMix(colors2mix)
         return rgb2hex(mixed_color)
     end
 end

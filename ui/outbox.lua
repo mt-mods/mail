@@ -65,7 +65,7 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
 		tablecolumns[color;text;text]
-        table[0,0.7;5.75,7.45;outbox;]] .. mail.get_color("h") .. "," .. S("To") .. "," .. S("Subject")
+        table[0,0.7;5.75,7.45;outbox;]] .. mail.get_color("header") .. "," .. S("To") .. "," .. S("Subject")
 	local formspec = { outbox_formspec }
 
 	mail.message_drafts[name] = nil
@@ -73,7 +73,7 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
 	if #messages > 0 then
         for _, message in ipairs(messages) do
             local selected_id = 0
-            local displayed_color = ""
+            local displayed_color = {}
             -- check if message is in selection list and return its id
             if mail.selected_idxs.outbox[name] and #mail.selected_idxs.outbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.outbox[name]) do
@@ -84,7 +84,7 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                displayed_color = displayed_color .. "s"
+                table.insert(displayed_color, "selected")
             end
             formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
