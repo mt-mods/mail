@@ -42,7 +42,8 @@ function mail.show_about(name)
 			[[,TheTrueBeginner,Simplified Chinese trans.,]] ..
 			[[,nyomi,Hungarian translation,]] ..
 			[[,whosit,UI fixes,]] ..
-			[[,Wuzzy,German translation]
+			[[,Wuzzy,German translation,]] ..
+			[[,Muhammad Rifqi Priyo Susanto,Indonesian trans.]
 		]] .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)

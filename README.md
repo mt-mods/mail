@@ -84,6 +84,7 @@ See the "LICENSE" file
 * nyomi (Hungarian translation)
 * whosit (UI fixes)
 * Wuzzy (German translation)
+* Muhammad Rifqi Priyo Susanto (Indonesian translation)
 
 # Contribute
 
