@@ -96,6 +96,9 @@ function mail.show_settings(name)
             local dataset_str = table.concat(formatted_dataset, ",")
             local dataset_selected_id = field_default
             formspec = formspec .. [[
+            label[]] .. x .. "," .. y .. ";" .. data.label .. "]"
+            y = y + 0.4
+            formspec = formspec .. [[
             dropdown[]] .. x .. "," .. y .. ";3,0.5;" .. setting .. ";" ..
             dataset_str .. [[;]] .. dataset_selected_id .. [[;true]
             ]]
