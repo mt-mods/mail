@@ -9,7 +9,7 @@ function mail.show_receivers(name, id)
 	local formspec = [[
 			size[8,6]
 
-			box[0,0;7,1.1;]] .. mail.colors.highlighted .. [[]
+			box[0,0;7,1.1;]] .. mail.get_color("highlighted") .. [[]
 
 			button[7.25,0.15;0.75,0.5;back;X]
 
@@ -25,10 +25,10 @@ function mail.show_receivers(name, id)
 
 	local from = minetest.formspec_escape(message.from) or ""
 	local to = mail.parse_player_list(message.to or "")
-	local to_str = mail.colors.header .. "," .. S("To") .. ",,"
+	local to_str = mail.get_color("header") .. "," .. S("To") .. ",,"
 	to_str = to_str .. table.concat(to, ",,")
 	local cc = mail.parse_player_list(message.cc or "")
-	local cc_str = mail.colors.header .. "," .. S("CC") .. ",,"
+	local cc_str = mail.get_color("header") .. "," .. S("CC") .. ",,"
 	cc_str = cc_str .. table.concat(cc, ",,")
 	local date = type(message.time) == "number"
 		and minetest.formspec_escape(os.date(mail.get_setting(name, "date_format"), message.time)) or ""

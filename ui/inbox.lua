@@ -67,7 +67,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
         tablecolumns[color;text;text]
-        table[0,0.7;5.75,7.45;inbox;]] .. mail.colors.header .. "," .. S("From") .. "," .. S("Subject")
+        table[0,0.7;5.75,7.45;inbox;]] .. mail.get_color("header") .. "," .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
 
     mail.message_drafts[name] = nil
@@ -78,6 +78,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
     if #messages > 0 then
         for _, message in ipairs(messages) do
             local selected_id = 0
+            local displayed_color = {}
             -- check if message is in selection list and return its id
             if mail.selected_idxs.inbox[name] and #mail.selected_idxs.inbox[name] > 0 then
                 for i, selected_msg in ipairs(mail.selected_idxs.inbox[name]) do
@@ -88,34 +89,15 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
                 end
             end
             if selected_id > 0 then
-                if not message.read and unread_color_enable then
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_add_sel
-                    else
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_sel
-                    end
-                else
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.add_sel
-                    else
-                        formspec[#formspec + 1] = "," .. mail.colors.selected
-                    end
-                end
-            else
-                if not message.read and unread_color_enable then
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.imp_add
-                    else
-                        formspec[#formspec + 1] = "," .. mail.colors.important
-                    end
-                else
-                    if not mail.player_in_list(name, message.to) and cc_color_enable then
-                        formspec[#formspec + 1] = "," .. mail.colors.additional
-                    else
-                        formspec[#formspec + 1] = ","
-                    end
-                end
+                table.insert(displayed_color, "selected")
             end
+            if not message.read and unread_color_enable then
+                table.insert(displayed_color, "important")
+            end
+            if not mail.player_in_list(name, message.to) and cc_color_enable then
+                table.insert(displayed_color, "additional")
+            end
+            formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
             formspec[#formspec + 1] = minetest.formspec_escape(message.from)
             formspec[#formspec + 1] = ","

@@ -5,15 +5,15 @@ local FORMNAME = "mail:selectcontact"
 
 local select_contact_formspec = "size[8,9;]" .. mail.theme .. [[
     tablecolumns[color;text;text]
-    table[0,0;3.5,9;contacts;]] .. mail.colors.header .. "," .. S("Name") .. "," .. S("Note") .. [[%s]
+    table[0,0;3.5,9;contacts;]] .. mail.get_color("header") .. "," .. S("Name") .. "," .. S("Note") .. [[%s]
     button[3.55,2.00;1.75,0.5;toadd;→ ]] .. S("Add") .. [[]
     button[3.55,2.75;1.75,0.5;toremove;← ]] .. S("Remove") .. [[]
     button[3.55,6.00;1.75,0.5;ccadd;→ ]] .. S("Add") .. [[]
     button[3.55,6.75;1.75,0.5;ccremove;← ]] .. S("Remove") .. [[]
     tablecolumns[color;text;text]
-    table[5.15,0.0;2.75,4.5;to;]] .. mail.colors.header .. "," .. S("To") .. ":," .. S("Note") .. [[%s]
+    table[5.15,0.0;2.75,4.5;to;]] .. mail.get_color("header") .. "," .. S("To") .. ":," .. S("Note") .. [[%s]
     tablecolumns[color;text;text]
-    table[5.15,4.6;2.75,4.5;cc;]] .. mail.colors.header .. "," .. S("CC") .. ":," .. S("Note") .. [[%s]
+    table[5.15,4.6;2.75,4.5;cc;]] .. mail.get_color("header") .. "," .. S("CC") .. ":," .. S("Note") .. [[%s]
     button[3.55,8.25;1.75,0.5;back;]] .. S("Back") .. [[]
 ]]
 
