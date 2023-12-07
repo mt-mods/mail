@@ -4,12 +4,7 @@ local S = minetest.get_translator("mail")
 local FORMNAME = "mail:message"
 
 local function interleaveMsg(body)
-	local lines = (body or ""):split("\n", true)
-	local il_lines = {}
-	for _,l in ipairs(lines) do
-		il_lines[#il_lines+1] = "> " .. l
-	end
-	return table.concat(il_lines, "\n")
+	return "> " .. (body or ""):gsub("\n", "\n> ")
 end
 
 
