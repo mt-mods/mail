@@ -3,6 +3,11 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:message"
 
+local function interleaveMsg(body)
+	return "> " .. (body or ""):gsub("\n", "\n> ")
+end
+
+
 function mail.show_message(name, id)
 	local message = mail.get_message(name, id)
 	if not message then
@@ -65,8 +70,7 @@ function mail.reply(name, message)
 		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
-	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
-	mail.show_compose(name, message.from, "Re: "..message.subject, replyfooter)
+	mail.show_compose(name, message.from, "Re: "..message.subject, interleaveMsg(message.body))
 end
 
 function mail.replyall(name, message)
@@ -76,8 +80,6 @@ function mail.replyall(name, message)
 		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
-
-	local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 
 	-- new recipients are the sender plus the original recipients, minus ourselves
 	local recipients = message.to or ""
@@ -103,12 +105,11 @@ function mail.replyall(name, message)
 	end
 	cc = mail.concat_player_list(cc)
 
-	mail.show_compose(name, recipients, "Re: "..message.subject, replyfooter, cc)
+	mail.show_compose(name, recipients, "Re: "..message.subject, interleaveMsg(message.body), cc)
 end
 
 function mail.forward(name, message)
-	local fwfooter = "Type your message here.\n\n--Original message follows--\n" .. (message.body or "")
-	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), fwfooter)
+	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), interleaveMsg(message.body))
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
