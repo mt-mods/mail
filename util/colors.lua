@@ -5,6 +5,7 @@ local generic_colors = {
 	additional     = "#CCCCDD",
 	highlighted    = "#608631",
 	new            = "#00F529",
+	warning        = "#FF8800",
 }
 
 local function get_base_color(c)
