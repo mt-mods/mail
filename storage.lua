@@ -399,9 +399,9 @@ end
 
 function mail.get_setting(playername, key)
 	local entry = mail.get_storage_entry(playername)
-	local value = entry.settings[key] == nil
-		and mail.get_setting_default_value(key)
-		or entry.settings[key]
+	local value = (entry.settings[key] == nil
+		and {mail.get_setting_default_value(key)}
+		or {entry.settings[key]})[1]
 
 	if mail.settings[key].sync then -- in case this setting is shared with another mod
 		value = mail.settings[key].sync(playername, key) -- get new value
