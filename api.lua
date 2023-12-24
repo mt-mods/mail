@@ -83,6 +83,7 @@ function mail.send(m)
 	local entry = mail.get_storage_entry(m.from)
 	table.insert(entry.outbox, 1, msg)
 	mail.set_storage_entry(m.from, entry)
+	msg.spam = #mail.check_spam(msg) >= 1
 
 	-- add in every receivers inbox
 	for recipient in pairs(recipients) do

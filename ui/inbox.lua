@@ -97,6 +97,9 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
             if not mail.player_in_list(name, message.to) and cc_color_enable then
                 table.insert(displayed_color, "additional")
             end
+            if message.spam then
+                table.insert(displayed_color, "warning")
+            end
             formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
             formspec[#formspec + 1] = minetest.formspec_escape(message.from)
