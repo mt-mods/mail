@@ -189,6 +189,40 @@ function mail.mark_unread(playername, msg_ids)
 	return
 end
 
+-- marks a mail as a spam
+function mail.mark_spam(playername, msg_ids)
+	local entry = mail.get_storage_entry(playername)
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
+	for _, spam_msg_id in ipairs(msg_ids) do
+		for _, entry_msg in ipairs(entry.inbox) do
+			if entry_msg.id == spam_msg_id then
+				entry_msg.spam = true
+			end
+		end
+	end
+	mail.set_storage_entry(playername, entry)
+	return
+end
+
+-- marks a mail as a non-spam
+function mail.unmark_spam(playername, msg_ids)
+	local entry = mail.get_storage_entry(playername)
+	if type(msg_ids) ~= "table" then -- if this is not a table
+		msg_ids = { msg_ids }
+	end
+	for _, unspam_msg_id in ipairs(msg_ids) do
+		for _, entry_msg in ipairs(entry.inbox) do
+			if entry_msg.id == unspam_msg_id then
+				entry_msg.spam = false
+			end
+		end
+	end
+	mail.set_storage_entry(playername, entry)
+	return
+end
+
 -- deletes a mail by its id
 function mail.delete_mail(playername, msg_ids, delete_in_trash)
 	local entry = mail.get_storage_entry(playername)
