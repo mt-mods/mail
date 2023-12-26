@@ -18,26 +18,31 @@ function mail.show_message(name, id)
 	mail.selected_idxs.message[name] = id
 
 	local formspec = [[
-			size[8,9]
+			size[10,10]
 
 			box[0,0;7,1.9;]] .. mail.get_color("highlighted") .. [[]
 
-			button[7.25,0.15;0.75,0.5;back;X]
+			button[9.25,0.15;0.75,0.5;back;X]
+			button[7.25,-0.07;2,1;receivers;]] .. S("Receivers") .. [[]
 
 			label[0.2,0.1;]] .. S("From") .. [[: %s]
 			label[0.2,0.5;]] .. S("To") .. [[: %s]
 			label[0.2,0.9;]] .. S("CC") .. [[: %s]
 			label[0.2,1.3;]] .. S("Date") .. [[: %s]
 			tooltip[0.2,1.3;4.8,0.4;]] .. mail.time_ago(message.time) .. [[]
-			button[5.1,1;2,1;receivers;]] .. S("Receivers") .. [[]
 
 			label[0,2.1;]] .. S("Subject") .. [[: %s]
 			textarea[0.25,2.6;8,7.0;;;%s]
 
-			button[0,8.5;2,1;reply;]] .. S("Reply") .. [[]
-			button[2,8.5;2,1;replyall;]] .. S("Reply all") .. [[]
-			button[4,8.5;2,1;forward;]] .. S("Forward") .. [[]
-			button[6,8.5;2,1;delete;]] .. S("Delete") .. [[]
+			button[7.25,1.0;2.75,1;reply;]] .. S("Reply") .. [[]
+			button[7.25,1.8;2.75,1;replyall;]] .. S("Reply all") .. [[]
+			button[7.25,2.6;2.75,1;forward;]] .. S("Forward") .. [[]
+			button[7.25,3.6;2.75,1;markspam;]] .. S("Mark Spam") .. [[]
+			button[7.25,4.4;2.75,1;unmarkspam;]] .. S("Unmark Spam") .. [[]
+
+			box[7.25,5.4;2.5,4.0;]] .. mail.get_color("disabled") .. [[]
+
+			button[7.25,9.5;2.75,1;delete;]] .. S("Delete") .. [[]
 
 			tooltip[reply;]] .. S("Reply only to the sender") .. [[]
 			tooltip[replyall;]] .. S("Reply to all involved people") .. [[]
@@ -133,6 +138,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.forward then
 		mail.forward(name, message)
+
+	elseif fields.markspam then
+		mail.mark_spam(name, message.id)
+
+	elseif fields.unmarkspam then
+		mail.unmark_spam(name, message.id)
 
 	elseif fields.delete then
         if mail.get_setting(name, "trash_move_enable") and mail.selected_idxs.boxtab[name] ~= 4 then

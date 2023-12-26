@@ -33,7 +33,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         trash_tab = "," .. S("Trash")
     end
 
-    local inbox_formspec = "size[8.5,10;]" .. mail.theme .. [[
+    local inbox_formspec = "size[8.5,11;]" .. mail.theme .. [[
         tabheader[0.3,1;boxtab;]] ..
         S("Inbox") .. "," .. S("Outbox").. "," .. S("Drafts") .. trash_tab .. [[;1;false;false]
 
@@ -43,31 +43,34 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         button[6,2.45;2.5,0.5;replyall;]] .. S("Reply all") .. [[]
         button[6,3.20;2.5,0.5;forward;]] .. S("Forward") .. [[]
         button[6,3.95;2.5,0.5;delete;]] .. S("Delete") .. [[]
-        button[6,4.82;2.5,0.5;markread;]] .. S("Mark Read") .. [[]
+        button[6,4.85;2.5,0.5;markread;]] .. S("Mark Read") .. [[]
         button[6,5.55;2.5,0.5;markunread;]] .. S("Mark Unread") .. [[]
-        button[6,6.8;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
-        button[6,7.6;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
-        button[6,8.7;2.5,0.5;options;]] .. S("Options") .. [[]
-        button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
+        button[6,6.4;2.5,0.5;markspam;]] .. S("Mark Spam") .. [[]
+        button[6,7.1;2.5,0.5;unmarkspam;]] .. S("Unmark Spam") .. [[]
+        button[6,8.0;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
+        button[6,8.8;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
+        button[6,9.7;2.5,0.5;options;]] .. S("Options") .. [[]
+        button_exit[6,10.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
         tooltip[reply;]] .. S("Reply only to the sender") .. [[]
         tooltip[replyall;]] .. S("Reply to all involved people") .. [[]
         tooltip[forward;]] .. S("Transfer message to other people") .. [[]
 
-        dropdown[0,8.5;2,0.5;sortfield;]] ..
+        dropdown[0,9.5;2,0.5;sortfield;]] ..
         S("From") .. "," .. S("Subject") .. "," .. S("Date") .. [[;]] .. sortfieldindex .. [[;true]
-        dropdown[2.0,8.5;2,0.5;sortdirection;]] ..
+        dropdown[2.0,9.5;2,0.5;sortdirection;]] ..
         S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
-        field[4.25,8.95;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
-        button[5.14,8.62;0.85,0.5;search;Q]
+        field[4.25,9.95;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
+        button[5.14,9.62;0.85,0.5;search;Q]
 
-        checkbox[0,9.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
+        checkbox[0,10.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
-        label[0,9.65;]] .. S("@1 of @2 selected", tostring(#mail.selected_idxs.inbox[name]), tostring(#messages)) .. [[]
-        button[3.5,9.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
+        label[0,10.65;]] ..
+        S("@1 of @2 selected", tostring(#mail.selected_idxs.inbox[name]), tostring(#messages)) .. [[]
+        button[3.5,10.5;2.5,0.5;selectall;]] .. S("(Un)select all") .. [[]
 
         tablecolumns[color;text;text]
-        table[0,0.7;5.75,7.45;inbox;]] .. mail.get_color("header") .. "," .. S("From") .. "," .. S("Subject")
+        table[0,0.7;5.75,8.45;inbox;]] .. mail.get_color("header") .. "," .. S("From") .. "," .. S("Subject")
     local formspec = { inbox_formspec }
 
     mail.message_drafts[name] = nil

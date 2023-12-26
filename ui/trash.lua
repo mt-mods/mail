@@ -1,7 +1,7 @@
 -- translation
 local S = minetest.get_translator("mail")
 
-local trash_formspec = "size[8.5,10;]" .. mail.theme .. [[
+local trash_formspec = "size[8.5,11;]" .. mail.theme .. [[
 	tabheader[0.3,1;boxtab;]] ..
 	S("Inbox") .. "," .. S("Outbox").. "," .. S("Drafts") .. "," .. S("Trash") .. [[;4;false;false]
 
@@ -10,13 +10,13 @@ local trash_formspec = "size[8.5,10;]" .. mail.theme .. [[
 	button[6,1.70;2.5,0.5;restore;]] .. S("Restore") .. [[]
 	button[6,2.45;2.5,0.5;delete;]] .. S("Delete") .. [[]
 	button[6,3.20;2.5,0.5;empty;]] .. S("Empty") .. [[]
-	button[6,6.8;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
-	button[6,7.6;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
-	button[6,8.7;2.5,0.5;options;]] .. S("Options") .. [[]
-	button_exit[6,9.5;2.5,0.5;quit;]] .. S("Close") .. [[]
+	button[6,8.0;2.5,0.5;contacts;]] .. S("Contacts") .. [[]
+	button[6,8.8;2.5,0.5;maillists;]] .. S("Mail lists") .. [[]
+	button[6,9.7;2.5,0.5;options;]] .. S("Options") .. [[]
+	button_exit[6,10.5;2.5,0.5;quit;]] .. S("Close") .. [[]
 
 	tablecolumns[color;text;text]
-	table[0,0.7;5.75,9.35;trash;]] .. mail.get_color("header") .. "," .. S("From/To") .. "," .. S("Subject")
+	table[0,0.7;5.75,10.35;trash;]] .. mail.get_color("header") .. "," .. S("From/To") .. "," .. S("Subject")
 
 
 function mail.show_trash(name)
