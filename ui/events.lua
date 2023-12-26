@@ -313,6 +313,20 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
+    elseif fields.markspam then
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            mail.mark_spam(name, mail.selected_idxs.inbox[name])
+        end
+
+        mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
+
+    elseif fields.unmarkspam then
+        if formname == "mail:inbox" and mail.selected_idxs.inbox[name] then
+            mail.unmark_spam(name, mail.selected_idxs.inbox[name])
+        end
+
+        mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
+
     elseif fields.new then
         mail.show_compose(name)
 
