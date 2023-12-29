@@ -28,7 +28,7 @@ local function words_ratio(str, ratio)
 end
 
 function mail.check_spam(message)
-    spam_checks = {}
+    local spam_checks = {}
     if caps_ratio(message.subject) == 1 or caps_ratio(message.body) > 0.4 then
         table.insert(spam_checks, "caps")
     end
