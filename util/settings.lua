@@ -53,6 +53,9 @@ mail.settings_groups = {
     { name = "other",         label = S("Other")}
 }
 
-for s, _ in pairs(mail.settings) do
+for s, d in pairs(mail.settings) do
 	mail.selected_idxs[s] = {}
+	if d.type == "list" then
+        mail.selected_idxs["index_" .. s] = {}
+    end
 end

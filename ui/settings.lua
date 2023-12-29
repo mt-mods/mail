@@ -107,6 +107,22 @@ function mail.show_settings(name)
                 tooltip[]] .. setting .. ";" .. data.tooltip .. [[]
                 ]]
             end
+        elseif data.type == "list" then
+            y = y + 0.5
+            formspec = formspec .. [[
+            field[]] .. x+0.275 .. "," .. y .. ";2.975,0.5;field_" .. setting .. [[;;]
+            button[]] .. x+2.75 .. "," .. y-0.325 .. ";0.75,0.5;add_" .. setting .. [[;+]
+            button[]] .. x+3.25 .. "," .. y-0.325 .. ";0.75,0.5;remove_" .. setting .. [[;-]
+            ]]
+            if data.tooltip then
+                formspec = formspec .. "tooltip[field_" .. setting .. ";" .. data.tooltip .. "]"
+            end
+            y = y + 0.5
+            formspec = formspec .. [[
+            tablecolumns[color;text]
+            table[]] .. x-0.0125 .. "," .. y .. ";3.8125,2.5;" .. setting .. ";" ..
+            mail.get_color("header") .. "," .. data.label .. ",," ..
+            table.concat(field_default, ",,") .. "]"
         end
     end
     formspec = formspec .. mail.theme
@@ -121,7 +137,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local playername = player:get_player_name()
 
     for setting, data in pairs(mail.settings) do
-        if fields[setting] then
+        if fields[setting] or fields["add_" .. setting] or fields["remove_" .. setting] then
             if data.type == "bool" then
                 mail.selected_idxs[setting][playername] = fields[setting] == "true"
                 break
@@ -132,6 +148,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.show_settings(playername)
             elseif data.type == "index" then
                 mail.selected_idxs[setting][playername] = tonumber(fields[setting])
+            elseif data.type == "list" then
+                mail.selected_idxs[setting][playername] = mail.selected_idxs[setting][playername] or
+                mail.get_setting(playername, setting)
+                if fields[setting] then
+                    local evt = minetest.explode_table_event(fields[setting])
+                    mail.selected_idxs["index_" .. setting][playername] = evt.row-1
+                elseif fields["add_" .. setting] then
+                    table.insert(mail.selected_idxs[setting][playername], fields["field_" .. setting])
+                elseif fields["remove_" .. setting] and mail.selected_idxs["index_" .. setting][playername] then
+                    table.remove(mail.selected_idxs[setting][playername],
+                    mail.selected_idxs["index_" .. setting][playername])
+                end
+                mail.show_settings(playername)
             end
         end
     end
