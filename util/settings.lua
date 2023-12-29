@@ -45,11 +45,16 @@ mail.settings = {
         type = "string", default = "%Y-%m-%d %X", group = "other", index = 3, label = S("Date format"),
         dataset = {"%Y-%m-%d %X", "%d/%m/%y %X", "%A %d %B %Y %X"}, format = os.date
     },
+    mute_list = {
+        type = "list", default = {}, group = "spam", index = 1,
+        label = S("Mute list")
+    },
 }
 
 mail.settings_groups = {
     { name = "notifications", label = S("Notifications")},
     { name = "message_list",  label = S("Message list")},
+    { name = "spam",          label = S("Spam")},
     { name = "other",         label = S("Other")}
 }
 
@@ -58,4 +63,45 @@ for s, d in pairs(mail.settings) do
 	if d.type == "list" then
         mail.selected_idxs["index_" .. s] = {}
     end
+end
+
+function mail.settings.mute_list.check(name, value)
+    local valid_players = {}
+    for _, p in ipairs(value) do
+        if p ~= name and minetest.player_exists(p) then
+            table.insert(valid_players, p)
+        end
+    end
+    return valid_players
+end
+
+function mail.settings.mute_list.sync(name)
+    if minetest.get_modpath("beerchat") then
+        local players = {}
+        for other_player, _ in minetest.get_auth_handler().iterate() do
+            if beerchat.has_player_muted_player(name, other_player) then
+                table.insert(players, other_player)
+            end
+        end
+        return players
+    end
+    return nil
+end
+
+function mail.settings.mute_list.transfer(name, value)
+    if minetest.get_modpath("beerchat") then
+        for other_player, _ in minetest.get_auth_handler().iterate() do -- unmute all
+            if not beerchat.execute_callbacks("before_mute", name, other_player) then
+                return false
+            end
+            minetest.get_player_by_name(name):get_meta():set_string(
+				"beerchat:muted:" .. other_player, "")
+        end
+        for _, other_player in ipairs(value) do -- then mute only players in table
+            minetest.get_player_by_name(name):get_meta():set_string(
+                    "beerchat:muted:" .. other_player, "true")
+        end
+        return true
+    end
+    return nil
 end
