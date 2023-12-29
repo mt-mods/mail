@@ -37,10 +37,13 @@ function mail.show_message(name, id)
 			button[7.25,1.0;2.75,1;reply;]] .. S("Reply") .. [[]
 			button[7.25,1.8;2.75,1;replyall;]] .. S("Reply all") .. [[]
 			button[7.25,2.6;2.75,1;forward;]] .. S("Forward") .. [[]
+
 			button[7.25,3.6;2.75,1;markspam;]] .. S("Mark Spam") .. [[]
 			button[7.25,4.4;2.75,1;unmarkspam;]] .. S("Unmark Spam") .. [[]
 
-			box[7.25,5.4;2.5,4.0;]] .. mail.get_color("disabled") .. [[]
+			button[7.25,5.4;2.75,1;togglemute;]] .. S("(Un)mute sender") .. [[]
+
+			box[7.25,6.4;2.5,3.0;]] .. mail.get_color("disabled") .. [[]
 
 			button[7.25,9.5;2.75,1;delete;]] .. S("Delete") .. [[]
 
@@ -144,6 +147,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.unmarkspam then
 		mail.unmark_spam(name, message.id)
+
+	elseif fields.togglemute then
+		local mutes = table.copy(mail.get_setting(name, "mute_list"))
+		local mute_indexof = table.indexof(mutes, message.from)
+		if mute_indexof == -1 then -- mute
+			table.insert(mutes, message.from)
+		else -- unmute
+			table.remove(mutes, mute_indexof)
+		end
+		mail.set_setting(name, "mute_list", mutes)
 
 	elseif fields.delete then
         if mail.get_setting(name, "trash_move_enable") and mail.selected_idxs.boxtab[name] ~= 4 then

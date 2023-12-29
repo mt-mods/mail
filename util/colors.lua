@@ -7,6 +7,7 @@ local generic_colors = {
 	new            = "#00F529",
 	warning        = "#FF8800",
 	disabled       = "#332222",
+	muted          = "#CCCCCC",
 }
 
 local function get_base_color(c)

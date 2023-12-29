@@ -103,6 +103,9 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
             if message.spam then
                 table.insert(displayed_color, "warning")
             end
+            if table.indexof(mail.get_setting(name, "mute_list"), message.from) >= 1 then
+                table.insert(displayed_color, "muted")
+            end
             formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
             formspec[#formspec + 1] = minetest.formspec_escape(message.from)
