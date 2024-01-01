@@ -156,6 +156,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         -- save settings
         for setting, _ in pairs(mail.settings) do
             local new_value = mail.selected_idxs[setting][playername]
+            mail.selected_idxs[setting][playername] = nil
             if new_value == nil then new_value = mail.get_setting(playername, setting) end
             mail.set_setting(playername, setting, new_value)
         end
