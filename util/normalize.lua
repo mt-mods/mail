@@ -1,18 +1,43 @@
-local has_canonical_name = minetest.get_modpath("canonical_name")
+local S = minetest.get_translator("mail")
+
+local function recursive_expand_recipient_names(sender, list, recipients, undeliverable)
+    for _, name in ipairs(list) do
+        if not (recipients[name] or undeliverable[name]) then
+            local succ, value
+            for _, handler in ipairs(mail.registered_recipient_handlers) do
+                succ, value = handler(sender, name)
+                if succ ~= nil then
+                    break
+                end
+            end
+            local vtp = type(value)
+            if succ then
+                if vtp == "string" then
+                    recursive_expand_recipient_names(sender, {value}, recipients, undeliverable)
+                elseif vtp == "table" then
+                    recursive_expand_recipient_names(sender, value, recipients, undeliverable)
+                elseif vtp == "function" then
+                    recipients[name] = value
+                else
+                    undeliverable[name] = S("The method of delivery to @1 is invalid.", name)
+                end
+            elseif succ == nil then
+                undeliverable[name] = S("The recipient @1 could not be identified.", name)
+            else
+                local reason = tostring(value) or S("@1 rejected your mail.", name)
+                undeliverable[name] = reason
+            end
+        end
+    end
+end
 
 --[[
 return the field normalized (comma separated, single space)
 and add individual player names to recipient list
 --]]
-function mail.normalize_players_and_add_recipients(field, recipients, undeliverable)
+function mail.normalize_players_and_add_recipients(sender, field, recipients, undeliverable)
     local order = mail.parse_player_list(field)
-    for _, recipient_name in ipairs(order) do
-        if not minetest.player_exists(recipient_name) then
-            undeliverable[recipient_name] = true
-        else
-            recipients[recipient_name] = true
-        end
-    end
+    recursive_expand_recipient_names(sender, order, recipients, undeliverable)
     return mail.concat_player_list(order)
 end
 
@@ -21,23 +46,14 @@ function mail.parse_player_list(field)
         return {}
     end
 
-    local separator = ", "
+    local separator = ",%s"
     local pattern = "([^" .. separator .. "]+)"
 
     -- get individual players
-    local player_set = {}
     local order = {}
-    field:gsub(pattern, function(player_name)
-        local lower = string.lower(player_name)
-        if not player_set[lower] then
-            if has_canonical_name then
-                player_name = canonical_name.get(player_name) or player_name
-            end
-
-            player_set[lower] = player_name
-            order[#order+1] = player_name
-        end
-    end)
+    for name in field:gmatch(pattern) do
+        table.insert(order, name)
+    end
 
     return order
 end

@@ -42,6 +42,22 @@ mail.register_on_receive(function(m)
 end)
 ```
 
+# Recipient handler
+Recipient handlers are registered using
+
+```lua
+mail.register_recipient_handler(function(sender, name)
+end)
+```
+
+where `name` is the name of a single recipient.
+
+The recipient handler should return
+* `nil` if the handler does not handle messages sent to the particular recipient,
+* `true, player` (where `player` is a string or a list of strings) if the mail should be redirected to `player`,
+* `true, deliver` if the mail should be delivered by calling `deliver` with the message, or
+* `false, reason` (where `reason` is optional or, if provided, a string) if the recipient explicitly rejects the mail.
+
 # Internals
 
 mod-storage entry for a player (indexed by playername and serialized with json):

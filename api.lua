@@ -10,6 +10,11 @@ function mail.register_on_receive(func)
 	mail.registered_on_receives[#mail.registered_on_receives + 1] = func
 end
 
+mail.registered_recipient_handlers = {}
+function mail.register_recipient_handler(func)
+	table.insert(mail.registered_recipient_handlers, func)
+end
+
 function mail.send(m)
 	if type(m.from) ~= "string" then return false, "'from' is not a string" end
 	if type(m.to or "") ~= "string" then return false, "'to' is not a string" end
@@ -25,22 +30,22 @@ function mail.send(m)
 	local recipients = {}
 	local undeliverable = {}
 	m.to = mail.concat_player_list(mail.extractMaillists(m.to, m.from))
-	m.to = mail.normalize_players_and_add_recipients(m.to, recipients, undeliverable)
+	m.to = mail.normalize_players_and_add_recipients(m.from, m.to, recipients, undeliverable)
 	if m.cc then
 		m.cc = mail.concat_player_list(mail.extractMaillists(m.cc, m.from))
-		m.cc = mail.normalize_players_and_add_recipients(m.cc, recipients, undeliverable)
+		m.cc = mail.normalize_players_and_add_recipients(mail.from, m.cc, recipients, undeliverable)
 	end
 	if m.bcc then
 		m.bcc = mail.concat_player_list(mail.extractMaillists(m.bcc, m.from))
-		m.bcc = mail.normalize_players_and_add_recipients(m.bcc, recipients, undeliverable)
+		m.bcc = mail.normalize_players_and_add_recipients(m.from, m.bcc, recipients, undeliverable)
 	end
 
 	if next(undeliverable) then -- table is not empty
-		local undeliverable_names = {}
-		for name in pairs(undeliverable) do
-			undeliverable_names[#undeliverable_names + 1] = '"' .. name .. '"'
+		local undeliverable_reason = {S("The mail could not be sent:")}
+		for _, reason in pairs(undeliverable) do
+			table.insert(undeliverable_reason, reason)
 		end
-		return false, f("recipients %s don't exist; cannot send mail.", table.concat(undeliverable_names, ", "))
+		return false, table.concat(undeliverable_reason, "\n")
 	end
 
 	local extra = {}
@@ -85,32 +90,8 @@ function mail.send(m)
 	mail.set_storage_entry(m.from, entry)
 
 	-- add in every receivers inbox
-	for recipient in pairs(recipients) do
-		entry = mail.get_storage_entry(recipient)
-		table.insert(entry.inbox, msg)
-		mail.set_storage_entry(recipient, entry)
-	end
-
-	-- notify recipients that happen to be online
-	local mail_alert = S("You have a new message from @1! Subject: @2",  m.from, m.subject) ..
-	"\n" .. S("To view it, type /mail")
-	local inventory_alert = S("You could also use the button in your inventory.")
-	for _, player in ipairs(minetest.get_connected_players()) do
-		local name = player:get_player_name()
-		if recipients[name] then
-			if mail.get_setting(name, "chat_notifications") == true then
-				minetest.chat_send_player(name, mail_alert)
-				if minetest.get_modpath("unified_inventory") or minetest.get_modpath("sfinv_buttons") then
-					minetest.chat_send_player(name, inventory_alert)
-				end
-			end
-			if mail.get_setting(name, "sound_notifications") == true then
-				minetest.sound_play("mail_notif", {to_player=name})
-			end
-			local receiver_entry = mail.get_storage_entry(name)
-			local receiver_messages = receiver_entry.inbox
-			mail.hud_update(name, receiver_messages)
-		end
+	for _, deliver in pairs(recipients) do
+		deliver(msg)
 	end
 
 	for i=1, #mail.registered_on_receives do
