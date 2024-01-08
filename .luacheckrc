@@ -13,7 +13,7 @@ read_globals = {
 	"dump",
 
 	-- Deps
-	"unified_inventory", "default",
+	"unified_inventory", "default", "sfinv_buttons",
 
 	-- optional mods
 	"mtt", "canonical_name"

@@ -94,14 +94,14 @@ function mail.send(m)
 	-- notify recipients that happen to be online
 	local mail_alert = S("You have a new message from @1! Subject: @2",  m.from, m.subject) ..
 	"\n" .. S("To view it, type /mail")
-	local unified_inventory_alert = S("You could also use the button in your inventory.")
+	local inventory_alert = S("You could also use the button in your inventory.")
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if recipients[name] then
 			if mail.get_setting(name, "chat_notifications") == true then
 				minetest.chat_send_player(name, mail_alert)
-				if minetest.get_modpath("unified_inventory") then
-					minetest.chat_send_player(name, unified_inventory_alert)
+				if minetest.get_modpath("unified_inventory") or minetest.get_modpath("sfinv_buttons") then
+					minetest.chat_send_player(name, inventory_alert)
 				end
 			end
 			if mail.get_setting(name, "sound_notifications") == true then
