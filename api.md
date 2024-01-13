@@ -34,11 +34,18 @@ local success, error = mail.send({
 ```
 
 # Hooks
-On-receive mail hook:
+Generic on-receive mail hook:
 
 ```lua
 mail.register_on_receive(function(m)
 	-- "m" is an object in the form: "Mail format"
+end)
+```
+
+Player-specific on-receive mail hook:
+```lua
+mail.register_on_player_receive(function(player, msg)
+    -- "player" is the name of a recipient; "msg" is a mail object (see "Mail format")
 end)
 ```
 

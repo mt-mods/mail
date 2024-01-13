@@ -10,6 +10,11 @@ function mail.register_on_receive(func)
 	mail.registered_on_receives[#mail.registered_on_receives + 1] = func
 end
 
+mail.registered_on_player_receives = {}
+function mail.register_on_player_receive(func)
+	table.insert(mail.registered_on_player_receives, func)
+end
+
 mail.registered_recipient_handlers = {}
 function mail.register_recipient_handler(func)
 	table.insert(mail.registered_recipient_handlers, func)

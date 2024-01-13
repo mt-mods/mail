@@ -1,7 +1,7 @@
 local S = minetest.get_translator("mail")
 local has_canonical_name = minetest.get_modpath("canonical_name")
 
-local function deliver_mail_to_player(name, msg)
+mail.register_on_player_receive(function(name, msg)
 	-- add to inbox
 	local entry = mail.get_storage_entry(name)
 	table.insert(entry.inbox, msg)
@@ -26,14 +26,18 @@ local function deliver_mail_to_player(name, msg)
 		local receiver_messages = receiver_entry.inbox
 		mail.hud_update(name, receiver_messages)
 	end
-end
+end)
 
 mail.register_recipient_handler(function(_, pname)
 	if not minetest.player_exists(pname) then
 		return nil
 	end
-	return true, function(mail)
-		deliver_mail_to_player(pname, mail)
+	return true, function(msg)
+		for _, on_player_receive in ipairs(mail.registered_on_player_receives) do
+			if on_player_receive(pname, msg) then
+				break
+			end
+		end
 	end
 end)
 
