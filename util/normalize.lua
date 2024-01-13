@@ -1,8 +1,8 @@
 local S = minetest.get_translator("mail")
 
-local function recursive_expand_recipient_names(sender, list, recipients, undeliverable)
+local function recursive_expand_recipient_names(sender, list, is_toplevel, recipients, undeliverable)
     for _, name in ipairs(list) do
-        if not (recipients[name] or undeliverable[name]) then
+        if not (recipients[name] or undeliverable[name] or (name == sender and not is_toplevel)) then
             local succ, value
             for _, handler in ipairs(mail.registered_recipient_handlers) do
                 succ, value = handler(sender, name)
@@ -13,9 +13,9 @@ local function recursive_expand_recipient_names(sender, list, recipients, undeli
             local vtp = type(value)
             if succ then
                 if vtp == "string" then
-                    recursive_expand_recipient_names(sender, {value}, recipients, undeliverable)
+                    recursive_expand_recipient_names(sender, {value}, false, recipients, undeliverable)
                 elseif vtp == "table" then
-                    recursive_expand_recipient_names(sender, value, recipients, undeliverable)
+                    recursive_expand_recipient_names(sender, value, false, recipients, undeliverable)
                 elseif vtp == "function" then
                     recipients[name] = value
                 else
@@ -37,7 +37,7 @@ and add individual player names to recipient list
 --]]
 function mail.normalize_players_and_add_recipients(sender, field, recipients, undeliverable)
     local order = mail.parse_player_list(field)
-    recursive_expand_recipient_names(sender, order, recipients, undeliverable)
+    recursive_expand_recipient_names(sender, order, true, recipients, undeliverable)
     return mail.concat_player_list(order)
 end
 
