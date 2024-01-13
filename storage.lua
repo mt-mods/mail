@@ -61,6 +61,9 @@ local function save_worker()
 	-- clear queue
 	save_queued_entries = {}
 
+	-- clear cached entries
+	cache = {}
+
 	-- save every second
 	minetest.after(1, save_worker)
 end
