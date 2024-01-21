@@ -23,7 +23,7 @@ local function assert_inbox_count(player_name, count)
     assert(entry, player_name .. " has no mail entry")
     local actual_count = #entry.inbox
     assert(actual_count == count, ("incorrect mail count: %d expected, got %d"):format(count, actual_count))
-    local player_received = received_count[player_name]
+    local player_received = received_count[player_name] or 0
     assert(player_received == count, ("incorrect receive count: %d expected, got %d"):format(count, player_received))
 end
 
