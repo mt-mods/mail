@@ -13,7 +13,7 @@ local function recursive_expand_recipient_names(sender, list, is_toplevel, recip
             local vtp = type(value)
             if succ then
                 if vtp == "string" then
-                    recursive_expand_recipient_names(sender, {value}, false, recipients, undeliverable)
+                    recursive_expand_recipient_names(sender, {value}, is_toplevel, recipients, undeliverable)
                 elseif vtp == "table" then
                     recursive_expand_recipient_names(sender, value, false, recipients, undeliverable)
                 elseif vtp == "function" then
