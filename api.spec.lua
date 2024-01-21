@@ -1,17 +1,15 @@
-mtt.register("register non-player-recipients", function(callback)
-    mail.register_recipient_handler(function(sender, name)
-        if name:sub(1, 6) == "alias/" then
-            return true, name:sub(7)
-        elseif name == "list/test" then
-            return true, {"alias/player1", "alias/player2"}
-        elseif name == "list/reject" then
-            return false, "It works (?)"
-        end
-    end)
-end
+mail.register_recipient_handler(function(_, name)
+    if name:sub(1, 6) == "alias/" then
+        return true, name:sub(7)
+    elseif name == "list/test" then
+        return true, {"alias/player1", "alias/player2"}
+    elseif name == "list/reject" then
+        return false, "It works (?)"
+    end
+end)
 
 local function assert_inbox_count(player_name, count)
-    local entry == mail.get_storage_entry(player_name)
+    local entry = mail.get_storage_entry(player_name)
     assert(entry, player_name .. " has no mail entry")
     local actual_count = #entry.inbox
     assert(actual_count == count, ("incorrect mail count: %d expected, got %d"):format(count, actual_count))
