@@ -26,9 +26,7 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 		minetest.formspec_escape(subject) or "",
 		minetest.formspec_escape(body) or "")
 
-    if id then
-        mail.selected_idxs.message[name] = id
-    end
+	mail.selected_idxs.message[name] = id or mail.new_uuid()
 
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
@@ -40,10 +38,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local name = player:get_player_name()
     if fields.send then
-        local id = mail.new_uuid()
-        if mail.selected_idxs.message[name] then
-            id = mail.selected_idxs.message[name]
-        end
+        local id = mail.selected_idxs.message[name] or mail.new_uuid()
         if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
             -- if mail is invalid then store it as a draft
             mail.save_draft({
