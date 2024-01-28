@@ -38,7 +38,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local name = player:get_player_name()
     if fields.send then
-        local id = mail.selected_idxs.message[name] or mail.new_uuid()
+	local id = mail.selected_idxs.message[name] or mail.new_uuid()
         if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
             -- if mail is invalid then store it as a draft
             mail.save_draft({
