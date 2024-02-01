@@ -396,24 +396,32 @@ function mail.extractMaillists(receivers_string, maillists_owner)
 	return receivers
 end
 
-function mail.get_setting_default_value(setting_name)
-	return mail.settings[setting_name].default
+function mail.get_setting_default_value(key)
+	return mail.settings[key].default
 end
 
-function mail.get_setting(playername, setting_name)
+function mail.get_setting(playername, key)
 	local entry = mail.get_storage_entry(playername)
-	if entry.settings[setting_name] ~= nil then
-		return entry.settings[setting_name]
-	else
-		return mail.get_setting_default_value(setting_name)
+	local value = (entry.settings[key] == nil
+		and {mail.get_setting_default_value(key)}
+		or {entry.settings[key]})[1]
+
+	if mail.settings[key].sync then -- in case this setting is shared with another mod
+		value = mail.settings[key].sync(playername, key) -- get new value
+		mail.set_setting(playername, key, value, false) -- update the setting in mail storage and don't transfer it again
 	end
+
+	return value
 end
 
 -- add or update a setting
-function mail.set_setting(playername, key, value)
+function mail.set_setting(playername, key, value, not_transfer)
 	local entry = mail.get_storage_entry(playername)
 	entry.settings[key] = value
 	mail.set_storage_entry(playername, entry)
+	if not not_transfer and mail.settings[key].transfer then -- in case this setting is shared with another mod
+		mail.settings[key].transfer(playername, key, value)
+	end
 end
 
 function mail.reset_settings(playername)
