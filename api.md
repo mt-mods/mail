@@ -34,13 +34,36 @@ local success, error = mail.send({
 ```
 
 # Hooks
-On-receive mail hook:
+Generic on-receive mail hook:
 
 ```lua
 mail.register_on_receive(function(m)
 	-- "m" is an object in the form: "Mail format"
 end)
 ```
+
+Player-specific on-receive mail hook:
+```lua
+mail.register_on_player_receive(function(player, msg)
+    -- "player" is the name of a recipient; "msg" is a mail object (see "Mail format")
+end)
+```
+
+# Recipient handler
+Recipient handlers are registered using
+
+```lua
+mail.register_recipient_handler(function(sender, name)
+end)
+```
+
+where `name` is the name of a single recipient.
+
+The recipient handler should return
+* `nil` if the handler does not handle messages sent to the particular recipient,
+* `true, player` (where `player` is a string or a list of strings) if the mail should be redirected to `player`,
+* `true, deliver` if the mail should be delivered by calling `deliver` with the message, or
+* `false, reason` (where `reason` is optional or, if provided, a string) if the recipient explicitly rejects the mail.
 
 # Internals
 

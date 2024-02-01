@@ -49,6 +49,7 @@ dofile(MP .. "/storage.lua")
 dofile(MP .. "/api.lua")
 dofile(MP .. "/gui.lua")
 dofile(MP .. "/onjoin.lua")
+dofile(MP .. "/player_recipients.lua")
 -- sub directories
 dofile(MP .. "/ui/init.lua")
 
