@@ -417,10 +417,14 @@ end
 -- add or update a setting
 function mail.set_setting(playername, key, value, not_transfer)
 	local entry = mail.get_storage_entry(playername)
-	entry.settings[key] = value
+	local valid_value = value
+	if mail.settings[key].check then
+		valid_value = mail.settings[key].check(playername, value)
+	end
+	entry.settings[key] = valid_value
 	mail.set_storage_entry(playername, entry)
 	if not not_transfer and mail.settings[key].transfer then -- in case this setting is shared with another mod
-		mail.settings[key].transfer(playername, key, value)
+		mail.settings[key].transfer(playername, valid_value)
 	end
 end
 
