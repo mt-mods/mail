@@ -59,7 +59,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 						desc = fields.desc,
 						players = mail.parse_player_list(fields.players)
 					}, old_maillist.name)
-					maillists[mail.selected_idxs.maillists[name]] = nil
 				end
 			else
 				mail.update_maillist(name, {
