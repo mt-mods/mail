@@ -10,7 +10,7 @@ function mail.show_about(name)
 			button[9.35,0;0.75,0.5;back;X]
 			label[0,0.7;Mail]
 			label[0,1.1;]] .. S("Provided by mt-mods") .. [[]
-			label[0,1.5;]] .. S("Version") .. [[ : 1.3.0]
+			label[0,1.5;]] .. S("Version") .. [[ : 1.4.0-dev]
 			label[0,2.0;]] .. S("Licenses") .. [[ :]
 			label[0.2,2.4;]] .. S("Expat (code), WTFPL (textures)") .. [[]
 			label[0,3.2;https://github.com/mt-mods/mail]
