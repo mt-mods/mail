@@ -32,7 +32,7 @@ function mail.show_message(name, id)
 			tooltip[0.2,1.3;4.8,0.4;]] .. mail.time_ago(message.time) .. [[]
 
 			label[0,2.1;]] .. S("Subject") .. [[: %s]
-			textarea[0.25,2.6;8,7.0;;;%s]
+			textarea[0.25,2.6;7.25,8.75;;;%s]
 
 			button[7.25,1.0;2.75,1;reply;]] .. S("Reply") .. [[]
 			button[7.25,1.8;2.75,1;replyall;]] .. S("Reply all") .. [[]
@@ -43,9 +43,9 @@ function mail.show_message(name, id)
 
 			button[7.25,5.4;2.75,1;togglemute;]] .. S("(Un)mute sender") .. [[]
 
-			box[7.25,6.4;2.5,3.0;]] .. mail.get_color("disabled") .. [[]
+			box[7.25,6.4;2.5,2.75;]] .. mail.get_color("disabled") .. [[]
 
-			button[7.25,9.5;2.75,1;delete;]] .. S("Delete") .. [[]
+			button[7.25,9.25;2.75,1;delete;]] .. S("Delete") .. [[]
 
 			tooltip[reply;]] .. S("Reply only to the sender") .. [[]
 			tooltip[replyall;]] .. S("Reply to all involved people") .. [[]
