@@ -404,30 +404,32 @@ function mail.delete_maillist(playername, listname)
 	end
 end
 
-function mail.extractMaillists(receivers_string, maillists_owner)
-	local receivers = mail.parse_player_list(receivers_string) -- extracted receivers
-
-	-- extract players from mailing lists
-	while string.find(receivers_string, "@") do
-		local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
-		receivers = {}
-		for _, receiver in ipairs(globalReceivers) do
-			local receiverInfo = receiver:split("@") -- @maillist
-			if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
-				local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
-				if maillist then
-					for _, playername in ipairs(maillist.players) do
-						table.insert(receivers, playername)
-					end
-				end
-			else -- in case of player
-				table.insert(receivers, receiver)
-			end
+function mail.extractMaillists(receivers, maillists_owner)
+	if type(receivers) == "string" then
+		local list = mail.parse_player_list(receivers)
+		if not string.find(receivers, "@") then
+			return list
 		end
-		receivers_string = mail.concat_player_list(receivers)
+		receivers = list
 	end
 
-	return receivers
+	local expanded_receivers = {}
+	for _, receiver in pairs(receivers) do
+		if string.find(receiver, "^@") then
+			local listname = string.sub(receiver, 2)
+			local maillist = mail.get_maillist_by_name(maillists_owner, listname)
+			if maillist then
+				for _, entry in ipairs(maillist.players) do
+					for _, recipient in ipairs(mail.extractMaillists(entry, maillists_owner)) do
+						table.insert(expanded_receivers, recipient)
+					end
+				end
+			end
+		else
+			table.insert(expanded_receivers, receiver)
+		end
+	end
+	return expanded_receivers
 end
 
 function mail.get_setting_default_value(key)
