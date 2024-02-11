@@ -2,7 +2,7 @@
 The mail could not be sent:=無法發送郵件：
 You have mail! Type /mail to read=您有新郵件，請使用 /mail 查看。
 You have a new message from @1! Subject: @2=您有一封來自 @1 的新郵件，主題為“@2”。
-To view it, type /mail=請使用 /mail 命令查看。
+To view it, type /mail=請使用 /mail 指令查看。
 You could also use the button in your inventory.=您也可以使用物品欄裡的按鍵。
 Provided by mt-mods=由 mt-mods 提供
 Version=版本
