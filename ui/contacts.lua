@@ -27,7 +27,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.contacts then
 		local evt = minetest.explode_table_event(fields.contacts)
-		for k, _, i in mail.pairsByKeys(contacts) do
+		for k, _, i in mail.pairs_by_keys(contacts) do
 			if i == evt.row - 1 then
 				mail.selected_idxs.contacts[name] = tonumber(k)
 				break
@@ -58,7 +58,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			-- except if it was the last. Then determine the new last
 			local found = false
 			local last = nil
-			for k in mail.pairsByKeys(contacts) do
+			for k in mail.pairs_by_keys(contacts) do
 				if found then
 					mail.selected_idxs.contacts[name] = tonumber(k)
 					break

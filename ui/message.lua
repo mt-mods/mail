@@ -3,7 +3,7 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:message"
 
-local function interleaveMsg(body)
+local function interleave_msg(body)
 	return "> " .. (body or ""):gsub("\n", "\n> ")
 end
 
@@ -78,7 +78,7 @@ function mail.reply(name, message)
 		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
-	mail.show_compose(name, message.from, "Re: "..message.subject, interleaveMsg(message.body))
+	mail.show_compose(name, message.from, "Re: "..message.subject, interleave_msg(message.body))
 end
 
 function mail.replyall(name, message)
@@ -113,11 +113,11 @@ function mail.replyall(name, message)
 	end
 	cc = mail.concat_player_list(cc)
 
-	mail.show_compose(name, recipients, "Re: "..message.subject, interleaveMsg(message.body), cc)
+	mail.show_compose(name, recipients, "Re: "..message.subject, interleave_msg(message.body), cc)
 end
 
 function mail.forward(name, message)
-	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), interleaveMsg(message.body))
+	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), interleave_msg(message.body))
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)

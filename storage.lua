@@ -431,7 +431,7 @@ local function extract_maillists_main(receivers, maillists_owner, expanded_recei
 	end
 end
 
-function mail.extractMaillists(receivers, maillists_owner)
+function mail.extract_maillists(receivers, maillists_owner)
 	local expanded_receivers = {}
 	extract_maillists_main(receivers, maillists_owner, expanded_receivers, {})
 	return expanded_receivers
@@ -478,7 +478,7 @@ function mail.reset_settings(playername)
 	mail.set_storage_entry(playername, entry)
 end
 
-function mail.pairsByKeys(t, f)
+function mail.pairs_by_keys(t, f)
 	-- http://www.lua.org/pil/19.3.html
 	local a = {}
 	for n in pairs(t) do table.insert(a, n) end

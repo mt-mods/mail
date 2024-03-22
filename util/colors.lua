@@ -27,7 +27,7 @@ local function rgb2hex(rgb)
     return "#" .. string.format("%x", rgb.r) .. string.format("%x", rgb.g) .. string.format("%x", rgb.b)
 end
 
-local function rgbColorsMix(colors)
+local function rgb_colors_mix(colors)
     local R = 0
     local G = 0
     local B = 0
@@ -52,7 +52,7 @@ function mail.get_color(mix)
         for _, c in ipairs(mix) do
             colors2mix[#colors2mix+1] = hex2rgb(get_base_color(c))
         end
-        local mixed_color = rgbColorsMix(colors2mix)
+        local mixed_color = rgb_colors_mix(colors2mix)
         return rgb2hex(mixed_color)
     end
 end

@@ -85,7 +85,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			-- except if it was the last. Then determine the new last
 			local found = false
 			local last = nil
-			for k in mail.pairsByKeys(maillists) do
+			for k in mail.pairs_by_keys(maillists) do
 				if found then
 					mail.selected_idxs.maillists[name] = k
 					break

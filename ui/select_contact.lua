@@ -75,7 +75,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if fields[v.."add"] then
 			update = true
 			if mail.selected_idxs.contacts[name] then
-				for k, contact, i in mail.pairsByKeys(contacts) do
+				for k, contact, i in mail.pairs_by_keys(contacts) do
 					if k == mail.selected_idxs.contacts[name] or i == mail.selected_idxs.contacts[name] then
 						local list = mail.parse_player_list(draft[v])
 						list[#list+1] = contact.name

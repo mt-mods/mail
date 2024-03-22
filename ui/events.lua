@@ -1,6 +1,6 @@
 
 -- Getter to filter and sort messages on demand
-local function messageGetter(messages, sortfield, ascending, filter)
+local function message_getter(messages, sortfield, ascending, filter)
     local results
     return function()
         if not results then
@@ -54,8 +54,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local entry = mail.get_storage_entry(name)
     local messagesDrafts = entry.drafts
     local messagesTrash = entry.trash
-    local getInbox = messageGetter(entry.inbox, inboxsortfield, sortdirection == "2", filter)
-    local getOutbox = messageGetter(entry.outbox, outboxsortfield, sortdirection == "2", filter)
+    local getInbox = message_getter(entry.inbox, inboxsortfield, sortdirection == "2", filter)
+    local getOutbox = message_getter(entry.outbox, outboxsortfield, sortdirection == "2", filter)
 
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table

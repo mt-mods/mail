@@ -8,7 +8,7 @@ function mail.compile_contact_list(name, selected, playernames)
 
 	if playernames == nil then
 		local length = 0
-		for k, contact, i, l in mail.pairsByKeys(contacts) do
+		for k, contact, i, l in mail.pairs_by_keys(contacts) do
 			if i == 1 then length = l end
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
