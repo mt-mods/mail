@@ -404,31 +404,36 @@ function mail.delete_maillist(playername, listname)
 	end
 end
 
-function mail.extractMaillists(receivers, maillists_owner)
+local function extract_maillists_main(receivers, maillists_owner, expanded_receivers, seen)
 	if type(receivers) == "string" then
-		local list = mail.parse_player_list(receivers)
-		if not string.find(receivers, "@") then
-			return list
-		end
-		receivers = list
+		receivers = mail.parse_player_list(receivers)
 	end
 
-	local expanded_receivers = {}
 	for _, receiver in pairs(receivers) do
-		if string.find(receiver, "^@") then
+		if seen[receiver] then
+			-- Do not add/expand this receiver as it is already seen
+			minetest.log("verbose", ("mail: ignoring duplicate receiver %q during maillist expansion"):format(receiver))
+		elseif string.find(receiver, "^@") then
+			seen[receiver] = true
 			local listname = string.sub(receiver, 2)
 			local maillist = mail.get_maillist_by_name(maillists_owner, listname)
 			if maillist then
+				minetest.log("verbose", ("mail: expanding maillist %q"):format(listname))
 				for _, entry in ipairs(maillist.players) do
-					for _, recipient in ipairs(mail.extractMaillists(entry, maillists_owner)) do
-						table.insert(expanded_receivers, recipient)
-					end
+					extract_maillists_main(entry, maillists_owner, expanded_receivers, seen)
 				end
 			end
 		else
+			seen[receiver] = true
+			minetest.log("verbose", ("mail: adding %q to receiver list during maillist expansion"):format(receiver))
 			table.insert(expanded_receivers, receiver)
 		end
 	end
+end
+
+function mail.extractMaillists(receivers, maillists_owner)
+	local expanded_receivers = {}
+	extract_maillists_main(receivers, maillists_owner, expanded_receivers, {})
 	return expanded_receivers
 end
 
