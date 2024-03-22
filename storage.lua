@@ -404,30 +404,37 @@ function mail.delete_maillist(playername, listname)
 	end
 end
 
-function mail.extractMaillists(receivers_string, maillists_owner)
-	local receivers = mail.parse_player_list(receivers_string) -- extracted receivers
-
-	-- extract players from mailing lists
-	while string.find(receivers_string, "@") do
-		local globalReceivers = mail.parse_player_list(receivers_string) -- receivers including maillists
-		receivers = {}
-		for _, receiver in ipairs(globalReceivers) do
-			local receiverInfo = receiver:split("@") -- @maillist
-			if receiverInfo[1] and receiver == "@" .. receiverInfo[1] then
-				local maillist = mail.get_maillist_by_name(maillists_owner, receiverInfo[1])
-				if maillist then
-					for _, playername in ipairs(maillist.players) do
-						table.insert(receivers, playername)
-					end
-				end
-			else -- in case of player
-				table.insert(receivers, receiver)
-			end
-		end
-		receivers_string = mail.concat_player_list(receivers)
+local function extract_maillists_main(receivers, maillists_owner, expanded_receivers, seen)
+	if type(receivers) == "string" then
+		receivers = mail.parse_player_list(receivers)
 	end
 
-	return receivers
+	for _, receiver in pairs(receivers) do
+		if seen[receiver] then
+			-- Do not add/expand this receiver as it is already seen
+			minetest.log("verbose", ("mail: ignoring duplicate receiver %q during maillist expansion"):format(receiver))
+		elseif string.find(receiver, "^@") then
+			seen[receiver] = true
+			local listname = string.sub(receiver, 2)
+			local maillist = mail.get_maillist_by_name(maillists_owner, listname)
+			if maillist then
+				minetest.log("verbose", ("mail: expanding maillist %q"):format(listname))
+				for _, entry in ipairs(maillist.players) do
+					extract_maillists_main(entry, maillists_owner, expanded_receivers, seen)
+				end
+			end
+		else
+			seen[receiver] = true
+			minetest.log("verbose", ("mail: adding %q to receiver list during maillist expansion"):format(receiver))
+			table.insert(expanded_receivers, receiver)
+		end
+	end
+end
+
+function mail.extractMaillists(receivers, maillists_owner)
+	local expanded_receivers = {}
+	extract_maillists_main(receivers, maillists_owner, expanded_receivers, {})
+	return expanded_receivers
 end
 
 function mail.get_setting_default_value(key)
