@@ -51,6 +51,8 @@ function mail.send(m)
 			table.insert(undeliverable_reason, reason)
 		end
 		return false, table.concat(undeliverable_reason, "\n")
+	elseif not next(recipients) then
+		return false, S("You did not specify any valid recipient.")
 	end
 
 	local extra = {}
