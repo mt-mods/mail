@@ -60,6 +60,9 @@ end
 
 function mail.concat_player_list(order)
     -- turn list of players back into normalized string
+    if order == nil or #order == 0 then
+        return ""
+    end
     return table.concat(order, ", ")
 end
 
