@@ -154,72 +154,46 @@ function mail.sort_messages(messages, sortfield, descending, filter)
 	return results
 end
 
--- marks a mail read by its id
-function mail.mark_read(playername, msg_ids)
+local function mark_property(playername, property, msg_ids, value, hud_update)
 	local entry = mail.get_storage_entry(playername)
 	if type(msg_ids) ~= "table" then -- if this is not a table
 		msg_ids = { msg_ids }
 	end
-	for _, read_msg_id in ipairs(msg_ids) do
+	for _, property_msg_id in ipairs(msg_ids) do
 		for _, entry_msg in ipairs(entry.inbox) do
-			if entry_msg.id == read_msg_id then
-				entry_msg.read = true
+			if entry_msg.id == property_msg_id then
+				entry_msg[property] = value
 			end
 		end
 	end
 	mail.set_storage_entry(playername, entry)
-	mail.hud_update(playername, entry.inbox)
+	if hud_update then
+		mail.hud_update(playername, entry.inbox)
+	end
+	return
+end
+
+-- marks a mail read by its id
+function mail.mark_read(playername, msg_ids)
+	mark_property(playername, "read", msg_ids, true, true)
 	return
 end
 
 -- marks a mail unread by its id
 function mail.mark_unread(playername, msg_ids)
-	local entry = mail.get_storage_entry(playername)
-	if type(msg_ids) ~= "table" then -- if this is not a table
-		msg_ids = { msg_ids }
-	end
-	for _, unread_msg_id in ipairs(msg_ids) do
-		for _, entry_msg in ipairs(entry.inbox) do
-			if entry_msg.id == unread_msg_id then
-				entry_msg.read = false
-			end
-		end
-	end
-	mail.set_storage_entry(playername, entry)
+	mark_property(playername, "read", msg_ids, false, true)
 	return
 end
 
 -- marks a mail as a spam
 function mail.mark_spam(playername, msg_ids)
-	local entry = mail.get_storage_entry(playername)
-	if type(msg_ids) ~= "table" then -- if this is not a table
-		msg_ids = { msg_ids }
-	end
-	for _, spam_msg_id in ipairs(msg_ids) do
-		for _, entry_msg in ipairs(entry.inbox) do
-			if entry_msg.id == spam_msg_id then
-				entry_msg.spam = true
-			end
-		end
-	end
-	mail.set_storage_entry(playername, entry)
+	mark_property(playername, "spam", msg_ids, true)
 	return
 end
 
 -- marks a mail as a non-spam
 function mail.unmark_spam(playername, msg_ids)
-	local entry = mail.get_storage_entry(playername)
-	if type(msg_ids) ~= "table" then -- if this is not a table
-		msg_ids = { msg_ids }
-	end
-	for _, unspam_msg_id in ipairs(msg_ids) do
-		for _, entry_msg in ipairs(entry.inbox) do
-			if entry_msg.id == unspam_msg_id then
-				entry_msg.spam = false
-			end
-		end
-	end
-	mail.set_storage_entry(playername, entry)
+	mark_property(playername, "spam", msg_ids, false)
 	return
 end
 
