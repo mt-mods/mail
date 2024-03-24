@@ -6,21 +6,33 @@ local FORMNAME = "mail:about"
 function mail.show_about(name)
 	local formspec = [[
 			size[10,6;]
-			tabheader[0.3,0.875;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
+			tabheader[0,0;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
 			button[9.35,0;0.75,0.5;back;X]
-			label[0,0.7;Mail]
-			label[0,1.1;]] .. S("Provided by mt-mods") .. [[]
-			label[0,1.5;]] .. S("Version") .. [[ : 1.4.0-dev]
-			label[0,2.0;]] .. S("Licenses") .. [[ :]
-			label[0.2,2.4;]] .. S("Expat (code), WTFPL (textures)") .. [[]
-			label[0,3.2;https://github.com/mt-mods/mail]
-			label[0,3.6;https://content.minetest.net/packages/mt-mods/mail]
-			textarea[0.5,4.8;4,5.5;;]] .. S("Note") .. [[;]] ..
+
+			box[0,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
+			label[0.2,0;Mail]
+
+			label[0.2,0.5;]] .. S("Provided by mt-mods") .. [[]
+			label[0.2,0.9;]] .. S("Version") .. [[ : 1.4.0-dev]
+
+			box[0,1.5;3,0.45;]] .. mail.get_color("highlighted") .. [[]
+			label[0.2,1.5;]] .. S("Licenses") .. [[]
+			label[0.2,2.0;]] .. S("Expat (code), WTFPL (textures)") .. [[]
+
+			box[0,2.6;3,0.45;]] .. mail.get_color("highlighted") .. [[]
+			label[0.2,2.6;]] .. S("Note") .. [[]
+			textarea[0.5,3.1;4,5.5;;;]] ..
 			S("Communication using this system is NOT guaranteed to be private!") .. " " ..
 			S("Admins are able to view the messages of any player.") .. [[]
 
+			button[0,5.7;2,0.5;github;GitHub]
+			button[2,5.7;2,0.5;contentdb;ContentDB]
+
+			box[4,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
+			label[4.2,0;]] .. S("Contributors") .. [[]
+
 			tablecolumns[color;text;text]
-			table[5,0.75;4.9,5.5;contributors;]] ..
+			table[4,0.75;5.9,5.5;contributors;]] ..
 			mail.get_color("header") .. [[,]] .. S("Contributors") .. [[,,]] ..
 			mail.get_color("important") .. [[,Cheapie,Initial idea/project,]] ..
 			[[,Rubenwardy,Lua/UI improvements,]] ..
@@ -66,5 +78,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields.optionstab == "2" then
         mail.selected_idxs.optionstab[playername] = 2
         mail.show_about(playername)
+
+	elseif fields.github then
+		minetest.chat_send_player(playername, "https://github.com/mt-mods/mail")
+
+	elseif fields.contentdb then
+		minetest.chat_send_player(playername, "https://content.minetest.net/packages/mt-mods/mail")
 	end
 end)
