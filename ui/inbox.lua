@@ -61,7 +61,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
         dropdown[2.0,9.5;2,0.5;sortdirection;]] ..
         S("Ascending") .. "," .. S("Descending") .. [[;]] .. sortdirection .. [[;true]
         field[4.25,9.95;1.4,0.5;filter;]] .. S("Filter") .. [[:;]] .. filter .. [[]
-        button[5.14,9.62;0.85,0.5;search;Q]
+        image_button[5.14,9.5;0.85,0.85;search.png;search;]
 
         checkbox[0,10.1;multipleselection;]] .. S("Allow multiple selection") .. [[;]] ..
         tostring(mail.selected_idxs.multipleselection[name]) .. [[]
