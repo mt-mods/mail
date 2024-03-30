@@ -76,7 +76,7 @@ function mail.show_about(name, contributor_grouping)
 			("dropdown[4,0.75;6.4;contributor_grouping;%s,%s;%d;true]"):format(
 					S("Group by name"), S("Group by contribution"), contributor_grouping)
 
-	local contributor_columns, contributor_list = "", {}
+	local contributor_list, contributor_columns = {}
 
 	if contributor_grouping == 2 then
 		contributor_columns = "color;text"
