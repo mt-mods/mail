@@ -43,7 +43,9 @@ local contributors = {
 	{ name = "y5nw", groups = {"c", "i"} },
 }
 
-function mail.show_about(name)
+function mail.show_about(name, contributor_grouping)
+	contributor_grouping = tonumber(contributor_grouping) or 1
+
 	local formspec = [[
 			size[10,6;]
 			tabheader[0,0;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
@@ -69,21 +71,50 @@ function mail.show_about(name)
 			button[2,5.7;2,0.5;contentdb;ContentDB]
 
 			box[4,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
-			label[4.2,0;]] .. S("Contributors") .. [[]
+			label[4.2,0;]] .. S("Contributors") .. "]" ..
 
-			tablecolumns[text;text]
-			table[4,0.75;5.9,5.5;contributors;]]
+			("dropdown[4,0.75;6.4;contributor_grouping;%s,%s;%d;true]"):format(
+					S("Group by name"), S("Group by contribution"), contributor_grouping)
 
-	for _, c in ipairs(contributors) do
-		formspec = formspec .. c.name
+	local contributor_columns, contributor_list = "", {}
+
+	if contributor_grouping == 2 then
+		contributor_columns = "color;text"
+		local sorted = {}
 		for _, g in ipairs(groups) do
-			if table.indexof(c.groups, g[1]) >= 1 then
-				formspec = formspec .. "," .. g[2] .. ","
+			sorted[g[1]] = {}
+		end
+		for _, c in ipairs(contributors) do
+			for _, g in ipairs(c.groups) do
+				table.insert(sorted[g] or {}, c.name)
+			end
+		end
+		for _, g in ipairs(groups) do
+			table.insert(contributor_list, mail.get_color("header") .. "," .. g[2])
+			for _, c in ipairs(sorted[g[1]]) do
+				table.insert(contributor_list, "," .. c)
+			end
+		end
+	else
+		contributor_columns = "text;text"
+		for _, c in ipairs(contributors) do
+			for _, g in ipairs(groups) do
+				local index = table.indexof(c.groups, g[1])
+				if index >= 1 then
+					if index == 1 then
+						table.insert(contributor_list, c.name)
+					else
+						table.insert(contributor_list, "")
+					end
+					table.insert(contributor_list, g[2])
+				end
 			end
 		end
 	end
 
-	formspec = string.sub(formspec, 2, -2) -- remove last blank line
+	formspec = formspec .. ("tablecolumns[%s]"):format(contributor_columns) ..
+			("table[4,1.6;5.9,4.65;contributors;%s]"):format(table.concat(contributor_list, ","))
+
 	formspec = formspec .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
@@ -112,5 +143,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	elseif fields.contentdb then
 		minetest.chat_send_player(playername, "https://content.minetest.net/packages/mt-mods/mail")
+	elseif fields.contributor_grouping then
+		mail.show_about(playername, fields.contributor_grouping)
 	end
 end)
