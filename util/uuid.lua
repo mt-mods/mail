@@ -27,7 +27,7 @@ end
 
 function mail.new_uuid()
     local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    local candidate_uuid = ""
+    local candidate_uuid
     repeat
         candidate_uuid = string.gsub(template, '[xy]',
             function (c)
