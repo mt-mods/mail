@@ -3,6 +3,46 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:about"
 
+local groups = {
+	{ "o", S("Original author")},
+	{ "c", S("Code")},
+	{ "i", S("Internationalization")},
+	{ "t", S("Textures")},
+	{ "a", S("Audio")},
+}
+
+local contributors = {
+	{ name = "Cheapie", groups = {"o", "c"} },
+	{ name = "aBlueShadow", groups = {"c"} },
+	{ name = "APercy", groups = {"i"} },
+	{ name = "Athozus", groups = {"c", "i"} },
+	{ name = "BuckarooBanzay", groups = {"c"} },
+	{ name = "Chache", groups = {"i"} },
+	{ name = "Dennis Jenkins", groups = {"c"} },
+	{ name = "Emojigit", groups = {"i"} },
+	{ name = "Eredin", groups = {"i"} },
+	{ name = "fluxionary", groups = {"c"} },
+	{ name = "imre84", groups = {"c"} },
+	{ name = "Muhammad Rifqi Priyo Susanto", groups = {"i"} },
+	{ name = "NatureFreshMilk", groups = {"c", "t"} },
+	{ name = "Niklp", groups = {"c", "i"} },
+	{ name = "Nuno Filipe Povoa", groups = {"a"} },
+	{ name = "nyomi", groups = {"i"} },
+	{ name = "OgelGames", groups = {"c"} },
+	{ name = "Panquesito7", groups = {"c"} },
+	{ name = "Peter Nerlich", groups = {"c"} },
+	{ name = "Rubenwardy", groups = {"c"} },
+	{ name = "savilli", groups = {"c"} },
+	{ name = "Singularis", groups = {"c"} },
+	{ name = "SX", groups = {"c"} },
+	{ name = "TheTrueBeginner", groups = {"i"} },
+	{ name = "Thomas Rudin", groups = {"c"} },
+	{ name = "Toby1710", groups = {"c"} },
+	{ name = "whosit", groups = {"c"} },
+	{ name = "Wuzzy", groups = {"i"} },
+	{ name = "y5nw", groups = {"c", "i"} },
+}
+
 function mail.show_about(name)
 	local formspec = [[
 			size[10,6;]
@@ -31,32 +71,22 @@ function mail.show_about(name)
 			box[4,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
 			label[4.2,0;]] .. S("Contributors") .. [[]
 
-			tablecolumns[color;text;text]
-			table[4,0.75;5.9,5.5;contributors;]] ..
-			mail.get_color("header") .. [[,]] .. S("Contributors") .. [[,,]] ..
-			mail.get_color("important") .. [[,Cheapie,Initial idea/project,]] ..
-			[[,Rubenwardy,Lua/UI improvements,]] ..
-			[[,BuckarooBanzay,Clean-ups\, Refactoring,]] ..
-			[[,Athozus,Boxes\, Maillists\, UI\, Settings,]] ..
-			[[,fluxionary,Minor fixups,]] ..
-			[[,SX,Various fixes\, UI,]] ..
-			[[,Toby1710,UX fixes,]] ..
-			[[,Peter Nerlich,CC\, BCC,]] ..
-			[[,Niklp,German translation,]] ..
-			[[,Emojigit,Traditional Chinese trans.,]] ..
-			[[,Dennis Jenkins,UX fixes,]] ..
-			[[,Thomas Rudin,Maintenance,]] ..
-			[[,NatureFreshMilk,Maintenance,]] ..
-			[[,imre84,UI fixes,]] ..
-			[[,Chache,Spanish translation,]] ..
-			[[,APercy,Brazilian Portuguese trans.,]] ..
-			[[,Nuno Filipe Povoa,mail_notif.ogg,]] ..
-			[[,TheTrueBeginner,Simplified Chinese trans.,]] ..
-			[[,nyomi,Hungarian translation,]] ..
-			[[,whosit,UI fixes,]] ..
-			[[,Wuzzy,German translation,]] ..
-			[[,Muhammad Rifqi Priyo Susanto,Indonesian trans.]
-		]] .. mail.theme
+			tablecolumns[text;text;text;text;text;text]
+			table[4,0.75;5.9,5.5;contributors;]]
+
+	for _, c in ipairs(contributors) do
+		formspec = formspec .. c.name .. ","
+		for _, g in ipairs(groups) do
+			if table.indexof(c.groups, g[1]) >= 1 then
+				formspec = formspec .. string.upper(g[1]) .. ","
+			end
+		end
+		for _ = 1, (#groups-#c.groups) do
+			formspec = formspec .. ","
+		end
+	end
+
+	formspec = formspec .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
 end
