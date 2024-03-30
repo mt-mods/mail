@@ -71,21 +71,19 @@ function mail.show_about(name)
 			box[4,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
 			label[4.2,0;]] .. S("Contributors") .. [[]
 
-			tablecolumns[text;text;text;text;text;text]
+			tablecolumns[text;text]
 			table[4,0.75;5.9,5.5;contributors;]]
 
 	for _, c in ipairs(contributors) do
-		formspec = formspec .. c.name .. ","
+		formspec = formspec .. c.name
 		for _, g in ipairs(groups) do
 			if table.indexof(c.groups, g[1]) >= 1 then
-				formspec = formspec .. string.upper(g[1]) .. ","
+				formspec = formspec .. "," .. g[2] .. ","
 			end
-		end
-		for _ = 1, (#groups-#c.groups) do
-			formspec = formspec .. ","
 		end
 	end
 
+	formspec = string.sub(formspec, 2, -2) -- remove last blank line
 	formspec = formspec .. mail.theme
 
 	minetest.show_formspec(name, FORMNAME, formspec)
