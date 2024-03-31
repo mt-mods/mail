@@ -91,17 +91,15 @@ end
 
 local function is_uuid_existing(uuid)
     for _, k in ipairs(mail.storage:get_keys()) do
-        if string.sub(k,1,5) ~= "mail/" then
-            goto continue
-        end
-        local p = string.sub(k, 6)
-        local result
-        local boxes = {"inbox", "outbox", "drafts", "trash"}
-        for _, b in ipairs(boxes) do
-			result = search_box(p, b, uuid)
-			if result then return result end
+        if string.sub(k,1,5) == "mail/" then
+			local p = string.sub(k, 6)
+			local result
+			local boxes = {"inbox", "outbox", "drafts", "trash"}
+			for _, b in ipairs(boxes) do
+				result = search_box(p, b, uuid)
+				if result then return result end
+			end
 		end
-        ::continue::
     end
     return false
 end
@@ -121,44 +119,36 @@ local function repair_box(playername, box)
 	for _, m in ipairs(e[box]) do
 		local uuid = m.id
 		local exists = is_uuid_existing(uuid)
-		if not exists then
-			goto continue
-		elseif are_message_sames(exists, m) then
-			-- same message, continue
-			goto continue
-		else
+		if exists and not are_message_sames(exists, m) then
 			local new_uuid = mail.new_uuid() -- generates a new uuid to replace doublons
 			for _, k in ipairs(mail.storage:get_keys()) do
-				if string.sub(k,1,5) ~= "mail/" then
-					goto continue_r
-				end
-				local p = string.sub(k, 6)
-				local er = mail.get_storage_entry(p)
-				for _, r in ipairs(er.inbox) do
-					if r.id == uuid and not are_message_sames(m, r) then
-						r.id = new_uuid
+				if string.sub(k,1,5) == "mail/" then
+					local p = string.sub(k, 6)
+					local er = mail.get_storage_entry(p)
+					for _, r in ipairs(er.inbox) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
 					end
-				end
-				for _, r in ipairs(er.outbox) do
-					if r.id == uuid and not are_message_sames(m, r) then
-						r.id = new_uuid
+					for _, r in ipairs(er.outbox) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
 					end
-				end
-				for _, r in ipairs(er.drafts) do
-					if r.id == uuid and not are_message_sames(m, r) then
-						r.id = new_uuid
+					for _, r in ipairs(er.drafts) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
 					end
-				end
-				for _, r in ipairs(er.trash) do
-					if r.id == uuid and not are_message_sames(m, r) then
-						r.id = new_uuid
+					for _, r in ipairs(er.trash) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
 					end
+					mail.set_storage_entry(p, er)
 				end
-				mail.set_storage_entry(p, er)
-				::continue_r::
 			end
 		end
-		::continue::
 	end
 end
 
@@ -166,15 +156,13 @@ end
 local function repair_storage()
 	-- iterate through players
 	for _, k in ipairs(mail.storage:get_keys()) do
-		if string.sub(k,1,5) ~= "mail/" then
-			goto continue
+		if string.sub(k,1,5) == "mail/" then
+			local p = string.sub(k, 6)
+			repair_box(p, "inbox")
+			repair_box(p, "outbox")
+			repair_box(p, "drafts")
+			repair_box(p, "trash")
 		end
-        local p = string.sub(k, 6)
-		repair_box(p, "inbox")
-		repair_box(p, "outbox")
-		repair_box(p, "drafts")
-		repair_box(p, "trash")
-        ::continue::
 	end
 end
 
