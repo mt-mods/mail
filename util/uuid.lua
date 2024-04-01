@@ -1,26 +1,28 @@
 -- source: https://gist.github.com/jrus/3197011
 local random = math.random
 
-local function is_uuid_unexisting(uuid)
+local function search_box(playername, box, uuid)
+	local e = mail.get_storage_entry(playername)
+	for _, m in ipairs(e[box]) do
+		if m.id == uuid then
+		return { time = m.time, from = m.from, to = m.to, cc = m.cc, bcc = m.bcc, subject = m.subject, body = m.body } end
+	end
+	return false
+end
+
+local function is_uuid_existing(uuid)
     for _, k in ipairs(mail.storage:get_keys()) do
         if string.sub(k,1,5) == "mail/" then
-            local p = string.sub(k, 6)
-            local e = mail.get_storage_entry(p)
-            for _, m in ipairs(e.inbox) do
-                if m.id == uuid then return false end
-            end
-            for _, m in ipairs(e.outbox) do
-                if m.id == uuid then return false end
-            end
-            for _, m in ipairs(e.drafts) do
-                if m.id == uuid then return false end
-            end
-            for _, m in ipairs(e.trash) do
-                if m.id == uuid then return false end
-            end
-        end
+			local p = string.sub(k, 6)
+			local result
+			local boxes = {"inbox", "outbox", "drafts", "trash"}
+			for _, b in ipairs(boxes) do
+				result = search_box(p, b, uuid)
+				if result then return result end
+			end
+		end
     end
-    return true
+    return false
 end
 
 function mail.new_uuid()
@@ -32,6 +34,6 @@ function mail.new_uuid()
                 local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
                 return string.format('%x', v)
             end)
-    until is_uuid_unexisting(candidate_uuid)
+    until not is_uuid_existing(candidate_uuid)
     return candidate_uuid
 end
