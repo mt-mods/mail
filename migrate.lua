@@ -1,5 +1,5 @@
-
 local STORAGE_VERSION_KEY = "@@version"
+local CURRENT_VERSION = 3.1
 
 local function migrate_v1_to_v3()
 	local file = io.open(minetest.get_worldpath().."/mail.db", "r")
@@ -134,11 +134,11 @@ end
 
 function mail.migrate()
 	-- check for v2 storage first, v1-migration might have set the v3-flag already
-	local version = mail.storage:get_int(STORAGE_VERSION_KEY)
-	if version < 3 then
+	local version = mail.storage:get_float(STORAGE_VERSION_KEY)
+	if version < math.floor(CURRENT_VERSION) then
 		-- v2 to v3
 		migrate_v2_to_v3()
-		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
 	end
 
 	-- check for v1 storage
@@ -146,9 +146,12 @@ function mail.migrate()
 	if v1_file then
 		-- v1 to v3
 		migrate_v1_to_v3()
-		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
 	end
 
 	-- repair storage for uuid doublons
-	repair_storage()
+	if version < CURRENT_VERSION  then
+		repair_storage()
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
+	end
 end
