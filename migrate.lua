@@ -116,7 +116,7 @@ local function are_message_sames(a, b)
 	   and a.body == b.body
 end
 
-local function repair_box(playername, box)
+local function fix_duplicate_uuids(playername, box)
 	local e = mail.get_storage_entry(playername)
 	for _, m in ipairs(e[box]) do
 		local uuid = m.id
@@ -160,10 +160,10 @@ local function repair_storage()
 	for _, k in ipairs(mail.storage:get_keys()) do
 		if string.sub(k,1,5) == "mail/" then
 			local p = string.sub(k, 6)
-			repair_box(p, "inbox")
-			repair_box(p, "outbox")
-			repair_box(p, "drafts")
-			repair_box(p, "trash")
+			fix_duplicate_uuids(p, "inbox")
+			fix_duplicate_uuids(p, "outbox")
+			fix_duplicate_uuids(p, "drafts")
+			fix_duplicate_uuids(p, "trash")
 		end
 	end
 end
