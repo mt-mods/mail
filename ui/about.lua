@@ -43,8 +43,8 @@ local contributors = {
 	{ name = "y5nw", groups = {"c", "i"} },
 }
 
-function mail.show_about(name, contributor_grouping)
-	contributor_grouping = tonumber(contributor_grouping) or 1
+function mail.show_about(name)
+	mail.selected_idxs.contributor_grouping[name] = tonumber(mail.selected_idxs.contributor_grouping[name]) or 1
 
 	local formspec = [[
 			size[10,6;]
@@ -71,14 +71,16 @@ function mail.show_about(name, contributor_grouping)
 			button[2,5.7;2,0.5;contentdb;ContentDB]
 
 			box[4,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
-			label[4.2,0;]] .. S("Contributors") .. "]" ..
+			label[4.2,0;]] .. S("Contributors") .. [[]
 
-			("dropdown[4,0.75;6.4;contributor_grouping;%s,%s;%d;true]"):format(
-					S("Group by name"), S("Group by contribution"), contributor_grouping)
+			dropdown[4,0.75;6.4;contributor_grouping;]]
+				.. S("Group by name") .. ","
+				.. S("Group by contribution") .. ";" .. mail.selected_idxs.contributor_grouping[name] .. [[;true]
+			]]
 
 	local contributor_list, contributor_columns = {}
 
-	if contributor_grouping == 2 then
+	if mail.selected_idxs.contributor_grouping[name] == 2 then
 		contributor_columns = "color;text"
 		local sorted = {}
 		for _, g in ipairs(groups) do
@@ -144,6 +146,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	elseif fields.contentdb then
 		minetest.chat_send_player(playername, "https://content.minetest.net/packages/mt-mods/mail")
 	elseif fields.contributor_grouping then
-		mail.show_about(playername, fields.contributor_grouping)
+		mail.selected_idxs.contributor_grouping[playername] = fields.contributor_grouping
+		mail.show_about(playername)
 	end
 end)

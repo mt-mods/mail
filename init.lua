@@ -30,6 +30,7 @@ mail = {
 		multipleselection = {},
 		optionstab = {},
 		settings_group = {},
+		contributor_grouping = {},
 	},
 
 	message_drafts = {}
