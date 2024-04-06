@@ -31,7 +31,7 @@ function mail.show_settings(name)
             ]]
 
     local x = 3.5
-    local y = -0.6
+    local y = -0.7
     -- put settings in order
     local ordered_settings = {}
     for setting, data in pairs(mail.settings) do
@@ -86,7 +86,7 @@ function mail.show_settings(name)
             end
 
         elseif data.type == "index" then
-            y = y + 0.55
+            y = y + 0.2
             local formatted_dataset = table.copy(data.dataset)
             if data.format then
                 for i, d in ipairs(formatted_dataset) do
@@ -107,22 +107,27 @@ function mail.show_settings(name)
                 tooltip[]] .. setting .. ";" .. data.tooltip .. [[]
                 ]]
             end
+            y = y + 0.2
         elseif data.type == "list" then
-            y = y + 0.5
-            formspec = formspec .. [[
-            field[]] .. x+0.275 .. "," .. y .. ";2.975,0.5;field_" .. setting .. [[;;]
-            button[]] .. x+2.75 .. "," .. y-0.325 .. ";0.75,0.5;add_" .. setting .. [[;+]
-            button[]] .. x+3.25 .. "," .. y-0.325 .. ";0.75,0.5;remove_" .. setting .. [[;-]
-            ]]
-            if data.tooltip then
-                formspec = formspec .. "tooltip[field_" .. setting .. ";" .. data.tooltip .. "]"
-            end
-            y = y + 0.5
+            y = y + 0.3
             formspec = formspec .. [[
             tablecolumns[color;text]
             table[]] .. x-0.0125 .. "," .. y .. ";3.8125,2.5;" .. setting .. ";" ..
             mail.get_color("header") .. "," .. data.label .. ",," ..
             table.concat(field_default, ",,") .. "]"
+
+            y = y + 3.1
+            formspec = formspec .. [[
+            field[]] .. x+0.275 .. "," .. y .. ";2.975,0.5;field_" .. setting .. [[;;]
+            button[]] .. x+2.75 .. "," .. y-0.325 .. ";0.75,0.5;add_" .. setting .. [[;+]
+            button[]] .. x+3.25 .. "," .. y-0.325 .. ";0.75,0.5;remove_" .. setting .. [[;-]
+            ]]
+
+            if data.tooltip then
+                formspec = formspec .. "tooltip[field_" .. setting .. ";" .. data.tooltip .. "]"
+            end
+
+            y = y - 0.4
         end
     end
     formspec = formspec .. mail.theme

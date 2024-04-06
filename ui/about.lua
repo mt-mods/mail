@@ -63,7 +63,7 @@ function mail.show_about(name)
 
 			box[0,2.6;3,0.45;]] .. mail.get_color("highlighted") .. [[]
 			label[0.2,2.6;]] .. S("Note") .. [[]
-			textarea[0.5,3.1;4,5.5;;;]] ..
+			textarea[0.5,3.15;4,5.5;;;]] ..
 			S("Communication using this system is NOT guaranteed to be private!") .. " " ..
 			S("Admins are able to view the messages of any player.") .. [[]
 
