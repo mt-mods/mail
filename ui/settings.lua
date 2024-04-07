@@ -3,24 +3,49 @@ local S = minetest.get_translator("mail")
 
 local FORMNAME = "mail:settings"
 
-function mail.show_settings(name)
-    local groups_labels = {}
-    local group_index = 1
-    mail.selected_idxs.settings_group[name] = mail.selected_idxs.settings_group[name] or mail.settings_groups[1].name
-    for i, g in ipairs(mail.settings_groups) do
-        table.insert(groups_labels, g.label)
-        if g.name == mail.selected_idxs.settings_group[name] then
-            group_index = i
+local function get_settings_groups(parent)
+    -- generate ordered list of settings
+    local groups = {}
+    for _, g in ipairs(mail.settings_groups) do
+        if (g.parent or 0) == parent then
+            table.insert(groups, g)
+            -- insert sub groups just after the parent group
+            table.insert_all(groups, get_settings_groups(g.name))
         end
     end
-    local groups_str = table.concat(groups_labels, ",")
+    return groups
+end
+
+local groups_labels = {}
+local ordered_groups = get_settings_groups(0)
+local tree_indent = 0
+for i, g in ipairs(ordered_groups) do
+    if not g.parent then tree_indent = 0
+    elseif i > 1 and g.parent == ordered_groups[i-1].name then tree_indent = tree_indent + 1
+    elseif i > 1 and g.parent ~= ordered_groups[i-1].parent then tree_indent = tree_indent - 1
+    end
+    table.insert(groups_labels, tostring(tree_indent))
+    table.insert(groups_labels, g.label)
+end
+local groups_str = table.concat(groups_labels, ",")
+
+function mail.show_settings(name)
+    local group_index = 1
+    mail.selected_idxs.settings_group[name] = mail.selected_idxs.settings_group[name] or mail.settings_groups[1].name
+
+    for i, g in ipairs(ordered_groups) do
+        if g.name == mail.selected_idxs.settings_group[name] then
+            group_index = i
+            break
+        end
+    end
 
 	local formspec = [[
 			size[10,6;]
 			tabheader[0,0;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;1;false;false]
 			button[9.35,0;0.75,0.5;back;X]
 
-			tablecolumns[text]
+			tablecolumns[tree;text]
             table[0,0.775;3,4.5;groups;]] .. groups_str .. [[;]] .. group_index .. [[]
 
 			box[0,0;3,0.45;]] .. mail.get_color("highlighted") .. [[]
