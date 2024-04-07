@@ -26,11 +26,11 @@ mail.settings = {
         label = S("Show CC/BCC in different color")
     },
     defaultsortfield = {
-        type = "index", default = 3, group = "message_list", index = 3,
+        type = "index", default = 3, group = "box_fields", index = 1,
         label = S("Default sorting field"), dataset = { S("From/To"), S("Subject"), S("Date") }
     },
     defaultsortdirection = {
-        type = "index", default = 1, group = "message_list", index = 4,
+        type = "index", default = 1, group = "box_fields", index = 2,
         label = S("Default sorting direction"), dataset = { S("Ascending"), S("Descending") }
     },
     trash_move_enable = {
@@ -52,10 +52,11 @@ mail.settings = {
 }
 
 mail.settings_groups = {
-    { name = "notifications", label = S("Notifications")},
-    { name = "message_list",  label = S("Message list")},
-    { name = "spam",          label = S("Spam")},
-    { name = "other",         label = S("Other")}
+    { name = "notifications", label = S("Notifications"), index = 1, parent = 0},
+    { name = "message_list",  label = S("Message list"),  index = 2, parent = 0},
+    { name = "box_fields",    label = S("Fields"),        index = 1, parent = "message_list"},
+    { name = "spam",          label = S("Spam"),          index = 3, parent = 0},
+    { name = "other",         label = S("Other"),         index = 4, parent = 0}
 }
 
 for s, d in pairs(mail.settings) do
