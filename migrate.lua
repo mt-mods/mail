@@ -1,5 +1,5 @@
-
 local STORAGE_VERSION_KEY = "@@version"
+local CURRENT_VERSION = 3.1
 
 local function migrate_v1_to_v3()
 	local file = io.open(minetest.get_worldpath().."/mail.db", "r")
@@ -80,13 +80,101 @@ local function migrate_v2_to_v3()
 	end)
 end
 
+
+
+local function search_box(playername, box, uuid)
+	local e = mail.get_storage_entry(playername)
+	for _, m in ipairs(e[box]) do
+		if m.id == uuid then
+		return { time = m.time, from = m.from, to = m.to, cc = m.cc, bcc = m.bcc, subject = m.subject, body = m.body } end
+	end
+	return false
+end
+
+local function is_uuid_existing(uuid)
+    for _, k in ipairs(mail.storage:get_keys()) do
+        if string.sub(k,1,5) == "mail/" then
+			local p = string.sub(k, 6)
+			local result
+			local boxes = {"inbox", "outbox", "drafts", "trash"}
+			for _, b in ipairs(boxes) do
+				result = search_box(p, b, uuid)
+				if result then return result end
+			end
+		end
+    end
+    return false
+end
+
+local function are_message_sames(a, b)
+	return a.time == b.time
+	   and a.from == b.from
+	   and a.to == b.to
+	   and a.cc == b.cc
+	   and a.bcc == b.bcc
+	   and a.subject == b.subject
+	   and a.body == b.body
+end
+
+local function fix_duplicate_uuids(playername, box)
+	local e = mail.get_storage_entry(playername)
+	for _, m in ipairs(e[box]) do
+		local uuid = m.id
+		local exists = is_uuid_existing(uuid)
+		if exists and not are_message_sames(exists, m) then
+			local new_uuid = mail.new_uuid() -- generates a new uuid to replace doublons
+			for _, k in ipairs(mail.storage:get_keys()) do
+				if string.sub(k,1,5) == "mail/" then
+					local p = string.sub(k, 6)
+					local er = mail.get_storage_entry(p)
+					for _, r in ipairs(er.inbox) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
+					end
+					for _, r in ipairs(er.outbox) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
+					end
+					for _, r in ipairs(er.drafts) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
+					end
+					for _, r in ipairs(er.trash) do
+						if r.id == uuid and not are_message_sames(m, r) then
+							r.id = new_uuid
+						end
+					end
+					mail.set_storage_entry(p, er)
+				end
+			end
+		end
+	end
+end
+
+-- repair database for uuid doublons
+local function repair_storage()
+	-- iterate through players
+	for _, k in ipairs(mail.storage:get_keys()) do
+		if string.sub(k,1,5) == "mail/" then
+			local p = string.sub(k, 6)
+			fix_duplicate_uuids(p, "inbox")
+			fix_duplicate_uuids(p, "outbox")
+			fix_duplicate_uuids(p, "drafts")
+			fix_duplicate_uuids(p, "trash")
+		end
+	end
+end
+
 function mail.migrate()
 	-- check for v2 storage first, v1-migration might have set the v3-flag already
-	local version = mail.storage:get_int(STORAGE_VERSION_KEY)
-	if version < 3 then
+	local version = mail.storage:get_float(STORAGE_VERSION_KEY)
+	if version < math.floor(CURRENT_VERSION) then
 		-- v2 to v3
 		migrate_v2_to_v3()
-		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
 	end
 
 	-- check for v1 storage
@@ -94,6 +182,12 @@ function mail.migrate()
 	if v1_file then
 		-- v1 to v3
 		migrate_v1_to_v3()
-		mail.storage:set_int(STORAGE_VERSION_KEY, 3)
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
+	end
+
+	-- repair storage for uuid doublons
+	if version < CURRENT_VERSION  then
+		repair_storage()
+		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
 	end
 end
