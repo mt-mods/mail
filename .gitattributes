@@ -1,0 +1,5 @@
+mtt.lua export-ignore
+docker-compose.yml export-ignore
+*.spec.lua export-ignore
+test/* export-ignore
+screenshot_* export-ignore
