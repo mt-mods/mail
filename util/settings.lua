@@ -45,6 +45,10 @@ mail.settings = {
         type = "string", default = "%Y-%m-%d %X", group = "other", index = 3, label = S("Date format"),
         dataset = {"%Y-%m-%d %X", "%d/%m/%y %X", "%A %d %B %Y %X"}, format = os.date
     },
+    timezone_offset = {
+        type = "number", default = 0, group = "other", index = 4,
+        label = S("Timezone offset"), tooltip = S("Offset to add to server time."),
+    },
     mute_list = {
         type = "list", default = {}, group = "spam", index = 1,
         label = S("Mute list")
