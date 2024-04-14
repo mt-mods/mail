@@ -109,7 +109,35 @@ function mail.show_settings(name)
                 dataset_str .. [[;]] .. dataset_selected_id .. [[;true]
                 ]]
             end
-
+        elseif data.type == "number" then
+            y = y + 1
+            formspec = formspec .. [[
+            field[]] .. x+0.275 .. "," .. y .. ";3,0.5;" .. setting .. ";" .. data.label .. [[;]] ..
+            tostring(field_default) .. [[]
+            ]]
+            if data.tooltip then
+                formspec = formspec .. "tooltip[" .. setting .. ";" .. data.tooltip .. "]"
+            end
+            if data.dataset then
+                local formatted_dataset = table.copy(data.dataset)
+                if data.format then
+                    for i, d in ipairs(formatted_dataset) do
+                        formatted_dataset[i] = data.format(d)
+                    end
+                end
+                local dataset_str = table.concat(formatted_dataset, ",")
+                local dataset_selected_id = 1
+                for i, d in ipairs(data.dataset) do
+                    if d == field_default then
+                        dataset_selected_id = i
+                        break
+                    end
+                end
+                formspec = formspec .. [[
+                dropdown[]] .. x+3 .. "," .. y-0.45 .. ";3,0.5;" .. "dataset_" .. setting .. ";" ..
+                dataset_str .. [[;]] .. dataset_selected_id .. [[;true]
+                ]]
+            end
         elseif data.type == "index" then
             y = y + 0.2
             local formatted_dataset = table.copy(data.dataset)
@@ -174,8 +202,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             elseif data.type == "string" then
                 if data.dataset and fields["dataset_" .. setting] then
                     mail.selected_idxs[setting][playername] = data.dataset[tonumber(fields["dataset_" .. setting])]
+                    mail.show_settings(playername)
                 end
-                mail.show_settings(playername)
+            elseif data.type == "number" then
+                if data.dataset and fields["dataset_" .. setting] then
+                    mail.selected_idxs[setting][playername] = data.dataset[tonumber(fields["dataset_" .. setting])]
+                    mail.show_settings(playername)
+                end
             elseif data.type == "index" then
                 mail.selected_idxs[setting][playername] = tonumber(fields[setting])
             elseif data.type == "list" then
