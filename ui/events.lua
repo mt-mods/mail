@@ -24,6 +24,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
+    local boxes = {"inbox", "outbox", "drafts", "trash"}
+
     -- Get player name and handle / convert common input fields
     local name = player:get_player_name()
     local filter = (fields.search and fields.filter) or mail.selected_idxs.filter[name] or ""
@@ -32,9 +34,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local inboxsortfield = ({"from","subject","time"})[sortfieldindex]
     local outboxsortfield = ({"to","subject","time"})[sortfieldindex]
 
-    -- Be sure that inbox/outbox selected idxs aren't nil
-    mail.selected_idxs.inbox[name] = mail.selected_idxs.inbox[name] or {}
-    mail.selected_idxs.outbox[name] = mail.selected_idxs.outbox[name] or {}
+    -- Be sure that selected idxs aren't nil
+    for _, b in ipairs(boxes) do
+        mail.selected_idxs[b][name] = mail.selected_idxs[b][name] or {}
+    end
 
     -- Store common player configuration for reuse
     mail.selected_idxs.sortfield[name] = sortfieldindex
@@ -46,16 +49,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- Avoid several selected after disabling the multiple selection
     if not mail.selected_idxs.multipleselection[name] then
-        mail.selected_idxs.inbox[name] = { mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]] }
-        mail.selected_idxs.outbox[name] = { mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]] }
+        for _, b in ipairs(boxes) do
+            mail.selected_idxs[b][name] = { mail.selected_idxs[b][name][#mail.selected_idxs[b][name]] }
+        end
     end
 
     -- split inbox and outbox msgs for different tests
     local entry = mail.get_storage_entry(name)
-    local messagesDrafts = entry.drafts
-    local messagesTrash = entry.trash
     local getInbox = message_getter(entry.inbox, inboxsortfield, sortdirection == "2", filter)
     local getOutbox = message_getter(entry.outbox, outboxsortfield, sortdirection == "2", filter)
+    local getDrafts = message_getter(entry.drafts, inboxsortfield, sortdirection == "2", filter)
+    local getTrash = message_getter(entry.trash, outboxsortfield, sortdirection == "2", filter)
 
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table
@@ -158,18 +162,44 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
             mail.show_mail_menu(name)
-            return
+            return true
         end
-        mail.selected_idxs.drafts[name] = evt.row - 1
-        if evt.type == "DCL" and messagesDrafts[mail.selected_idxs.drafts[name]] then
-            mail.selected_idxs.message[name] = messagesDrafts[mail.selected_idxs.drafts[name]].id
+        local drafts = getDrafts()[evt.row-1]
+        if not drafts then
+            mail.show_mail_menu(name)
+            return true
+        end
+        if mail.selected_idxs.multipleselection[name] then
+            if not mail.selected_idxs.drafts[name] then
+                mail.selected_idxs.drafts[name] = {}
+            end
+            local selected_id = 0
+            if mail.selected_idxs.drafts[name] and #mail.selected_idxs.drafts[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.drafts[name]) do
+                    if drafts.id == selected_msg then
+                        selected_id = i
+                        table.remove(mail.selected_idxs.drafts[name], i)
+                        break
+                    end
+                end
+            end
+            if selected_id == 0 then
+                table.insert(mail.selected_idxs.drafts[name], drafts.id)
+                mail.selected_idxs.message[name] = drafts.id
+            end
+        else
+            mail.selected_idxs.drafts[name] = { drafts }
+            mail.selected_idxs.message[name] = drafts.id
+        end
+        if evt.type == "DCL" then
+            mail.selected_idxs.message[name] = drafts.id
             mail.show_compose(name,
-            messagesDrafts[mail.selected_idxs.drafts[name]].to,
-            messagesDrafts[mail.selected_idxs.drafts[name]].subject,
-            messagesDrafts[mail.selected_idxs.drafts[name]].body,
-            messagesDrafts[mail.selected_idxs.drafts[name]].cc,
-            messagesDrafts[mail.selected_idxs.drafts[name]].bcc,
-            messagesDrafts[mail.selected_idxs.drafts[name]].id
+            drafts.to,
+            drafts.subject,
+            drafts.body,
+            drafts.cc,
+            drafts.bcc,
+            drafts.id
             )
         end
         return true
@@ -183,12 +213,38 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
             mail.selected_idxs.sortfield[name] = evt.column-1 -- update column
             mail.show_mail_menu(name)
-            return
+            return true
         end
-        mail.selected_idxs.trash[name] = evt.row - 1
-        if evt.type == "DCL" and messagesTrash[mail.selected_idxs.trash[name]] then
-            mail.selected_idxs.message[name] = messagesTrash[mail.selected_idxs.trash[name]].id
-            mail.show_message(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+        local trash = getTrash()[evt.row-1]
+        if not trash then
+            mail.show_mail_menu(name)
+            return true
+        end
+        if mail.selected_idxs.multipleselection[name] then
+            if not mail.selected_idxs.trash[name] then
+                mail.selected_idxs.trash[name] = {}
+            end
+            local selected_id = 0
+            if mail.selected_idxs.trash[name] and #mail.selected_idxs.trash[name] > 0 then
+                for i, selected_msg in ipairs(mail.selected_idxs.trash[name]) do
+                    if trash.id == selected_msg then
+                        selected_id = i
+                        table.remove(mail.selected_idxs.trash[name], i)
+                        break
+                    end
+                end
+            end
+            if selected_id == 0 then
+                table.insert(mail.selected_idxs.trash[name], trash.id)
+                mail.selected_idxs.message[name] = trash.id
+            end
+        else
+            mail.selected_idxs.trash[name] = { trash.id }
+            mail.selected_idxs.message[name] = trash.id
+        end
+        if evt.type == "DCL" then
+            mail.selected_idxs.message[name] = trash.id
+            mail.show_message(name, trash.id)
         end
         return true
     end
@@ -214,22 +270,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             mail.selected_idxs.message[name] = mail.selected_idxs.inbox[name][#mail.selected_idxs.inbox[name]]
         elseif formname == "mail:outbox" and nonempty(mail.selected_idxs.outbox[name]) then -- outbox table
             mail.selected_idxs.message[name] = mail.selected_idxs.outbox[name][#mail.selected_idxs.outbox[name]]
-        elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then
-            mail.selected_idxs.message[name] = messagesTrash[mail.selected_idxs.trash[name]].id
+        elseif formname == "mail:trash" and mail.selected_idxs.trash[name] then
+            mail.selected_idxs.message[name] = mail.selected_idxs.trash[name]
         end
         if mail.selected_idxs.message[name] then
             mail.show_message(name, mail.selected_idxs.message[name])
         end
 
     elseif fields.edit then
-        if formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then
+        if formname == "mail:drafts" and mail.selected_idxs.drafts[name] then
             mail.show_compose(name,
-            messagesDrafts[mail.selected_idxs.drafts[name]].to,
-            messagesDrafts[mail.selected_idxs.drafts[name]].subject,
-            messagesDrafts[mail.selected_idxs.drafts[name]].body,
-            messagesDrafts[mail.selected_idxs.drafts[name]].cc,
-            messagesDrafts[mail.selected_idxs.drafts[name]].bcc,
-            messagesDrafts[mail.selected_idxs.drafts[name]].id
+            mail.selected_idxs.drafts[name].to,
+            mail.selected_idxs.drafts[name].subject,
+            mail.selected_idxs.drafts[name].body,
+            mail.selected_idxs.drafts[name].cc,
+            mail.selected_idxs.drafts[name].bcc,
+            mail.selected_idxs.drafts[name].id
             )
         end
 
@@ -249,23 +305,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.delete_mail(name, mail.selected_idxs.outbox[name])
             end
             mail.selected_idxs.outbox[name] = {}
-        elseif formname == "mail:drafts" and messagesDrafts[mail.selected_idxs.drafts[name]] then -- drafts table
+        elseif formname == "mail:drafts" and mail.selected_idxs.drafts[name] then -- drafts table
             if trash_enabled then
-                mail.trash_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+                mail.trash_mail(name, mail.selected_idxs.drafts[name])
             else
-                mail.delete_mail(name, messagesDrafts[mail.selected_idxs.drafts[name]].id)
+                mail.delete_mail(name, mail.selected_idxs.drafts[name])
             end
             mail.selected_idxs.drafts[name] = nil
 
-        elseif formname == "mail:trash" and messagesTrash[mail.selected_idxs.trash[name]] then -- trash table
-            mail.delete_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id, true)
+        elseif formname == "mail:trash" and mail.selected_idxs.trash[name] then -- trash table
+            mail.delete_mail(name, mail.selected_idxs.trash[name], true)
         end
 
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
     elseif fields.restore then
-        if messagesTrash[mail.selected_idxs.trash[name]] then
-            mail.restore_mail(name, messagesTrash[mail.selected_idxs.trash[name]].id)
+        if mail.selected_idxs.trash[name] then
+            mail.restore_mail(name, mail.selected_idxs.trash[name])
         end
         mail.show_mail_menu(name, sortfieldindex, sortdirection, filter)
 
