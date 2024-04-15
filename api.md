@@ -1,4 +1,3 @@
-
 # Mail format
 The mail format in the api hooks
 
@@ -70,6 +69,7 @@ The recipient handler should return
 mod-storage entry for a player (indexed by playername and serialized with json):
 ```lua
 {
+
 	contacts = {
 		{
 			-- name of the player (unique key in the list)
@@ -107,6 +107,12 @@ mod-storage entry for a player (indexed by playername and serialized with json):
 	outbox = {
 		-- same format as "inbox"
 	},
+	drafts = {
+		-- same format as "inbox"
+	},
+	trash = {
+		-- same format as "inbox"
+	},
 	lists = {
 		{
 			-- name of the maillist (unique key in the list)
@@ -116,5 +122,10 @@ mod-storage entry for a player (indexed by playername and serialized with json):
 			-- playername list
 			players = {"playername", "playername2"}
 		}
+	},
+	settings = {
+		setting1 = "value",
+		setting2 = true,
+		setting3 = 123
 	}
 }
