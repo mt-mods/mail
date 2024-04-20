@@ -1,16 +1,24 @@
 # textdomain: mail
 The mail could not be sent:=无法发送邮件：
+You did not specify any valid recipient.=
 You have mail! Type /mail to read=您有新邮件，请使用 /mail 查看。
 You have a new message from @1! Subject: @2=您有一封来自 @1 的新邮件，主题为“@2”。
 To view it, type /mail=请使用 /mail 命令查看。
 You could also use the button in your inventory.=您也可以使用物品清单里的按键。
+Original author=
+Code=
+Internationalization=
+Textures=
+Audio=
 Provided by mt-mods=由 mt-mods 提供
-Version=版本
+Version: @1=
 Licenses=许可证
 Expat (code), WTFPL (textures)=Expat（代码），WTFPL（材质）
 Communication using this system is NOT guaranteed to be private!=这个系统不适用于私密沟通！
 Admins are able to view the messages of any player.=管理员可以查看所有玩家的邮件。
 Contributors=贡献者
+Group by name=
+Group by contribution=
 Note=备注
 Settings=设置
 About=关于
@@ -97,11 +105,15 @@ Move deleted messages to trash=将已删除的邮件移至垃圾箱
 Automatic marking read=自动将邮件标记为已读
 Mark a message as read when opened=打开邮件时自动将邮件标记为已读
 Date format=日期格式
+Timezone offset=
+Offset to add to server time.=
 Mute list=屏蔽列表
 Notifications=通知
 Message list=邮件列表
+Fields=
 Spam=垃圾邮件
 Other=其它
+Date and Time=
 years=年
 months=月
 weeks=周
@@ -110,3 +122,8 @@ hours=小时
 minuts=分钟
 seconds=秒
 @1 ago=@1前
+
+
+##### not used anymore #####
+
+Version=版本

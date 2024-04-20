@@ -1,16 +1,24 @@
 # textdomain: mail
 The mail could not be sent:=
+You did not specify any valid recipient.=
 You have mail! Type /mail to read=Sie haben Post! „/mail“ eingeben zum Lesen
 You have a new message from @1! Subject: @2=Sie haben eine neue Nachricht von @1! Betreff: @2
 To view it, type /mail=Geben Sie zum Anzeigen „/mail“ ein
 You could also use the button in your inventory.=Sie können auch die Schaltfläche in Ihrem Inventar verwenden.
+Original author=
+Code=
+Internationalization=
+Textures=
+Audio=
 Provided by mt-mods=Bereitgestellt von mt-mods
-Version=Version
+Version: @1=
 Licenses=Lizenzen
 Expat (code), WTFPL (textures)=Expat (Code), WTFPL (Texturen)
 Communication using this system is NOT guaranteed to be private!=Die Kommunikation über dieses System ist NICHT garantiert privat!
 Admins are able to view the messages of any player.=Admins können die Nachrichten aller Spieler sehen.
 Contributors=Mitwirkende
+Group by name=
+Group by contribution=
 Note=Anmerkung
 Settings=Einstellungen
 About=Über
@@ -96,11 +104,15 @@ Move deleted messages to trash=Gelöschte Nachrichten in den Papierkorb verschie
 Automatic marking read=
 Mark a message as read when opened=
 Date format=Datumsformat
+Timezone offset=
+Offset to add to server time.=
 Mute list=
 Notifications=Benachrichtigungen
 Message list=Nachrichtenliste
+Fields=
 Spam=
 Other=Anderes
+Date and Time=
 years=Jahren
 months=Monaten
 weeks=Wochen
@@ -109,3 +121,8 @@ hours=Stunden
 minuts=Minuten
 seconds=Sekunden
 @1 ago=Vor @1
+
+
+##### not used anymore #####
+
+Version=Version

@@ -1,16 +1,24 @@
 # textdomain: mail
 The mail could not be sent:=
+You did not specify any valid recipient.=
 You have mail! Type /mail to read=Van egy leveled! Írd /mail az olvasáshoz
 You have a new message from @1! Subject: @2=Van egy új üzeneted @1-től Cím: @2
 To view it, type /mail=Ahhoz hogy megnézd, írd /mail
 You could also use the button in your inventory.=A gombot is tudod használni az inventoridban.
+Original author=
+Code=
+Internationalization=
+Textures=
+Audio=
 Provided by mt-mods=Feltéve, hogy az én mt-mod-om
-Version=Verzió
+Version: @1=
 Licenses=License
 Expat (code), WTFPL (textures)=Expat (kód), WTFPL (textúrák)
 Communication using this system is NOT guaranteed to be private!=A systemben lévő komunikáció nem garantáltan privát!
 Admins are able to view the messages of any player.=Az adminok megtudják nézni minden játékos üzenetjét.
 Contributors=Közreműködöttek
+Group by name=
+Group by contribution=
 Note=Jegyzet
 Settings=Beállítások
 About=Róla
@@ -96,11 +104,15 @@ Move deleted messages to trash=
 Automatic marking read=
 Mark a message as read when opened=
 Date format=
+Timezone offset=
+Offset to add to server time.=
 Mute list=
 Notifications=Értesítések
 Message list=Üzenetek listája
+Fields=
 Spam=
 Other=
+Date and Time=
 years=
 months=
 weeks=
@@ -109,3 +121,8 @@ hours=
 minuts=
 seconds=
 @1 ago=
+
+
+##### not used anymore #####
+
+Version=Verzió

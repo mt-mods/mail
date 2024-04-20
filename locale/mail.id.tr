@@ -1,16 +1,24 @@
 # textdomain: mail
 The mail could not be sent:=
+You did not specify any valid recipient.=
 You have mail! Type /mail to read=Anda memiliki surel! ketik /mail untuk membaca
 You have a new message from @1! Subject: @2=Anda memiliki pesan baru dari @1! Subjek: @2
 To view it, type /mail=Untuk melihatnya, ketik /mail
 You could also use the button in your inventory.=Anda juga dapat menggunakan tombol dalam inventaris Anda.
+Original author=
+Code=
+Internationalization=
+Textures=
+Audio=
 Provided by mt-mods=Disediakan oleh mt-mods
-Version=Versi
+Version: @1=
 Licenses=Lisensi
 Expat (code), WTFPL (textures)=Expat (kode), WTFPL (tekstur)
 Communication using this system is NOT guaranteed to be private!=Komunikasi dengan sistem ini TIDAK dijamin bersifat pribadi!
 Admins are able to view the messages of any player.=Admin dapat melihat pesan dari setiap pemain.
 Contributors=Kontributor
+Group by name=
+Group by contribution=
 Note=Catatan
 Settings=Pengaturan
 About=Tentang
@@ -96,11 +104,15 @@ Move deleted messages to trash=Pindahkan pesan yang dihapus ke sampah
 Automatic marking read=Penandaan otomatis sudah dibaca
 Mark a message as read when opened=Tandai pesan sebagai sudah dibaca saat dibuka
 Date format=Format tanggal
+Timezone offset=
+Offset to add to server time.=
 Mute list=
 Notifications=Pemberitahuan
 Message list=Daftar Pesan
+Fields=
 Spam=
 Other=Lain-Lain
+Date and Time=
 years=tahun
 months=bulan
 weeks=pekan
@@ -109,3 +121,8 @@ hours=jam
 minuts=menit
 seconds=detik
 @1 ago=@1 yang lalu
+
+
+##### not used anymore #####
+
+Version=Versi
