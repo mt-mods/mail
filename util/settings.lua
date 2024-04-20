@@ -42,11 +42,11 @@ mail.settings = {
         label = S("Automatic marking read"), tooltip = S("Mark a message as read when opened")
     },
     date_format = {
-        type = "string", default = "%Y-%m-%d %X", group = "other", index = 3, label = S("Date format"),
+        type = "string", default = "%Y-%m-%d %X", group = "date_and_time", index = 3, label = S("Date format"),
         dataset = {"%Y-%m-%d %X", "%d/%m/%y %X", "%A %d %B %Y %X"}, format = os.date
     },
     timezone_offset = {
-        type = "number", default = 0, group = "other", index = 4,
+        type = "number", default = 0, group = "date_and_time", index = 4,
         label = S("Timezone offset"), tooltip = S("Offset to add to server time."),
     },
     mute_list = {
@@ -60,7 +60,8 @@ mail.settings_groups = {
     { name = "message_list",  label = S("Message list"),  index = 2, parent = 0},
     { name = "box_fields",    label = S("Fields"),        index = 1, parent = "message_list"},
     { name = "spam",          label = S("Spam"),          index = 3, parent = 0},
-    { name = "other",         label = S("Other"),         index = 4, parent = 0}
+    { name = "other",         label = S("Other"),         index = 4, parent = 0},
+    { name = "date_and_time", label = S("Date and Time"), index = 1, parent = "other"}
 }
 
 for s, d in pairs(mail.settings) do
