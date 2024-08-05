@@ -11,7 +11,8 @@ It adds a mail-system that allows players to send each other messages in-game an
 
 # Screenshot
 
-![](screenshot_1.2.0.png)
+![Main view](screenshot_1.4.0_1.png)
+![Message view](screenshot_1.4.0_2.png)
 
 # Installation
 
@@ -43,7 +44,8 @@ Mails can be deleted, marked as read or unread, replied to and forwarded to anot
 * Multiple selection (new in 1.1.0)
 * Settings
 * Chat, on join, HUD and sound notifications
-* Translated in : English, French, German, Chinese (both traditional and simplified), Spanish, Brazilian Portuguese.
+* Anti-spam detection
+* Translated in : English, French, German, Chinese (both traditional and simplified), Spanish, Brazilian Portuguese, Hungarian, Indonesian.
 
 # Compatibility / Migration
 
@@ -51,8 +53,10 @@ Overview:
 * `v1` all the data is in the `<worldfolder>/mails.db` file
 * `v2` every player has its own (in-) mailbox in the `<worldfolder>/mails/<playername>.json` file
 * `v3` every player has an entry in the `<playername>` `mod_storage/` (inbox, outbox, drafts, contacts, mailing lists, settings)
+* `v3.1` database fix after the message id mess
 
 # Dependencies
+
 * None
 
 # License
@@ -84,7 +88,12 @@ See the "LICENSE" file
 * nyomi (Hungarian translation)
 * whosit (UI fixes)
 * Wuzzy (German translation)
+* savilli (UX fixes)
+* Panquesito7 (Maintenance)
+* Eredin (Spanish translation)
 * Muhammad Rifqi Priyo Susanto (Indonesian translation)
+* aBlueShadow (sfinv compatibility)
+* Singularis (UX and storage fixes)
 
 # Contribute
 
