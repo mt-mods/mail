@@ -99,7 +99,9 @@ mod-storage entry for a player (indexed by playername and serialized with json):
 			-- timestamp (os.time())
 			time = 1234,
 			-- read-flag (true: player has read the mail, inbox only)
-			read = true
+			read = true,
+                        -- spam-flag (true: that mail is noted as a spam)
+                        spam = false
 		},{
 			...
 		}
