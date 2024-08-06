@@ -77,6 +77,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
 
     local unread_color_enable = mail.get_setting(name, "unreadcolorenable")
     local cc_color_enable = mail.get_setting(name, "cccolorenable")
+    local mute_list = mail.get_setting(name, "mute_list")
 
     if #messages > 0 then
         for _, message in ipairs(messages) do
@@ -103,7 +104,7 @@ function mail.show_inbox(name, sortfieldindex, sortdirection, filter)
             if message.spam then
                 table.insert(displayed_color, "warning")
             end
-            if table.indexof(mail.get_setting(name, "mute_list"), message.from) >= 1 then
+            if table.indexof(mute_list, message.from) >= 1 then
                 table.insert(displayed_color, "muted")
             end
             formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
