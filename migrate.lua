@@ -175,7 +175,7 @@ end
 local function repair_storage()
 	-- iterate through players
 	-- get_keys() was introduced in 5.7
-	if mail.storage:get_keys() then
+	if mail.storage.get_keys then
 		for _, k in ipairs(mail.storage:get_keys()) do
 			if string.sub(k,1,5) == "mail/" then
 				local p = string.sub(k, 6)
