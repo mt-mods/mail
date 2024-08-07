@@ -91,16 +91,28 @@ local function search_box(playername, box, uuid)
 	return false
 end
 
+local function search_boxes(playername, boxes, uuid)
+	local result
+	for _, b in ipairs(boxes) do
+		result = search_box(playername, b, uuid)
+		if result then return result end
+	end
+end
+
 local function is_uuid_existing(uuid)
-    for _, k in ipairs(mail.storage:get_keys()) do
-        if string.sub(k,1,5) == "mail/" then
-			local p = string.sub(k, 6)
-			local result
-			local boxes = {"inbox", "outbox", "drafts", "trash"}
-			for _, b in ipairs(boxes) do
-				result = search_box(p, b, uuid)
+	local boxes = {"inbox", "outbox", "drafts", "trash"}
+	if mail.storage.get_keys then
+		for _, k in ipairs(mail.storage:get_keys()) do
+			if string.sub(k,1,5) == "mail/" then
+				local p = string.sub(k, 6)
+				local result = search_boxes(p, boxes, uuid)
 				if result then return result end
 			end
+		end
+	else
+		for p, _ in minetest.get_auth_handler().iterate() do
+			local result = search_boxes(p, boxes, uuid)
+			if result then return result end
 		end
     end
     return false
