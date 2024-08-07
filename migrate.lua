@@ -148,7 +148,7 @@ local function fix_box_duplicate_uuids(playername, box)
 		local exists = is_uuid_existing(uuid)
 		if exists and not are_message_sames(exists, m) then
 			local new_uuid = mail.new_uuid() -- generates a new uuid to replace doublons
-			if mail.storage:get_keys() then
+			if mail.storage.get_keys then
 				for _, k in ipairs(mail.storage:get_keys()) do
 					if string.sub(k,1,5) == "mail/" then
 						local p = string.sub(k, 6)
