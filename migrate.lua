@@ -91,16 +91,28 @@ local function search_box(playername, box, uuid)
 	return false
 end
 
+local function search_boxes(playername, boxes, uuid)
+	local result
+	for _, b in ipairs(boxes) do
+		result = search_box(playername, b, uuid)
+		if result then return result end
+	end
+end
+
 local function is_uuid_existing(uuid)
-    for _, k in ipairs(mail.storage:get_keys()) do
-        if string.sub(k,1,5) == "mail/" then
-			local p = string.sub(k, 6)
-			local result
-			local boxes = {"inbox", "outbox", "drafts", "trash"}
-			for _, b in ipairs(boxes) do
-				result = search_box(p, b, uuid)
+	local boxes = {"inbox", "outbox", "drafts", "trash"}
+	if mail.storage.get_keys then
+		for _, k in ipairs(mail.storage:get_keys()) do
+			if string.sub(k,1,5) == "mail/" then
+				local p = string.sub(k, 6)
+				local result = search_boxes(p, boxes, uuid)
 				if result then return result end
 			end
+		end
+	else
+		for p, _ in minetest.get_auth_handler().iterate() do
+			local result = search_boxes(p, boxes, uuid)
+			if result then return result end
 		end
     end
     return false
@@ -116,55 +128,78 @@ local function are_message_sames(a, b)
 	   and a.body == b.body
 end
 
-local function fix_duplicate_uuids(playername, box)
+local function replace_other_player_message_uuid(p, m, uuid, new_uuid)
+	local er = mail.get_storage_entry(p)
+	for _, r in ipairs(er.inbox) do
+		if r.id == uuid and not are_message_sames(m, r) then
+			r.id = new_uuid
+		end
+	end
+	for _, r in ipairs(er.outbox) do
+		if r.id == uuid and not are_message_sames(m, r) then
+			r.id = new_uuid
+		end
+	end
+	for _, r in ipairs(er.drafts) do
+		if r.id == uuid and not are_message_sames(m, r) then
+			r.id = new_uuid
+		end
+	end
+	for _, r in ipairs(er.trash) do
+		if r.id == uuid and not are_message_sames(m, r) then
+			r.id = new_uuid
+		end
+	end
+	mail.set_storage_entry(p, er)
+end
+
+local function fix_box_duplicate_uuids(playername, box)
 	local e = mail.get_storage_entry(playername)
 	for _, m in ipairs(e[box]) do
 		local uuid = m.id
 		local exists = is_uuid_existing(uuid)
 		if exists and not are_message_sames(exists, m) then
 			local new_uuid = mail.new_uuid() -- generates a new uuid to replace doublons
-			for _, k in ipairs(mail.storage:get_keys()) do
-				if string.sub(k,1,5) == "mail/" then
-					local p = string.sub(k, 6)
-					local er = mail.get_storage_entry(p)
-					for _, r in ipairs(er.inbox) do
-						if r.id == uuid and not are_message_sames(m, r) then
-							r.id = new_uuid
-						end
+			if mail.storage.get_keys then
+				for _, k in ipairs(mail.storage:get_keys()) do
+					if string.sub(k,1,5) == "mail/" then
+						local p = string.sub(k, 6)
+						replace_other_player_message_uuid(p, m, uuid, new_uuid)
 					end
-					for _, r in ipairs(er.outbox) do
-						if r.id == uuid and not are_message_sames(m, r) then
-							r.id = new_uuid
-						end
-					end
-					for _, r in ipairs(er.drafts) do
-						if r.id == uuid and not are_message_sames(m, r) then
-							r.id = new_uuid
-						end
-					end
-					for _, r in ipairs(er.trash) do
-						if r.id == uuid and not are_message_sames(m, r) then
-							r.id = new_uuid
-						end
-					end
-					mail.set_storage_entry(p, er)
+				end
+			else
+				for p, _ in minetest.get_auth_handler().iterate() do
+					replace_other_player_message_uuid(p, m, uuid, new_uuid)
 				end
 			end
 		end
 	end
 end
 
+local function fix_player_duplicate_uuids(playername)
+	fix_box_duplicate_uuids(playername, "inbox")
+	fix_box_duplicate_uuids(playername, "outbox")
+	fix_box_duplicate_uuids(playername, "drafts")
+	fix_box_duplicate_uuids(playername, "trash")
+end
+
 -- repair database for uuid doublons
 local function repair_storage()
 	-- iterate through players
-	for _, k in ipairs(mail.storage:get_keys()) do
-		if string.sub(k,1,5) == "mail/" then
-			local p = string.sub(k, 6)
-			fix_duplicate_uuids(p, "inbox")
-			fix_duplicate_uuids(p, "outbox")
-			fix_duplicate_uuids(p, "drafts")
-			fix_duplicate_uuids(p, "trash")
+	-- get_keys() was introduced in 5.7
+	if mail.storage.get_keys then
+		for _, k in ipairs(mail.storage:get_keys()) do
+			if string.sub(k,1,5) == "mail/" then
+				local p = string.sub(k, 6)
+				fix_player_duplicate_uuids(p)
+			end
 		end
+	else
+		minetest.after(0, function()
+			for p, _ in minetest.get_auth_handler().iterate() do
+				fix_player_duplicate_uuids(p)
+			end
+		end)
 	end
 end
 
