@@ -76,7 +76,7 @@ See the "LICENSE" file
 * fluxionary (Minor fixups)
 * Toby1710 (UX fixes)
 * Peter Nerlich (CC, BCC)
-* Emojigit (Traditional Chinese translation)
+* Emojigit (Performance, Traditional Chinese translation)
 * Niklp09 (German translation)
 * Dennis Jenkins (UX fixes)
 * Thomas Rudin (Maintenance)
