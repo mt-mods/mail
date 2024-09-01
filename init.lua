@@ -5,6 +5,9 @@ mail = {
 	-- mod storage
 	storage = minetest.get_mod_storage(),
 
+	-- translation
+	S = minetest.get_translator(minetest.get_current_modname()),
+
 	-- ui theme prepend
 	theme = "",
 

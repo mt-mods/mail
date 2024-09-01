@@ -1,4 +1,5 @@
-local S = minetest.get_translator("mail")
+-- translation
+local S = mail.S
 
 local function recursive_expand_recipient_names(sender, list, is_toplevel, recipients, undeliverable)
     for _, name in ipairs(list) do

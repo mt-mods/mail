@@ -1,5 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 local trash_formspec = "size[8.5,11;]" .. mail.theme .. [[
 	tabheader[0.3,1;boxtab;]] ..

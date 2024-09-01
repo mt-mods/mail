@@ -1,5 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
     sortfieldindex = tonumber(sortfieldindex or mail.selected_idxs.sortfield[name])

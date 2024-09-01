@@ -1,5 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)

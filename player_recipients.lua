@@ -1,4 +1,6 @@
-local S = minetest.get_translator("mail")
+-- translation
+local S = mail.S
+
 local has_canonical_name = minetest.get_modpath("canonical_name")
 
 mail.register_on_player_receive(function(name, msg)
