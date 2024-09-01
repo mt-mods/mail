@@ -55,7 +55,7 @@ function mail.show_about(name)
 			label[0.2,0;Mail]
 
 			label[0.2,0.5;]] .. S("Provided by mt-mods") .. [[]
-			label[0.2,0.9;]] .. S("Version: @1", "1.4.1") .. [[]
+			label[0.2,0.9;]] .. S("Version: @1", "1.5.0-dev") .. [[]
 
 			box[0,1.5;3,0.45;]] .. mail.get_color("highlighted") .. [[]
 			label[0.2,1.5;]] .. S("Licenses") .. [[]
