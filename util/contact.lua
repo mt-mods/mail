@@ -1,5 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 function mail.compile_contact_list(name, selected, playernames)
 	-- TODO: refactor this - not just compiles *a* list, but *the* list for the contacts screen (too inflexible)

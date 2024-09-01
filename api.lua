@@ -1,7 +1,7 @@
 -- see: mail.md
 
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 local f = string.format
 

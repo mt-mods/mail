@@ -1,6 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
-
+local S = mail.S
 
 function mail.show_drafts(name)
 	local trash_tab = ""

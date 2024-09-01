@@ -1,5 +1,5 @@
 -- translation
-local S = minetest.get_translator("mail")
+local S = mail.S
 
 function mail.time_ago(t)
     local elapsed = os.time() - t
