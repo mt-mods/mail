@@ -52,16 +52,16 @@ function mail.show_message(name, id)
 			tooltip[forward;]] .. S("Transfer message to other people") .. [[]
 		]] .. mail.theme
 
-	local from = minetest.formspec_escape(message.from) or ""
-	local to = minetest.formspec_escape(message.to) or ""
+	local from = core.formspec_escape(message.from) or ""
+	local to = core.formspec_escape(message.to) or ""
 	if string.len(to) > 70 then to = string.sub(to, 1, 67) .. "..." end
-	local cc = minetest.formspec_escape(message.cc) or ""
+	local cc = core.formspec_escape(message.cc) or ""
 	if string.len(cc) > 50 then cc = string.sub(cc, 1, 47) .. "..." end
 	local date = type(message.time) == "number"
-		and minetest.formspec_escape(os.date(mail.get_setting(name, "date_format"),
+		and core.formspec_escape(os.date(mail.get_setting(name, "date_format"),
 		message.time+3600*mail.get_setting(name, "timezone_offset"))) or ""
-	local subject = minetest.formspec_escape(message.subject) or ""
-	local body = minetest.formspec_escape(message.body) or ""
+	local subject = core.formspec_escape(message.subject) or ""
+	local body = core.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
 
 	if not message.read and mail.get_setting(name, "auto_marking_read") then
@@ -69,14 +69,14 @@ function mail.show_message(name, id)
 		mail.mark_read(name, id)
 	end
 
-	minetest.show_formspec(name, FORMNAME, formspec)
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
 function mail.reply(name, message)
 	if not message then
 		-- TODO: workaround for https://github.com/mt-mods/mail/issues/84
-		minetest.log("error", "[mail] reply called with nil message for player: " .. name)
-		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
+		core.log("error", "[mail] reply called with nil message for player: " .. name)
+		core.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
 	mail.show_compose(name, message.from, "Re: "..message.subject, interleave_msg(message.body))
@@ -85,8 +85,8 @@ end
 function mail.replyall(name, message)
 	if not message then
 		-- TODO: workaround for https://github.com/mt-mods/mail/issues/84
-		minetest.log("error", "[mail] replyall called with nil message for player: " .. name)
-		minetest.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
+		core.log("error", "[mail] replyall called with nil message for player: " .. name)
+		core.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
 
@@ -121,7 +121,7 @@ function mail.forward(name, message)
 	mail.show_compose(name, "", "Fw: " .. (message.subject or ""), interleave_msg(message.body))
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end

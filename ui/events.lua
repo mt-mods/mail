@@ -14,7 +14,7 @@ local function nonempty(x)
  return ((type(x)=="table")and(#x>0))
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "mail:inbox" and formname ~= "mail:outbox"
     and formname ~= "mail:drafts" and formname ~= "mail:trash" then
         return
@@ -59,7 +59,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- Hanmdle formspec event
     if fields.inbox then -- inbox table
-        local evt = minetest.explode_table_event(fields.inbox)
+        local evt = core.explode_table_event(fields.inbox)
         if evt.row == 1 then -- header
             if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
                 mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
@@ -105,7 +105,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if fields.outbox then -- outbox table
-        local evt = minetest.explode_table_event(fields.outbox)
+        local evt = core.explode_table_event(fields.outbox)
         if evt.row == 1 then -- header
             if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
                 mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
@@ -151,7 +151,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if fields.drafts then -- drafts table
-        local evt = minetest.explode_table_event(fields.drafts)
+        local evt = core.explode_table_event(fields.drafts)
         if evt.row == 1 then -- header
             if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
                 mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"
@@ -176,7 +176,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if fields.trash then -- trash table
-        local evt = minetest.explode_table_event(fields.trash)
+        local evt = core.explode_table_event(fields.trash)
         if evt.row == 1 then -- header
             if mail.selected_idxs.sortfield[name] == evt.column-1 then -- if already this field, then change direction
                 mail.selected_idxs.sortdirection[name] = mail.selected_idxs.sortdirection[name] == "2" and "1" or "2"

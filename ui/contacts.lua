@@ -14,10 +14,10 @@ local contacts_formspec = "size[8,9;]" .. mail.theme .. [[
 
 function mail.show_contacts(name)
     local formspec = contacts_formspec .. mail.compile_contact_list(name, mail.selected_idxs.contacts[name])
-    minetest.show_formspec(name, FORMNAME, formspec)
+    core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -26,7 +26,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local contacts = mail.get_contacts(name)
 
 	if fields.contacts then
-		local evt = minetest.explode_table_event(fields.contacts)
+		local evt = core.explode_table_event(fields.contacts)
 		for k, _, i in mail.pairs_by_keys(contacts) do
 			if i == evt.row - 1 then
 				mail.selected_idxs.contacts[name] = tonumber(k)

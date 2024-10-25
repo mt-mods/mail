@@ -1,5 +1,5 @@
 -- sub files
-local MP = minetest.get_modpath(minetest.get_current_modname())
+local MP = core.get_modpath(core.get_current_modname())
 dofile(MP .. "/util/normalize.lua")
 dofile(MP .. "/util/colors.lua")
 dofile(MP .. "/util/contact.lua")

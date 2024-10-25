@@ -12,7 +12,7 @@ function mail.compile_contact_list(name, selected, playernames)
 			if i == 1 then length = l end
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(contact.name)
+			formspec[#formspec + 1] = core.formspec_escape(contact.name)
 			formspec[#formspec + 1] = ","
 			local note = contact.note
 			-- display an ellipsis if the note spans multiple lines
@@ -20,7 +20,7 @@ function mail.compile_contact_list(name, selected, playernames)
 			if idx ~= nil then
 				note = string.sub(note, 1, idx-1) .. ' ...'
 			end
-			formspec[#formspec + 1] = minetest.formspec_escape(note)
+			formspec[#formspec + 1] = core.formspec_escape(note)
 			if type(selected) == "string" then
 				if string.lower(selected) == k then
 					selected = i
@@ -43,7 +43,7 @@ function mail.compile_contact_list(name, selected, playernames)
 		for i,c in ipairs(playernames) do
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = minetest.formspec_escape(c)
+			formspec[#formspec + 1] = core.formspec_escape(c)
 			formspec[#formspec + 1] = ","
 			if contacts[string.lower(c)] == nil then
 				formspec[#formspec + 1] = ""
@@ -54,7 +54,7 @@ function mail.compile_contact_list(name, selected, playernames)
 				if idx ~= nil then
 					note = string.sub(note, 1, idx-1) .. ' ...'
 				end
-				formspec[#formspec + 1] = minetest.formspec_escape(note)
+				formspec[#formspec + 1] = core.formspec_escape(note)
 			end
 			if not selected then
 				if type(selected) == "string" then

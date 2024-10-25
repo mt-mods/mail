@@ -1,4 +1,4 @@
-minetest.register_chatcommand("mail",{
+core.register_chatcommand("mail",{
 	description = "Open the mail interface",
 	func = function(name, param)
 		if #param > 0 then -- if param is not empty

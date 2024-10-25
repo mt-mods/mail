@@ -184,10 +184,10 @@ function mail.show_settings(name)
         end
     end
     formspec = formspec .. mail.theme
-	minetest.show_formspec(name, FORMNAME, formspec)
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -215,7 +215,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 mail.selected_idxs[setting][playername] = mail.selected_idxs[setting][playername] or
                 mail.get_setting(playername, setting)
                 if fields[setting] then
-                    local evt = minetest.explode_table_event(fields[setting])
+                    local evt = core.explode_table_event(fields[setting])
                     mail.selected_idxs["index_" .. setting][playername] = evt.row-1
                 elseif fields["add_" .. setting] then
                     table.insert(mail.selected_idxs[setting][playername], fields["field_" .. setting])
@@ -233,7 +233,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return
 
     elseif fields.groups then
-        local evt = minetest.explode_table_event(fields.groups)
+        local evt = core.explode_table_event(fields.groups)
         mail.selected_idxs.settings_group[playername] = mail.settings_groups[tonumber(evt.row)].name
         mail.show_settings(playername)
     elseif fields.optionstab == "1" then

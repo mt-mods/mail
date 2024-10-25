@@ -90,18 +90,18 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
             formspec[#formspec + 1] = "," .. mail.get_color(displayed_color)
             formspec[#formspec + 1] = ","
 			if string.len(message.to) > 20 then
-				formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.to, 1, 17))
+				formspec[#formspec + 1] = core.formspec_escape(string.sub(message.to, 1, 17))
 				formspec[#formspec + 1] = "..."
 			else
-				formspec[#formspec + 1] = minetest.formspec_escape(message.to)
+				formspec[#formspec + 1] = core.formspec_escape(message.to)
 			end
             formspec[#formspec + 1] = ","
             if message.subject ~= "" then
                 if string.len(message.subject) > 30 then
-                    formspec[#formspec + 1] = minetest.formspec_escape(string.sub(message.subject, 1, 27))
+                    formspec[#formspec + 1] = core.formspec_escape(string.sub(message.subject, 1, 27))
                     formspec[#formspec + 1] = "..."
                 else
-                    formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
+                    formspec[#formspec + 1] = core.formspec_escape(message.subject)
                 end
             else
                 formspec[#formspec + 1] = S("(No subject)")
@@ -112,5 +112,5 @@ function mail.show_outbox(name, sortfieldindex, sortdirection, filter)
         formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No mail") .. "]"
     end
 
-	minetest.show_formspec(name, "mail:outbox", table.concat(formspec, ""))
+	core.show_formspec(name, "mail:outbox", table.concat(formspec, ""))
 end

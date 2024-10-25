@@ -119,10 +119,10 @@ function mail.show_about(name)
 
 	formspec = formspec .. mail.theme
 
-	minetest.show_formspec(name, FORMNAME, formspec)
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -141,10 +141,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         mail.show_about(playername)
 
 	elseif fields.github then
-		minetest.chat_send_player(playername, "https://github.com/mt-mods/mail")
+		core.chat_send_player(playername, "https://github.com/mt-mods/mail")
 
 	elseif fields.contentdb then
-		minetest.chat_send_player(playername, "https://content.minetest.net/packages/mt-mods/mail")
+		core.chat_send_player(playername, "https://content.minetest.net/packages/mt-mods/mail")
 	elseif fields.contributor_grouping then
 		mail.selected_idxs.contributor_grouping[playername] = fields.contributor_grouping
 		mail.show_about(playername)

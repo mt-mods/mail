@@ -3,10 +3,10 @@ mail = {
 	version = 3,
 
 	-- mod storage
-	storage = minetest.get_mod_storage(),
+	storage = core.get_mod_storage(),
 
 	-- translation
-	S = minetest.get_translator(minetest.get_current_modname()),
+	S = core.get_translator(core.get_current_modname()),
 
 	-- ui theme prepend
 	theme = "",
@@ -39,12 +39,12 @@ mail = {
 	message_drafts = {}
 }
 
-if minetest.get_modpath("default") then
+if core.get_modpath("default") then
 	mail.theme = default.gui_bg .. default.gui_bg_img
 end
 
 -- sub files
-local MP = minetest.get_modpath(minetest.get_current_modname())
+local MP = core.get_modpath(core.get_current_modname())
 dofile(MP .. "/util/init.lua")
 dofile(MP .. "/chatcommands.lua")
 dofile(MP .. "/migrate.lua")
@@ -60,7 +60,7 @@ dofile(MP .. "/ui/init.lua")
 -- migrate storage
 mail.migrate()
 
-if minetest.get_modpath("mtt") then
+if core.get_modpath("mtt") then
 	dofile(MP .. "/mtt.lua")
 	dofile(MP .. "/api.spec.lua")
 	dofile(MP .. "/migrate.spec.lua")

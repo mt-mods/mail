@@ -24,12 +24,12 @@ function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 	end
 	formspec = formspec .. mail.theme
 	formspec = string.format(formspec,
-		minetest.formspec_escape(contact_name or ""),
-		minetest.formspec_escape(note or ""))
-	minetest.show_formspec(name, FORMNAME, formspec)
+		core.formspec_escape(contact_name or ""),
+		core.formspec_escape(note or ""))
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end

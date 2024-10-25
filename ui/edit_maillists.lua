@@ -25,13 +25,13 @@ function mail.show_edit_maillist(playername, maillist_name, desc, players, illeg
 	end
 	formspec = formspec .. mail.theme
 	formspec = string.format(formspec,
-		minetest.formspec_escape(maillist_name or ""),
-		minetest.formspec_escape(desc or ""),
-		minetest.formspec_escape(players or ""))
-	minetest.show_formspec(playername, FORMNAME, formspec)
+		core.formspec_escape(maillist_name or ""),
+		core.formspec_escape(desc or ""),
+		core.formspec_escape(players or ""))
+	core.show_formspec(playername, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end

@@ -31,7 +31,7 @@ function mail.get_storage_entry(playername)
 		entry = populate_entry()
 	else
 		-- deserialize existing entry
-		local e = minetest.parse_json(str)
+		local e = core.parse_json(str)
 		entry = populate_entry(e)
 	end
 
@@ -55,7 +55,7 @@ end
 local function save_worker()
 	for key, entry in pairs(save_queued_entries) do
 		-- write to backend
-		mail.storage:set_string(key, minetest.write_json(entry))
+		mail.storage:set_string(key, core.write_json(entry))
 	end
 
 	-- clear queue
@@ -65,13 +65,13 @@ local function save_worker()
 	cache = {}
 
 	-- save every second
-	minetest.after(1, save_worker)
+	core.after(1, save_worker)
 end
 
 -- start save-worker loop
 save_worker()
 -- save on shutdown
-minetest.register_on_shutdown(save_worker)
+core.register_on_shutdown(save_worker)
 
 -- get a mail by id from the players in- or outbox
 function mail.get_message(playername, msg_id)
@@ -392,20 +392,20 @@ local function extract_maillists_main(receivers, maillists_owner, expanded_recei
 	for _, receiver in pairs(receivers) do
 		if seen[receiver] then
 			-- Do not add/expand this receiver as it is already seen
-			minetest.log("verbose", ("mail: ignoring duplicate receiver %q during maillist expansion"):format(receiver))
+			core.log("verbose", ("mail: ignoring duplicate receiver %q during maillist expansion"):format(receiver))
 		elseif string.find(receiver, "^@") then
 			seen[receiver] = true
 			local listname = string.sub(receiver, 2)
 			local maillist = mail.get_maillist_by_name(maillists_owner, listname)
 			if maillist then
-				minetest.log("verbose", ("mail: expanding maillist %q"):format(listname))
+				core.log("verbose", ("mail: expanding maillist %q"):format(listname))
 				for _, entry in ipairs(maillist.players) do
 					extract_maillists_main(entry, maillists_owner, expanded_receivers, seen)
 				end
 			end
 		else
 			seen[receiver] = true
-			minetest.log("verbose", ("mail: adding %q to receiver list during maillist expansion"):format(receiver))
+			core.log("verbose", ("mail: adding %q to receiver list during maillist expansion"):format(receiver))
 			table.insert(expanded_receivers, receiver)
 		end
 	end

@@ -1,5 +1,5 @@
 
-if minetest.get_modpath("unified_inventory") then
+if core.get_modpath("unified_inventory") then
 
 	unified_inventory.register_button("mail", {
 			type = "image",
@@ -11,7 +11,7 @@ if minetest.get_modpath("unified_inventory") then
 		})
 end
 
-if minetest.get_modpath("sfinv_buttons") then
+if core.get_modpath("sfinv_buttons") then
 	sfinv_buttons.register_button("mail", {
 			title = "Mail",
 			image = "mail_button.png",

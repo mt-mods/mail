@@ -19,14 +19,14 @@ function mail.show_maillists(name)
 		for _, maillist in ipairs(maillists) do
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
-			formspec[#formspec + 1] = "@" .. minetest.formspec_escape(maillist.name)
+			formspec[#formspec + 1] = "@" .. core.formspec_escape(maillist.name)
 			formspec[#formspec + 1] = ","
 			if maillist.desc ~= "" then
 				if string.len(maillist.desc or "") > 30 then
-					formspec[#formspec + 1] = minetest.formspec_escape(string.sub(maillist.desc, 1, 27))
+					formspec[#formspec + 1] = core.formspec_escape(string.sub(maillist.desc, 1, 27))
 					formspec[#formspec + 1] = "..."
 				else
-					formspec[#formspec + 1] = minetest.formspec_escape(maillist.desc)
+					formspec[#formspec + 1] = core.formspec_escape(maillist.desc)
 				end
 			else
 				formspec[#formspec + 1] = S("(No description)")
@@ -40,10 +40,10 @@ function mail.show_maillists(name)
 	else
 		formspec[#formspec + 1] = "]label[2.25,4.5;" .. S("No maillist") .. "]"
 	end
-	minetest.show_formspec(name, FORMNAME, table.concat(formspec, ""))
+	core.show_formspec(name, FORMNAME, table.concat(formspec, ""))
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -52,7 +52,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local maillists = mail.get_maillists(name)
 
 	if fields.maillists then
-		local evt = minetest.explode_table_event(fields.maillists)
+		local evt = core.explode_table_event(fields.maillists)
 		mail.selected_idxs.maillists[name] = evt.row - 1
 		if evt.type == "DCL" and maillists[mail.selected_idxs.maillists[name]] then
 			local maillist = mail.get_maillist_by_name(name, maillists[mail.selected_idxs.maillists[name]].name)

@@ -74,7 +74,7 @@ end
 function mail.settings.mute_list.check(name, value)
     local valid_players = {}
     for _, p in ipairs(value) do
-        if p ~= name and minetest.player_exists(p) then
+        if p ~= name and core.player_exists(p) then
             table.insert(valid_players, p)
         end
     end
@@ -82,9 +82,9 @@ function mail.settings.mute_list.check(name, value)
 end
 
 function mail.settings.mute_list.sync(name)
-    if minetest.get_modpath("beerchat") then
+    if core.get_modpath("beerchat") then
         local players = {}
-        for other_player, _ in minetest.get_auth_handler().iterate() do
+        for other_player, _ in core.get_auth_handler().iterate() do
             if beerchat.has_player_muted_player(name, other_player) then
                 table.insert(players, other_player)
             end
@@ -95,16 +95,16 @@ function mail.settings.mute_list.sync(name)
 end
 
 function mail.settings.mute_list.transfer(name, value)
-    if minetest.get_modpath("beerchat") then
-        for other_player, _ in minetest.get_auth_handler().iterate() do -- unmute all
+    if core.get_modpath("beerchat") then
+        for other_player, _ in core.get_auth_handler().iterate() do -- unmute all
             if not beerchat.execute_callbacks("before_mute", name, other_player) then
                 return false
             end
-            minetest.get_player_by_name(name):get_meta():set_string(
+            core.get_player_by_name(name):get_meta():set_string(
 				"beerchat:muted:" .. other_player, "")
         end
         for _, other_player in ipairs(value) do -- then mute only players in table
-            minetest.get_player_by_name(name):get_meta():set_string(
+            core.get_player_by_name(name):get_meta():set_string(
                     "beerchat:muted:" .. other_player, "true")
         end
         return true

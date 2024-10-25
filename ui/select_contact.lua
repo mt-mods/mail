@@ -39,10 +39,10 @@ function mail.show_select_contact(name, to, cc)
 		bcc = ""
 	end]]--
 	formspec = string.format(formspec, contacts, to, cc)--, bcc()
-	minetest.show_formspec(name, FORMNAME, formspec)
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -60,7 +60,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		bcc = "bccremove"
 	}) do
 		if fields[k] then
-			local evt = minetest.explode_table_event(fields[k])
+			local evt = core.explode_table_event(fields[k])
 			mail.selected_idxs[k][name] = evt.row - 1
 			if evt.type == "DCL" and mail.selected_idxs[k][name] then
 				fields[action] = true

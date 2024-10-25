@@ -20,18 +20,18 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 		]] .. mail.theme
 
 	formspec = string.format(formspec,
-		minetest.formspec_escape(to) or "",
-		minetest.formspec_escape(cc) or "",
-		minetest.formspec_escape(bcc) or "",
-		minetest.formspec_escape(subject) or "",
-		minetest.formspec_escape(body) or "")
+		core.formspec_escape(to) or "",
+		core.formspec_escape(cc) or "",
+		core.formspec_escape(bcc) or "",
+		core.formspec_escape(subject) or "",
+		core.formspec_escape(body) or "")
 
 	mail.selected_idxs.message[name] = id or mail.new_uuid()
 
-	minetest.show_formspec(name, FORMNAME, formspec)
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
@@ -63,7 +63,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             body = fields.body,
         })
         if not success then
-            minetest.chat_send_player(name, err)
+            core.chat_send_player(name, err)
             return
         end
 
@@ -87,7 +87,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
         end
 
-        minetest.after(0.5, function()
+        core.after(0.5, function()
             mail.selected_idxs.drafts[name] = nil
             mail.show_mail_menu(name)
         end)

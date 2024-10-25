@@ -2,12 +2,12 @@ local STORAGE_VERSION_KEY = "@@version"
 local CURRENT_VERSION = 3.1
 
 local function migrate_v1_to_v3()
-	local file = io.open(minetest.get_worldpath().."/mail.db", "r")
+	local file = io.open(core.get_worldpath().."/mail.db", "r")
 	assert(file)
 	print("[mail] Migration from v1 to v3 database")
 
 	local data = file:read("*a")
-	local oldmails = minetest.deserialize(data)
+	local oldmails = core.deserialize(data)
 	file:close()
 
 	for name, oldmessages in pairs(oldmails) do
@@ -28,7 +28,7 @@ local function migrate_v1_to_v3()
 
 	-- rename file
 	print("[mail,v1] migration done, renaming old mail.db")
-	os.rename(minetest.get_worldpath().."/mail.db", minetest.get_worldpath().."/mail.db.old")
+	os.rename(core.get_worldpath().."/mail.db", core.get_worldpath().."/mail.db.old")
 end
 
 local function read_json_file(path)
@@ -36,7 +36,7 @@ local function read_json_file(path)
 	local content = {}
 	if file then
 		local json = file:read("*a")
-		content = minetest.parse_json(json or "[]") or {}
+		content = core.parse_json(json or "[]") or {}
 		file:close()
 	end
 	return content
@@ -44,13 +44,13 @@ end
 
 -- migrate from v2 to v3 database
 local function migrate_v2_to_v3()
-	local maildir = minetest.get_worldpath().."/mails"
-	minetest.mkdir(maildir) -- if necessary (eg. first login)
+	local maildir = core.get_worldpath().."/mails"
+	core.mkdir(maildir) -- if necessary (eg. first login)
 	print("[mail] Migration from v2 to v3 database")
 
 	-- defer execution until auth-handler ready (first server-step)
-	minetest.after(0, function()
-		for playername, _ in minetest.get_auth_handler().iterate() do
+	core.after(0, function()
+		for playername, _ in core.get_auth_handler().iterate() do
 			local entry = mail.get_storage_entry(playername)
 
 			local player_contacts = read_json_file(maildir .. "/contacts/" .. playername .. ".json")
@@ -110,7 +110,7 @@ local function is_uuid_existing(uuid)
 			end
 		end
 	else
-		for p, _ in minetest.get_auth_handler().iterate() do
+		for p, _ in core.get_auth_handler().iterate() do
 			local result = search_boxes(p, boxes, uuid)
 			if result then return result end
 		end
@@ -168,7 +168,7 @@ local function fix_box_duplicate_uuids(playername, box)
 					end
 				end
 			else
-				for p, _ in minetest.get_auth_handler().iterate() do
+				for p, _ in core.get_auth_handler().iterate() do
 					replace_other_player_message_uuid(p, m, uuid, new_uuid)
 				end
 			end
@@ -195,8 +195,8 @@ local function repair_storage()
 			end
 		end
 	else
-		minetest.after(0, function()
-			for p, _ in minetest.get_auth_handler().iterate() do
+		core.after(0, function()
+			for p, _ in core.get_auth_handler().iterate() do
 				fix_player_duplicate_uuids(p)
 			end
 		end)
@@ -213,7 +213,7 @@ function mail.migrate()
 	end
 
 	-- check for v1 storage
-	local v1_file = io.open(minetest.get_worldpath().."/mail.db", "r")
+	local v1_file = io.open(core.get_worldpath().."/mail.db", "r")
 	if v1_file then
 		-- v1 to v3
 		migrate_v1_to_v3()

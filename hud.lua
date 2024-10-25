@@ -1,7 +1,7 @@
 
 local huddata = {}
 
-minetest.register_on_joinplayer(function(player)
+core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	local data = {}
 
@@ -27,7 +27,7 @@ minetest.register_on_joinplayer(function(player)
 	huddata[name] = data
 end)
 
-minetest.register_on_leaveplayer(function(player)
+core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	huddata[name] = nil
 end)
@@ -35,7 +35,7 @@ end)
 
 function mail.hud_update(playername, messages)
 	local data = huddata[playername]
-	local player = minetest.get_player_by_name(playername)
+	local player = core.get_player_by_name(playername)
 
 	if not data or not player then
 		return
