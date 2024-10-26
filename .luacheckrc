@@ -8,8 +8,8 @@ read_globals = {
 	table = {fields = {"copy", "getn", "indexof", "insert_all"}},
 	beerchat = {fields = {"has_player_muted_player", "execute_callbacks"}},
 
-	-- Minetest
-	"minetest",
+	-- Luanti
+	"core",
 	"vector", "ItemStack",
 	"dump",
 
