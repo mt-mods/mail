@@ -6,7 +6,7 @@ core.register_on_joinplayer(function(player)
 	local data = {}
 
 	data.imageid = player:hud_add({
-		hud_elem_type = "image",
+		type = "image",
 		name = "MailIcon",
 		position = {x=0.52, y=0.52},
 		text="",
@@ -15,7 +15,7 @@ core.register_on_joinplayer(function(player)
 	})
 
 	data.textid = player:hud_add({
-		hud_elem_type = "text",
+		type = "text",
 		name = "MailText",
 		position = {x=0.55, y=0.52},
 		text= "",
