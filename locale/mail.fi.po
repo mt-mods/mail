@@ -8,383 +8,386 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-11 19:41-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-08-30 08:37+0000\n"
+"Last-Translator: Jouni Järvinen <rautajunk@gmail.com>\n"
+"Language-Team: Finnish <https://translate.luanti.ch/projects/mt-mods/mail/"
+"fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #: api.lua:49
 msgid "The mail could not be sent:"
-msgstr ""
+msgstr "Postia ei voitu lähettää:"
 
 #: api.lua:55
 msgid "You did not specify any valid recipient."
-msgstr ""
+msgstr "Et määrittänyt kelvollista vastaanottajaa."
 
 #: onjoin.lua:20
 msgid "You have mail! Type /mail to read"
-msgstr ""
+msgstr "Sinulla on postia! Kirjoita /mail lukeaksesi sen"
 
 #: player_recipients.lua:13
 msgid "You have a new message from @1! Subject: @2"
-msgstr ""
+msgstr "Sinulla on uusi viesti käyttäjältä @1! Aihe: @2"
 
 #: player_recipients.lua:14
 msgid "To view it, type /mail"
-msgstr ""
+msgstr "Nähdäksesi sen, kirjoita /mail"
 
 #: player_recipients.lua:15
 msgid "You could also use the button in your inventory."
-msgstr ""
+msgstr "Voit myös käyttää painiketta tavaraluettelossasi."
 
 msgid "Original author"
-msgstr ""
+msgstr "Alkuperäinen kirjoittaja"
 
 msgid "Code"
-msgstr ""
+msgstr "Koodi"
 
 msgid "Internationalization"
-msgstr ""
+msgstr "Kansainvälistäminen"
 
 msgid "Textures"
-msgstr ""
+msgstr "Tekstuurit"
 
 msgid "Audio"
-msgstr ""
+msgstr "Ääni"
 
 msgid "Provided by mt-mods"
-msgstr ""
+msgstr "Tekijä mt-mods"
 
 msgid "Version: @1"
-msgstr ""
+msgstr "Versio: @1"
 
 msgid "Licenses"
-msgstr ""
+msgstr "Lisenssit"
 
 msgid "Expat (code), WTFPL (textures)"
-msgstr ""
+msgstr "Expat (koodi), WTFPL (tekstuurit)"
 
 msgid "Communication using this system is NOT guaranteed to be private!"
-msgstr ""
+msgstr "Viestintä tässä järjestelmässä EI ole taattua olevan yksityistä!"
 
 msgid "Admins are able to view the messages of any player."
-msgstr ""
+msgstr "Ylläpitäjät voivat tarkastella minkä tahansa pelaajan viestejä."
 
 msgid "Contributors"
-msgstr ""
+msgstr "Avustajat"
 
 msgid "Group by name"
-msgstr ""
+msgstr "Ryhmitä nimen mukaan"
 
 msgid "Group by contribution"
-msgstr ""
+msgstr "Ryhmitä panoksen mukaan"
 
 msgid "Note"
-msgstr ""
+msgstr "Huomautus"
 
 msgid "Settings"
-msgstr ""
+msgstr "Asetukset"
 
 msgid "About"
-msgstr ""
+msgstr "Tietoja"
 
 msgid "BCC"
-msgstr ""
+msgstr "Piilokopio (BCC)"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Peruuta"
 
 msgid "Save draft"
-msgstr ""
+msgstr "Tallenna luonnos"
 
 msgid "Send"
-msgstr ""
+msgstr "Lähetä"
 
 msgid "Subject"
-msgstr ""
+msgstr "Aihe"
 
 msgid "To"
-msgstr ""
+msgstr "Vastaanottaja"
 
 msgid "CC"
-msgstr ""
+msgstr "Kopio (CC)"
 
 msgid "Delete"
-msgstr ""
+msgstr "Poista"
 
 msgid "New"
-msgstr ""
+msgstr "Uusi"
 
 msgid "Edit"
-msgstr ""
+msgstr "Muokkaa"
 
 msgid "Back"
-msgstr ""
+msgstr "Takaisin"
 
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 msgid "No drafts"
-msgstr ""
+msgstr "Ei luonnoksia"
 
 msgid "Trash"
-msgstr ""
+msgstr "Roskakori"
 
 msgid "Inbox"
-msgstr ""
+msgstr "Saapuneet"
 
 msgid "Outbox"
-msgstr ""
+msgstr "Lähtevät"
 
 msgid "Drafts"
-msgstr ""
+msgstr "Luonnokset"
 
 msgid "Contacts"
-msgstr ""
+msgstr "Yhteystiedot"
 
 msgid "Mail lists"
-msgstr ""
+msgstr "Postilistat"
 
 msgid "Options"
-msgstr ""
+msgstr "Asetukset"
 
 msgid "Close"
-msgstr ""
+msgstr "Sulje"
 
 msgid "(No subject)"
-msgstr ""
+msgstr "(Ei aihetta)"
 
 msgid "Player name"
-msgstr ""
+msgstr "Pelaajan nimi"
 
 msgid "That name is already in your contacts"
-msgstr ""
+msgstr "Nimi on jo yhteystiedoissasi"
 
 msgid "The contact name cannot be empty."
-msgstr ""
+msgstr "Yhteystiedon nimi ei voi olla tyhjä."
 
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 msgid "Maillist name"
-msgstr ""
+msgstr "Postituslistan nimi"
 
 msgid "Desc"
-msgstr ""
+msgstr "Kuvaus"
 
 msgid "Players"
-msgstr ""
+msgstr "Pelaajat"
 
 msgid "That name is already in your mailing lists."
-msgstr ""
+msgstr "Nimi on jo postituslistoillasi."
 
 msgid "The mailing list name cannot be empty."
-msgstr ""
+msgstr "Postituslistan nimi ei voi olla tyhjä."
 
 msgid "Mark Read"
-msgstr ""
+msgstr "Merkitse luetuksi"
 
 msgid "Mark Unread"
-msgstr ""
+msgstr "Merkitse lukemattomaksi"
 
 msgid "Mark Spam"
-msgstr ""
+msgstr "Merkitse roskapostiksi"
 
 msgid "Unmark Spam"
-msgstr ""
+msgstr "Merkitse ei roskapostiksi"
 
 msgid "Reply"
-msgstr ""
+msgstr "Vastaa"
 
 msgid "Reply all"
-msgstr ""
+msgstr "Vastaa kaikille"
 
 msgid "Forward"
-msgstr ""
+msgstr "Lähetä edelleen"
 
 msgid "Reply only to the sender"
-msgstr ""
+msgstr "Vastaa vain lähettäjälle"
 
 msgid "Reply to all involved people"
-msgstr ""
+msgstr "Vastaa kaikille asianosaisille"
 
 msgid "Transfer message to other people"
-msgstr ""
+msgstr "Siirrä viesti muille"
 
 msgid "Date"
-msgstr ""
+msgstr "Päivämäärä"
 
 msgid "From"
-msgstr ""
+msgstr "Lähettäjä"
 
 msgid "Filter"
-msgstr ""
+msgstr "Suodata"
 
 msgid "Allow multiple selection"
-msgstr ""
+msgstr "Salli useita valintoja"
 
 msgid "@1 of @2 selected"
-msgstr ""
+msgstr "@1/@2 valittu"
 
 msgid "(Un)select all"
-msgstr ""
+msgstr "(Poista) kaikkien valinta"
 
 msgid "No mail"
-msgstr ""
+msgstr "Ei postia"
 
 msgid "Read"
-msgstr ""
+msgstr "Luettu"
 
 msgid "Ascending"
-msgstr ""
+msgstr "Nouseva"
 
 msgid "Descending"
-msgstr ""
+msgstr "Laskeva"
 
 msgid "(No description)"
-msgstr ""
+msgstr "(Ei kuvausta)"
 
 msgid "No maillist"
-msgstr ""
+msgstr "Ei postituslistaa"
 
 msgid "Receivers"
-msgstr ""
+msgstr "Vastaanottajat"
 
 msgid "(Un)mute sender"
-msgstr ""
+msgstr "(Poista) lähettäjän mykistys"
 
 msgid "Add"
-msgstr ""
+msgstr "Lisää"
 
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 msgid "Reset"
-msgstr ""
+msgstr "Nollaa"
 
 msgid "Restore"
-msgstr ""
+msgstr "Palauta"
 
 msgid "Empty"
-msgstr ""
+msgstr "Tyhjennä"
 
 msgid "Trash is empty"
-msgstr ""
+msgstr "Roskakori on tyhjä"
 
 msgid "From/To"
-msgstr ""
+msgstr "Lähettäjä/Vastaanottaja"
 
 msgid "No contacts"
-msgstr ""
+msgstr "Ei yhteystietoja"
 
 msgid "The method of delivery to @1 is invalid."
-msgstr ""
+msgstr "Toimitustapa vastaanottajalle @1 on virheellinen."
 
 msgid "The recipient @1 could not be identified."
-msgstr ""
+msgstr "Vastaanottajaa @1 ei voitu tunnistaa."
 
 msgid "@1 rejected your mail."
-msgstr ""
+msgstr "@1 hylkäsi postisi."
 
 msgid "Chat notifications"
-msgstr ""
+msgstr "Keskusteluilmoitukset"
 
 msgid "Receive a message in the chat when there is a new message"
-msgstr ""
+msgstr "Vastaanota viesti keskustelussa, kun uusi viesti saapuu"
 
 msgid "On join notifications"
-msgstr ""
+msgstr "Liittymisilmoitukset"
 
 msgid "Receive a message at login when inbox isn't empty"
 msgstr ""
+"Vastaanota viesti kirjautumisen yhteydessä, kun postilaatikko ei ole tyhjä"
 
 msgid "HUD notifications"
-msgstr ""
+msgstr "HUD-ilmoitukset"
 
 msgid "Show an HUD notification when inbox isn't empty"
-msgstr ""
+msgstr "Näytä HUD-ilmoitus, kun postilaatikko ei ole tyhjä"
 
 msgid "Sound notifications"
-msgstr ""
+msgstr "Ääni-ilmoitukset"
 
 msgid "Play a sound when there is a new message"
-msgstr ""
+msgstr "Soita ääni, kun uusi viesti saapuu"
 
 msgid "Show unread in different color"
-msgstr ""
+msgstr "Näytä lukemattomat eri värillä"
 
 msgid "Show CC/BCC in different color"
-msgstr ""
+msgstr "Näytä (piilo)kopio eri värillä"
 
 msgid "Default sorting field"
-msgstr ""
+msgstr "Oletuslajittelukenttä"
 
 msgid "Default sorting direction"
-msgstr ""
+msgstr "Oletuslajittelusuunta"
 
 msgid "Move deleted messages to trash"
-msgstr ""
+msgstr "Siirrä poistetut viestit roskakoriin"
 
 msgid "Automatic marking read"
-msgstr ""
+msgstr "Merkitse viesti automaattisesti luetuksi"
 
 msgid "Mark a message as read when opened"
-msgstr ""
+msgstr "Merkitse viesti luetuksi avattaessa"
 
 msgid "Date format"
-msgstr ""
+msgstr "Päivämäärän muoto"
 
 msgid "Timezone offset"
-msgstr ""
+msgstr "Aikavyöhykkeen siirtymä"
 
 msgid "Offset to add to server time."
-msgstr ""
+msgstr "Lisäys palvelimen aikaan."
 
 msgid "Mute list"
-msgstr ""
+msgstr "Mykistyslista"
 
 msgid "Notifications"
-msgstr ""
+msgstr "Ilmoitukset"
 
 msgid "Message list"
-msgstr ""
+msgstr "Viestiluettelo"
 
 msgid "Fields"
-msgstr ""
+msgstr "Kentät"
 
 msgid "Spam"
-msgstr ""
+msgstr "Roskaposti"
 
 msgid "Other"
-msgstr ""
+msgstr "Muu"
 
 msgid "Date and Time"
-msgstr ""
+msgstr "Päivämäärä ja aika"
 
 msgid "years"
-msgstr ""
+msgstr "vuotta"
 
 msgid "months"
-msgstr ""
+msgstr "kuukautta"
 
 msgid "weeks"
-msgstr ""
+msgstr "viikkoa"
 
 msgid "days"
-msgstr ""
+msgstr "päivää"
 
 msgid "hours"
-msgstr ""
+msgstr "tuntia"
 
 msgid "minuts"
-msgstr ""
+msgstr "minuuttia"
 
 msgid "seconds"
-msgstr ""
+msgstr "sekuntia"
 
 msgid "@1 ago"
-msgstr ""
+msgstr "@1 sitten"
