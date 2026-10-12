@@ -146,9 +146,13 @@ function mail.sort_messages(messages, sortfield, descending, filter)
 	-- Sorting
 	if sortfield ~= nil then
 		if descending then
-			table.sort(results, function(a, b) return a[sortfield] > b[sortfield] end)
+			table.sort(results, function(a, b)
+				return a[sortfield] > b[sortfield]
+			end)
 		else
-			table.sort(results, function(a, b) return a[sortfield] < b[sortfield] end)
+			table.sort(results, function(a, b)
+				return a[sortfield] < b[sortfield]
+			end)
 		end
 	end
 	return results
@@ -423,9 +427,7 @@ end
 
 function mail.get_setting(playername, key)
 	local entry = mail.get_storage_entry(playername)
-	local value = (entry.settings[key] == nil
-		and {mail.get_setting_default_value(key)}
-		or {entry.settings[key]})[1]
+	local value = (entry.settings[key] == nil and { mail.get_setting_default_value(key) } or { entry.settings[key] })[1]
 
 	if mail.settings[key].sync then -- in case this setting is shared with another mod
 		local sync_value = mail.settings[key].sync(playername) -- get new value
@@ -461,10 +463,12 @@ end
 function mail.pairs_by_keys(t, f)
 	-- http://www.lua.org/pil/19.3.html
 	local a = {}
-	for n in pairs(t) do table.insert(a, n) end
+	for n in pairs(t) do
+		table.insert(a, n)
+	end
 	table.sort(a, f)
-	local i = 0		-- iterator variable
-	local iter = function()		-- iterator function
+	local i = 0 -- iterator variable
+	local iter = function() -- iterator function
 		i = i + 1
 		if a[i] == nil then
 			return nil
@@ -476,4 +480,3 @@ function mail.pairs_by_keys(t, f)
 	end
 	return iter
 end
-

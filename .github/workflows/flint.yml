@@ -1,0 +1,22 @@
+name: flint
+
+on: [push, pull_request]
+
+jobs:
+  flint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Lint
+        uses: luanti-org/flint@master
+        with:
+          command: lint
+      - name: Format
+        uses: luanti-org/flint@master
+        with:
+          command: format
+      - name: Compress media
+        uses: luanti-org/flint@master
+        with:
+          command: compress

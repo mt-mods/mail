@@ -13,21 +13,27 @@ function mail.show_edit_maillist(playername, maillist_name, desc, players, illeg
 			button[4,0.10;2,1;save;]] .. S("Save") .. [[]
 		]]
 	if illegal_name_hint == "collision" then
-		formspec = formspec .. [[
-			textarea[4.25,1;2.5,6;;;]] ..
-			S("That name is already in your mailing lists.") .. [[]
+		formspec = formspec
+			.. [[
+			textarea[4.25,1;2.5,6;;;]]
+			.. S("That name is already in your mailing lists.")
+			.. [[]
 			]]
 	elseif illegal_name_hint == "empty" then
-		formspec = formspec .. [[
-			textarea[4.25,1;2.5,6;;;]] ..
-			S("The mailing list name cannot be empty.") .. [[]
+		formspec = formspec
+			.. [[
+			textarea[4.25,1;2.5,6;;;]]
+			.. S("The mailing list name cannot be empty.")
+			.. [[]
 			]]
 	end
 	formspec = formspec .. mail.theme
-	formspec = string.format(formspec,
+	formspec = string.format(
+		formspec,
 		core.formspec_escape(maillist_name or ""),
 		core.formspec_escape(desc or ""),
-		core.formspec_escape(players or ""))
+		core.formspec_escape(players or "")
+	)
 	core.show_formspec(playername, FORMNAME, formspec)
 end
 
@@ -40,24 +46,22 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local maillists = mail.get_maillists(name)
 
 	if fields.save then
-		local old_maillist = maillists[mail.selected_idxs.maillists[name]] or {name = ""}
+		local old_maillist = maillists[mail.selected_idxs.maillists[name]] or { name = "" }
 		if mail.selected_idxs.maillists[name] then
 			if old_maillist.name ~= fields.name or fields.name == "" then
 				-- name changed!
 				if #fields.name == 0 then
 					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "empty")
 					return true
-
 				elseif mail.get_maillist_by_name(name, fields.name) then
 					mail.show_edit_maillist(name, old_maillist.name, fields.desc, fields.players, "collision")
 					return true
-
 				else
 					mail.update_maillist(name, {
 						owner = name,
 						name = fields.name,
 						desc = fields.desc,
-						players = mail.parse_player_list(fields.players)
+						players = mail.parse_player_list(fields.players),
 					}, old_maillist.name)
 				end
 			else
@@ -65,7 +69,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 					owner = name,
 					name = fields.name,
 					desc = fields.desc,
-					players = mail.parse_player_list(fields.players)
+					players = mail.parse_player_list(fields.players),
 				}, old_maillist.name)
 			end
 		else
@@ -73,11 +77,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				owner = name,
 				name = fields.name,
 				desc = fields.desc,
-				players = mail.parse_player_list(fields.players)
+				players = mail.parse_player_list(fields.players),
 			}, old_maillist.name)
 		end
 		mail.show_maillists(name)
-
 	elseif fields.back then
 		mail.show_maillists(name)
 	end

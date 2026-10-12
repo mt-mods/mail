@@ -1,0 +1,3 @@
+[linter.lints]
+# Remove once assert errors are fixed
+incorrect_standard_library_use = "warn"

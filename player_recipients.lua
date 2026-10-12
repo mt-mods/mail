@@ -10,8 +10,9 @@ mail.register_on_player_receive(function(name, msg)
 	mail.set_storage_entry(name, entry)
 
 	-- notify recipients that happen to be online
-	local mail_alert = S("You have a new message from @1! Subject: @2",  msg.from, msg.subject) ..
-	"\n" .. S("To view it, type /mail")
+	local mail_alert = S("You have a new message from @1! Subject: @2", msg.from, msg.subject)
+		.. "\n"
+		.. S("To view it, type /mail")
 	local inventory_alert = S("You could also use the button in your inventory.")
 	local player = core.get_player_by_name(name)
 	if player then
@@ -22,7 +23,7 @@ mail.register_on_player_receive(function(name, msg)
 			end
 		end
 		if mail.get_setting(name, "sound_notifications") == true then
-			core.sound_play("mail_notif", {to_player=name})
+			core.sound_play("mail_notif", { to_player = name })
 		end
 		local receiver_entry = mail.get_storage_entry(name)
 		local receiver_messages = receiver_entry.inbox
@@ -34,13 +35,14 @@ mail.register_recipient_handler(function(_, pname)
 	if not core.player_exists(pname) then
 		return nil
 	end
-	return true, function(msg)
-		for _, on_player_receive in ipairs(mail.registered_on_player_receives) do
-			if on_player_receive(pname, msg) then
-				break
+	return true,
+		function(msg)
+			for _, on_player_receive in ipairs(mail.registered_on_player_receives) do
+				if on_player_receive(pname, msg) then
+					break
+				end
 			end
 		end
-	end
 end)
 
 if has_canonical_name then

@@ -3,20 +3,49 @@ local S = mail.S
 
 local FORMNAME = "mail:selectcontact"
 
-local select_contact_formspec = "size[8,9;]" .. mail.theme .. [[
+local select_contact_formspec = "size[8,9;]"
+	.. mail.theme
+	.. [[
     tablecolumns[color;text;text]
-    table[0,0;3.5,9;contacts;]] .. mail.get_color("header") .. "," .. S("Name") .. "," .. S("Note") .. [[%s]
-    button[3.55,2.00;1.75,0.5;toadd;→ ]] .. S("Add") .. [[]
-    button[3.55,2.75;1.75,0.5;toremove;← ]] .. S("Remove") .. [[]
-    button[3.55,6.00;1.75,0.5;ccadd;→ ]] .. S("Add") .. [[]
-    button[3.55,6.75;1.75,0.5;ccremove;← ]] .. S("Remove") .. [[]
+    table[0,0;3.5,9;contacts;]]
+	.. mail.get_color("header")
+	.. ","
+	.. S("Name")
+	.. ","
+	.. S("Note")
+	.. [[%s]
+    button[3.55,2.00;1.75,0.5;toadd;→ ]]
+	.. S("Add")
+	.. [[]
+    button[3.55,2.75;1.75,0.5;toremove;← ]]
+	.. S("Remove")
+	.. [[]
+    button[3.55,6.00;1.75,0.5;ccadd;→ ]]
+	.. S("Add")
+	.. [[]
+    button[3.55,6.75;1.75,0.5;ccremove;← ]]
+	.. S("Remove")
+	.. [[]
     tablecolumns[color;text;text]
-    table[5.15,0.0;2.75,4.5;to;]] .. mail.get_color("header") .. "," .. S("To") .. ":," .. S("Note") .. [[%s]
+    table[5.15,0.0;2.75,4.5;to;]]
+	.. mail.get_color("header")
+	.. ","
+	.. S("To")
+	.. ":,"
+	.. S("Note")
+	.. [[%s]
     tablecolumns[color;text;text]
-    table[5.15,4.6;2.75,4.5;cc;]] .. mail.get_color("header") .. "," .. S("CC") .. ":," .. S("Note") .. [[%s]
-    button[3.55,8.25;1.75,0.5;back;]] .. S("Back") .. [[]
+    table[5.15,4.6;2.75,4.5;cc;]]
+	.. mail.get_color("header")
+	.. ","
+	.. S("CC")
+	.. ":,"
+	.. S("Note")
+	.. [[%s]
+    button[3.55,8.25;1.75,0.5;back;]]
+	.. S("Back")
+	.. [[]
 ]]
-
 
 function mail.show_select_contact(name, to, cc)
 	local formspec = select_contact_formspec
@@ -37,8 +66,9 @@ function mail.show_select_contact(name, to, cc)
 		bcc = table.concat(mail.compile_contact_list(name, mail.selected_idxs.bcc[name], bcc)
 	else
 		bcc = ""
-	end]]--
-	formspec = string.format(formspec, contacts, to, cc)--, bcc()
+	end]]
+	--
+	formspec = string.format(formspec, contacts, to, cc) --, bcc()
 	core.show_formspec(name, FORMNAME, formspec)
 end
 
@@ -53,11 +83,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	-- get indexes for fields with selected rows
 	-- execute their default button's actions if double clicked
-	for k,action in pairs({
+	for k, action in pairs({
 		contacts = "toadd",
 		to = "toremove",
 		cc = "ccremove",
-		bcc = "bccremove"
+		bcc = "bccremove",
 	}) do
 		if fields[k] then
 			local evt = core.explode_table_event(fields[k])
@@ -71,14 +101,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	local update = false
 	-- add
-	for _,v in pairs({"to","cc","bcc"}) do
-		if fields[v.."add"] then
+	for _, v in pairs({ "to", "cc", "bcc" }) do
+		if fields[v .. "add"] then
 			update = true
 			if mail.selected_idxs.contacts[name] then
 				for k, contact, i in mail.pairs_by_keys(contacts) do
 					if k == mail.selected_idxs.contacts[name] or i == mail.selected_idxs.contacts[name] then
 						local list = mail.parse_player_list(draft[v])
-						list[#list+1] = contact.name
+						list[#list + 1] = contact.name
 						mail.selected_idxs[v][name] = #list
 						draft[v] = mail.concat_player_list(list)
 						break
@@ -88,8 +118,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 	-- remove
-	for _,v in pairs({"to","cc","bcc"}) do
-		if fields[v.."remove"] then
+	for _, v in pairs({ "to", "cc", "bcc" }) do
+		if fields[v .. "remove"] then
 			update = true
 			if mail.selected_idxs[v][name] then
 				local list = mail.parse_player_list(draft[v])
@@ -108,7 +138,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	-- delete old idxs
-	for _,v in ipairs({"contacts","to","cc","bcc"}) do
+	for _, v in ipairs({ "contacts", "to", "cc", "bcc" }) do
 		mail.selected_idxs[v][name] = nil
 	end
 

@@ -7,7 +7,6 @@ local function interleave_msg(body)
 	return "> " .. (body or ""):gsub("\n", "\n> ")
 end
 
-
 function mail.show_message(name, id)
 	local message = mail.get_message(name, id)
 	if not message then
@@ -54,12 +53,21 @@ function mail.show_message(name, id)
 
 	local from = core.formspec_escape(message.from) or ""
 	local to = core.formspec_escape(message.to) or ""
-	if string.len(to) > 70 then to = string.sub(to, 1, 67) .. "..." end
+	if string.len(to) > 70 then
+		to = string.sub(to, 1, 67) .. "..."
+	end
 	local cc = core.formspec_escape(message.cc) or ""
-	if string.len(cc) > 50 then cc = string.sub(cc, 1, 47) .. "..." end
+	if string.len(cc) > 50 then
+		cc = string.sub(cc, 1, 47) .. "..."
+	end
 	local date = type(message.time) == "number"
-		and core.formspec_escape(os.date(mail.get_setting(name, "date_format"),
-		message.time+3600*mail.get_setting(name, "timezone_offset"))) or ""
+			and core.formspec_escape(
+				os.date(
+					mail.get_setting(name, "date_format"),
+					message.time + 3600 * mail.get_setting(name, "timezone_offset")
+				)
+			)
+		or ""
 	local subject = core.formspec_escape(message.subject) or ""
 	local body = core.formspec_escape(message.body) or ""
 	formspec = string.format(formspec, from, to, cc, date, subject, body)
@@ -79,7 +87,7 @@ function mail.reply(name, message)
 		core.log("error", "[mail] current mail-context: " .. dump(mail.selected_idxs))
 		return
 	end
-	mail.show_compose(name, message.from, "Re: "..message.subject, interleave_msg(message.body))
+	mail.show_compose(name, message.from, "Re: " .. message.subject, interleave_msg(message.body))
 end
 
 function mail.replyall(name, message)
@@ -96,7 +104,7 @@ function mail.replyall(name, message)
 		recipients = message.from .. ", " .. recipients
 	end
 	recipients = mail.parse_player_list(recipients)
-	for k,v in pairs(recipients) do
+	for k, v in pairs(recipients) do
 		if v == name then
 			table.remove(recipients, k)
 			break
@@ -106,7 +114,7 @@ function mail.replyall(name, message)
 
 	-- new CC is old CC minus ourselves
 	local cc = mail.parse_player_list(message.cc)
-	for k,v in pairs(cc) do
+	for k, v in pairs(cc) do
 		if v == name then
 			table.remove(cc, k)
 			break
@@ -114,7 +122,7 @@ function mail.replyall(name, message)
 	end
 	cc = mail.concat_player_list(cc)
 
-	mail.show_compose(name, recipients, "Re: "..message.subject, interleave_msg(message.body), cc)
+	mail.show_compose(name, recipients, "Re: " .. message.subject, interleave_msg(message.body), cc)
 end
 
 function mail.forward(name, message)
@@ -132,23 +140,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.back then
 		mail.show_mail_menu(name)
-		return true	-- don't uselessly set messages
-
+		return true -- don't uselessly set messages
 	elseif fields.reply then
 		mail.reply(name, message)
-
 	elseif fields.replyall then
 		mail.replyall(name, message)
-
 	elseif fields.forward then
 		mail.forward(name, message)
-
 	elseif fields.markspam then
 		mail.mark_spam(name, message.id)
-
 	elseif fields.unmarkspam then
 		mail.unmark_spam(name, message.id)
-
 	elseif fields.togglemute then
 		local mutes = table.copy(mail.get_setting(name, "mute_list"))
 		local mute_indexof = table.indexof(mutes, message.from)
@@ -158,15 +160,13 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			table.remove(mutes, mute_indexof)
 		end
 		mail.set_setting(name, "mute_list", mutes)
-
 	elseif fields.delete then
-        if mail.get_setting(name, "trash_move_enable") and mail.selected_idxs.boxtab[name] ~= 4 then
+		if mail.get_setting(name, "trash_move_enable") and mail.selected_idxs.boxtab[name] ~= 4 then
 			mail.trash_mail(name, message.id)
 		else
 			mail.delete_mail(name, message.id, true)
 		end
 		mail.show_mail_menu(name)
-
 	elseif fields.receivers then
 		mail.show_receivers(name, message.id)
 	end

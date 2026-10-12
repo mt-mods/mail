@@ -12,20 +12,19 @@ function mail.show_edit_contact(name, contact_name, note, illegal_name_hint)
 			button[4,0.10;2,1;save;]] .. S("Save") .. [[]
 		]]
 	if illegal_name_hint == "collision" then
-		formspec = formspec .. [[
-			textarea[4.25,1;2.5,6;;;]] ..
-			S("That name is already in your contacts") .. [[]
+		formspec = formspec
+			.. [[
+			textarea[4.25,1;2.5,6;;;]]
+			.. S("That name is already in your contacts")
+			.. [[]
 			]]
 	elseif illegal_name_hint == "empty" then
 		formspec = formspec .. [[
-			textarea[4.25,1;2.5,6;;;]] ..
-			S("The contact name cannot be empty.") .. [[]
+			textarea[4.25,1;2.5,6;;;]] .. S("The contact name cannot be empty.") .. [[]
 			]]
 	end
 	formspec = formspec .. mail.theme
-	formspec = string.format(formspec,
-		core.formspec_escape(contact_name or ""),
-		core.formspec_escape(note or ""))
+	formspec = string.format(formspec, core.formspec_escape(contact_name or ""), core.formspec_escape(note or ""))
 	core.show_formspec(name, FORMNAME, formspec)
 end
 
@@ -39,17 +38,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.save then
 		if mail.selected_idxs.contacts[name] then
-			local contact = contacts[mail.selected_idxs.contacts[name]] or {name = ""}
+			local contact = contacts[mail.selected_idxs.contacts[name]] or { name = "" }
 			if contact.name ~= fields.name or fields.name == "" then
 				-- name changed!
 				if #fields.name == 0 then
 					mail.show_edit_contact(name, contact.name, fields.note, "empty")
 					return true
-
 				elseif mail.get_contact(name, fields.name) then
 					mail.show_edit_contact(name, contact.name, fields.note, "collision")
 					return true
-
 				else
 					contact.name = fields.name
 					contact.note = fields.note
@@ -60,7 +57,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			contact.name = fields.name
 			contact.note = fields.note
 			mail.update_contact(name, contact)
-
 		else
 			mail.update_contact(name, {
 				name = fields.name,
@@ -68,7 +64,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			})
 		end
 		mail.show_contacts(name)
-
 	elseif fields.back then
 		mail.show_contacts(name)
 	end

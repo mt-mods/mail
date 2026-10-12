@@ -3,18 +3,32 @@ local S = mail.S
 
 local FORMNAME = "mail:contacts"
 
-local contacts_formspec = "size[8,9;]" .. mail.theme .. [[
-		button[6,0.10;2,0.5;new;]] .. S("New") .. [[]
-		button[6,0.85;2,0.5;edit;]] .. S("Edit") .. [[]
-		button[6,1.60;2,0.5;delete;]] .. S("Delete") .. [[]
-		button[6,8.25;2,0.5;back;]] .. S("Back") .. [[]
+local contacts_formspec = "size[8,9;]"
+	.. mail.theme
+	.. [[
+		button[6,0.10;2,0.5;new;]]
+	.. S("New")
+	.. [[]
+		button[6,0.85;2,0.5;edit;]]
+	.. S("Edit")
+	.. [[]
+		button[6,1.60;2,0.5;delete;]]
+	.. S("Delete")
+	.. [[]
+		button[6,8.25;2,0.5;back;]]
+	.. S("Back")
+	.. [[]
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;contacts;]] .. mail.get_color("header") .. "," .. S("Name") .. "," .. S("Note")
-
+		table[0,0;5.75,9;contacts;]]
+	.. mail.get_color("header")
+	.. ","
+	.. S("Name")
+	.. ","
+	.. S("Note")
 
 function mail.show_contacts(name)
-    local formspec = contacts_formspec .. mail.compile_contact_list(name, mail.selected_idxs.contacts[name])
-    core.show_formspec(name, FORMNAME, formspec)
+	local formspec = contacts_formspec .. mail.compile_contact_list(name, mail.selected_idxs.contacts[name])
+	core.show_formspec(name, FORMNAME, formspec)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -40,18 +54,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				contacts[mail.selected_idxs.contacts[name]].note
 			)
 		end
-
 	elseif fields.new then
 		mail.selected_idxs.contacts[name] = "#NEW#"
 		mail.show_edit_contact(name, "", "")
-
 	elseif fields.edit and mail.selected_idxs.contacts[name] and contacts[mail.selected_idxs.contacts[name]] then
 		mail.show_edit_contact(
 			name,
 			contacts[mail.selected_idxs.contacts[name]].name,
 			contacts[mail.selected_idxs.contacts[name]].note
 		)
-
 	elseif fields.delete then
 		if contacts[mail.selected_idxs.contacts[name]] then
 			-- delete the contact and set the selected to the next in the list,
@@ -77,7 +88,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		end
 
 		mail.show_contacts(name)
-
 	elseif fields.back then
 		mail.show_mail_menu(name)
 	end

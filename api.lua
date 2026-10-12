@@ -21,12 +21,24 @@ function mail.register_recipient_handler(func)
 end
 
 function mail.send(m)
-	if type(m.from) ~= "string" then return false, "'from' is not a string" end
-	if type(m.to or "") ~= "string" then return false, "'to' is not a string" end
-	if type(m.cc or "") ~= "string" then return false, "'cc' is not a string" end
-	if type(m.bcc or "") ~= "string" then return false, "'bcc' is not a string" end
-	if type(m.subject or "") ~= "string" then return false, "'subject' is not a string" end
-	if type(m.body) ~= "string" then return false, "'body' is not a string" end
+	if type(m.from) ~= "string" then
+		return false, "'from' is not a string"
+	end
+	if type(m.to or "") ~= "string" then
+		return false, "'to' is not a string"
+	end
+	if type(m.cc or "") ~= "string" then
+		return false, "'cc' is not a string"
+	end
+	if type(m.bcc or "") ~= "string" then
+		return false, "'bcc' is not a string"
+	end
+	if type(m.subject or "") ~= "string" then
+		return false, "'subject' is not a string"
+	end
+	if type(m.body) ~= "string" then
+		return false, "'body' is not a string"
+	end
 
 	-- defaults
 	m.subject = m.subject or "(No subject)"
@@ -46,7 +58,7 @@ function mail.send(m)
 	end
 
 	if next(undeliverable) then -- table is not empty
-		local undeliverable_reason = {S("The mail could not be sent:")}
+		local undeliverable_reason = { S("The mail could not be sent:") }
 		for _, reason in pairs(undeliverable) do
 			table.insert(undeliverable_reason, reason)
 		end
@@ -69,9 +81,10 @@ function mail.send(m)
 		extra_log = ""
 	end
 
-	core.log("action", f("[mail] %q send mail to %q%s with subject %q and body %q",
-		m.from, m.to, extra_log, m.subject, m.body
-	))
+	core.log(
+		"action",
+		f("[mail] %q send mail to %q%s with subject %q and body %q", m.from, m.to, extra_log, m.subject, m.body)
+	)
 
 	local id
 	if m.id then
@@ -102,7 +115,7 @@ function mail.send(m)
 		deliver(msg)
 	end
 
-	for i=1, #mail.registered_on_receives do
+	for i = 1, #mail.registered_on_receives do
 		if mail.registered_on_receives[i](m) then
 			break
 		end
@@ -112,19 +125,29 @@ function mail.send(m)
 end
 
 function mail.save_draft(m)
-	if type(m.from) ~= "string" then return false, "'from' is not a string" end
-	if type(m.to or "") ~= "string" then return false, "'to' is not a string" end
-	if type(m.cc or "") ~= "string" then return false, "'cc' is not a string" end
-	if type(m.bcc or "") ~= "string" then return false, "'bcc' is not a string" end
-	if type(m.subject or "") ~= "string" then return false, "'subject' is not a string" end
-	if type(m.body) ~= "string" then return false, "'body' is not a string" end
+	if type(m.from) ~= "string" then
+		return false, "'from' is not a string"
+	end
+	if type(m.to or "") ~= "string" then
+		return false, "'to' is not a string"
+	end
+	if type(m.cc or "") ~= "string" then
+		return false, "'cc' is not a string"
+	end
+	if type(m.bcc or "") ~= "string" then
+		return false, "'bcc' is not a string"
+	end
+	if type(m.subject or "") ~= "string" then
+		return false, "'subject' is not a string"
+	end
+	if type(m.body) ~= "string" then
+		return false, "'body' is not a string"
+	end
 
 	-- defaults
 	m.subject = m.subject or "(No subject)"
 
-	core.log("verbose", f("[mail] %q saves draft with subject %q and body %q",
-		m.from, m.subject, m.body
-	))
+	core.log("verbose", f("[mail] %q saves draft with subject %q and body %q", m.from, m.subject, m.body))
 
 	-- remove it is an update
 	local id
@@ -148,5 +171,4 @@ function mail.save_draft(m)
 	mail.set_storage_entry(m.from, entry)
 
 	return true
-
 end

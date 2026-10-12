@@ -36,7 +36,7 @@ mail = {
 		contributor_grouping = {},
 	},
 
-	message_drafts = {}
+	message_drafts = {},
 }
 
 if core.get_modpath("default") then

@@ -16,8 +16,13 @@ core.register_on_joinplayer(function(player)
 		end
 
 		if unreadcount > 0 and mail.get_setting(name, "onjoin_notifications") then
-			core.chat_send_player(name,
-				core.colorize(mail.get_color("new"), "(" .. unreadcount .. ") " .. S("You have mail! Type /mail to read")))
+			core.chat_send_player(
+				name,
+				core.colorize(
+					mail.get_color("new"),
+					"(" .. unreadcount .. ") " .. S("You have mail! Type /mail to read")
+				)
+			)
 		end
 	end, player:get_player_name())
 end)

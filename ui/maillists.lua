@@ -3,13 +3,28 @@ local S = mail.S
 
 local FORMNAME = "mail:maillists"
 
-local maillists_formspec = "size[8,9;]" .. mail.theme .. [[
-		button[6,0.10;2,0.5;new;]] .. S("New") .. [[]
-		button[6,0.85;2,0.5;edit;]] .. S("Edit") .. [[]
-		button[6,1.60;2,0.5;delete;]] .. S("Delete") .. [[]
-		button[6,8.25;2,0.5;back;]] .. S("Back") .. [[]
+local maillists_formspec = "size[8,9;]"
+	.. mail.theme
+	.. [[
+		button[6,0.10;2,0.5;new;]]
+	.. S("New")
+	.. [[]
+		button[6,0.85;2,0.5;edit;]]
+	.. S("Edit")
+	.. [[]
+		button[6,1.60;2,0.5;delete;]]
+	.. S("Delete")
+	.. [[]
+		button[6,8.25;2,0.5;back;]]
+	.. S("Back")
+	.. [[]
 		tablecolumns[color;text;text]
-		table[0,0;5.75,9;maillists;]] .. mail.get_color("header") .. "," .. S("Name") .. "," .. S("Note")
+		table[0,0;5.75,9;maillists;]]
+	.. mail.get_color("header")
+	.. ","
+	.. S("Name")
+	.. ","
+	.. S("Note")
 
 function mail.show_maillists(name)
 	local formspec = { maillists_formspec }
@@ -64,11 +79,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				players_string
 			)
 		end
-
 	elseif fields.new then
 		mail.selected_idxs.maillists[name] = "#NEW#"
 		mail.show_edit_maillist(name, "", "", "Player1, Player2, Player3")
-
 	elseif fields.edit and maillists[mail.selected_idxs.maillists[name]] then
 		local maillist = mail.get_maillist_by_name(name, maillists[mail.selected_idxs.maillists[name]].name)
 		local players_string = mail.concat_player_list(maillist.players)
@@ -78,7 +91,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			maillists[mail.selected_idxs.maillists[name]].desc,
 			players_string
 		)
-
 	elseif fields.delete then
 		if maillists[mail.selected_idxs.maillists[name]] then
 			-- delete the maillist and set the selected to the next in the list,
@@ -104,7 +116,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		end
 
 		mail.show_maillists(name)
-
 	elseif fields.back then
 		mail.show_mail_menu(name)
 	end

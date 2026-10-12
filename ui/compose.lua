@@ -19,12 +19,14 @@ function mail.show_compose(name, to, subject, body, cc, bcc, id)
 			button[5.3,8.5;2.5,1;send;]] .. S("Send") .. [[]
 		]] .. mail.theme
 
-	formspec = string.format(formspec,
+	formspec = string.format(
+		formspec,
 		core.formspec_escape(to) or "",
 		core.formspec_escape(cc) or "",
 		core.formspec_escape(bcc) or "",
 		core.formspec_escape(subject) or "",
-		core.formspec_escape(body) or "")
+		core.formspec_escape(body) or ""
+	)
 
 	mail.selected_idxs.message[name] = id or mail.new_uuid()
 
@@ -37,93 +39,90 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local name = player:get_player_name()
-    if fields.send then
-	local id = mail.selected_idxs.message[name] or mail.new_uuid()
-        if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
-            -- if mail is invalid then store it as a draft
-            mail.save_draft({
-                id = id,
-                from = name,
-                to = fields.to,
-                cc = fields.cc,
-                bcc = fields.bcc,
-                subject = fields.subject,
-                body = fields.body
-            })
-            mail.show_mail_menu(name)
-            return
-        end
-        local success, err = mail.send({
-            id = id,
-            from = name,
-            to = fields.to,
-            cc = fields.cc,
-            bcc = fields.bcc,
-            subject = fields.subject,
-            body = fields.body,
-        })
-        if not success then
-            core.chat_send_player(name, err)
-            return
-        end
+	if fields.send then
+		local id = mail.selected_idxs.message[name] or mail.new_uuid()
+		if (fields.to == "" and fields.cc == "" and fields.bcc == "") or fields.body == "" then
+			-- if mail is invalid then store it as a draft
+			mail.save_draft({
+				id = id,
+				from = name,
+				to = fields.to,
+				cc = fields.cc,
+				bcc = fields.bcc,
+				subject = fields.subject,
+				body = fields.body,
+			})
+			mail.show_mail_menu(name)
+			return
+		end
+		local success, err = mail.send({
+			id = id,
+			from = name,
+			to = fields.to,
+			cc = fields.cc,
+			bcc = fields.bcc,
+			subject = fields.subject,
+			body = fields.body,
+		})
+		if not success then
+			core.chat_send_player(name, err)
+			return
+		end
 
-        -- add new contacts if some receivers aren't registered
-        local contacts = mail.get_contacts(name)
-        local recipients = mail.parse_player_list(fields.to)
-        local isNew = true
-        for _,recipient in ipairs(recipients) do
-            if recipient:sub(1,1) == "@" then -- in case of maillist -- check if first char is @
-                isNew = false
-            else
-                for _,contact in ipairs(contacts) do
-                    if contact.name == recipient then
-                        isNew = false
-                        break
-                    end
-                end
-            end
-            if isNew then
-                mail.update_contact(name, {name = recipient, note = ""})
-            end
-        end
+		-- add new contacts if some receivers aren't registered
+		local contacts = mail.get_contacts(name)
+		local recipients = mail.parse_player_list(fields.to)
+		local isNew = true
+		for _, recipient in ipairs(recipients) do
+			if recipient:sub(1, 1) == "@" then -- in case of maillist -- check if first char is @
+				isNew = false
+			else
+				for _, contact in ipairs(contacts) do
+					if contact.name == recipient then
+						isNew = false
+						break
+					end
+				end
+			end
+			if isNew then
+				mail.update_contact(name, { name = recipient, note = "" })
+			end
+		end
 
-        core.after(0.5, function()
-            mail.selected_idxs.drafts[name] = nil
-            mail.show_mail_menu(name)
-        end)
+		core.after(0.5, function()
+			mail.selected_idxs.drafts[name] = nil
+			mail.show_mail_menu(name)
+		end)
+	elseif fields.tocontacts or fields.cccontacts or fields.bcccontacts then
+		mail.message_drafts[name] = {
+			to = fields.to,
+			cc = fields.cc,
+			bcc = fields.bcc,
+			subject = fields.subject,
+			body = fields.body,
+		}
+		mail.show_select_contact(name, fields.to, fields.cc, fields.bcc)
+	elseif fields.cancel then
+		mail.message_drafts[name] = nil
 
-    elseif fields.tocontacts or fields.cccontacts or fields.bcccontacts then
-        mail.message_drafts[name] = {
-            to = fields.to,
-            cc = fields.cc,
-            bcc = fields.bcc,
-            subject = fields.subject,
-            body = fields.body,
-        }
-        mail.show_select_contact(name, fields.to, fields.cc, fields.bcc)
+		mail.show_mail_menu(name)
+	elseif fields.draft then
+		local id = mail.new_uuid()
+		if mail.selected_idxs.message[name] then
+			id = mail.selected_idxs.message[name]
+		end
+		mail.save_draft({
+			id = id,
+			from = name,
+			to = fields.to,
+			cc = fields.cc,
+			bcc = fields.bcc,
+			subject = fields.subject,
+			body = fields.body,
+		})
 
-    elseif fields.cancel then
-        mail.message_drafts[name] = nil
+		mail.show_mail_menu(name)
+	end
 
-        mail.show_mail_menu(name)
-
-    elseif fields.draft then
-        local id = mail.new_uuid()
-        if mail.selected_idxs.message[name] then
-            id = mail.selected_idxs.message[name]
-        end
-        mail.save_draft({
-            id = id,
-            from = name,
-            to = fields.to,
-            cc = fields.cc,
-            bcc = fields.bcc,
-            subject = fields.subject,
-            body = fields.body
-        })
-
-        mail.show_mail_menu(name)
-    end
-
-    return true
+	return true
 end)

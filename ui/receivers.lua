@@ -31,7 +31,8 @@ function mail.show_receivers(name, id)
 	local cc_str = mail.get_color("header") .. "," .. S("CC") .. ",,"
 	cc_str = cc_str .. table.concat(cc, ",,")
 	local date = type(message.time) == "number"
-		and core.formspec_escape(os.date(mail.get_setting(name, "date_format"), message.time)) or ""
+			and core.formspec_escape(os.date(mail.get_setting(name, "date_format"), message.time))
+		or ""
 	formspec = string.format(formspec, from, date, to_str, cc_str)
 
 	core.show_formspec(name, FORMNAME, formspec)

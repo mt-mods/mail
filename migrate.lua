@@ -2,7 +2,7 @@ local STORAGE_VERSION_KEY = "@@version"
 local CURRENT_VERSION = 3.1
 
 local function migrate_v1_to_v3()
-	local file = io.open(core.get_worldpath().."/mail.db", "r")
+	local file = io.open(core.get_worldpath() .. "/mail.db", "r")
 	assert(file)
 	print("[mail] Migration from v1 to v3 database")
 
@@ -16,11 +16,11 @@ local function migrate_v1_to_v3()
 		for _, msg in ipairs(oldmessages) do
 			table.insert(entry.inbox, {
 				id = mail.new_uuid(),
-				from  = msg.sender or msg.from,
-				to      = msg.to or name,
+				from = msg.sender or msg.from,
+				to = msg.to or name,
 				subject = msg.subject,
-				body    = msg.body,
-				time    = msg.time or os.time(),
+				body = msg.body,
+				time = msg.time or os.time(),
 			})
 		end
 		mail.set_storage_entry(name, entry)
@@ -28,7 +28,7 @@ local function migrate_v1_to_v3()
 
 	-- rename file
 	print("[mail,v1] migration done, renaming old mail.db")
-	os.rename(core.get_worldpath().."/mail.db", core.get_worldpath().."/mail.db.old")
+	os.rename(core.get_worldpath() .. "/mail.db", core.get_worldpath() .. "/mail.db.old")
 end
 
 local function read_json_file(path)
@@ -44,7 +44,7 @@ end
 
 -- migrate from v2 to v3 database
 local function migrate_v2_to_v3()
-	local maildir = core.get_worldpath().."/mails"
+	local maildir = core.get_worldpath() .. "/mails"
 	core.mkdir(maildir) -- if necessary (eg. first login)
 	print("[mail] Migration from v2 to v3 database")
 
@@ -63,14 +63,14 @@ local function migrate_v2_to_v3()
 			print("[mail,v2] + migrating player '" .. playername .. "'")
 			for _, msg in ipairs(player_inbox) do
 				table.insert(entry.inbox, {
-                                        id = mail.new_uuid(),
-                                        from  = msg.sender or msg.from,
-                                        to      = msg.to or playername,
-                                        cc      = msg.cc,
-                                        subject = msg.subject,
-                                        body    = msg.body,
-                                        time    = msg.time or os.time(),
-					read    = not msg.unread,
+					id = mail.new_uuid(),
+					from = msg.sender or msg.from,
+					to = msg.to or playername,
+					cc = msg.cc,
+					subject = msg.subject,
+					body = msg.body,
+					time = msg.time or os.time(),
+					read = not msg.unread,
 				})
 			end
 
@@ -80,13 +80,20 @@ local function migrate_v2_to_v3()
 	end)
 end
 
-
-
 local function search_box(playername, box, uuid)
 	local e = mail.get_storage_entry(playername)
 	for _, m in ipairs(e[box]) do
 		if m.id == uuid then
-		return { time = m.time, from = m.from, to = m.to, cc = m.cc, bcc = m.bcc, subject = m.subject, body = m.body } end
+			return {
+				time = m.time,
+				from = m.from,
+				to = m.to,
+				cc = m.cc,
+				bcc = m.bcc,
+				subject = m.subject,
+				body = m.body,
+			}
+		end
 	end
 	return false
 end
@@ -95,37 +102,43 @@ local function search_boxes(playername, boxes, uuid)
 	local result
 	for _, b in ipairs(boxes) do
 		result = search_box(playername, b, uuid)
-		if result then return result end
+		if result then
+			return result
+		end
 	end
 end
 
 local function is_uuid_existing(uuid)
-	local boxes = {"inbox", "outbox", "drafts", "trash"}
+	local boxes = { "inbox", "outbox", "drafts", "trash" }
 	if mail.storage.get_keys then
 		for _, k in ipairs(mail.storage:get_keys()) do
-			if string.sub(k,1,5) == "mail/" then
+			if string.sub(k, 1, 5) == "mail/" then
 				local p = string.sub(k, 6)
 				local result = search_boxes(p, boxes, uuid)
-				if result then return result end
+				if result then
+					return result
+				end
 			end
 		end
 	else
 		for p, _ in core.get_auth_handler().iterate() do
 			local result = search_boxes(p, boxes, uuid)
-			if result then return result end
+			if result then
+				return result
+			end
 		end
-    end
-    return false
+	end
+	return false
 end
 
 local function are_message_sames(a, b)
 	return a.time == b.time
-	   and a.from == b.from
-	   and a.to == b.to
-	   and a.cc == b.cc
-	   and a.bcc == b.bcc
-	   and a.subject == b.subject
-	   and a.body == b.body
+		and a.from == b.from
+		and a.to == b.to
+		and a.cc == b.cc
+		and a.bcc == b.bcc
+		and a.subject == b.subject
+		and a.body == b.body
 end
 
 local function replace_other_player_message_uuid(p, m, uuid, new_uuid)
@@ -162,7 +175,7 @@ local function fix_box_duplicate_uuids(playername, box)
 			local new_uuid = mail.new_uuid() -- generates a new uuid to replace doublons
 			if mail.storage.get_keys then
 				for _, k in ipairs(mail.storage:get_keys()) do
-					if string.sub(k,1,5) == "mail/" then
+					if string.sub(k, 1, 5) == "mail/" then
 						local p = string.sub(k, 6)
 						replace_other_player_message_uuid(p, m, uuid, new_uuid)
 					end
@@ -189,7 +202,7 @@ local function repair_storage()
 	-- get_keys() was introduced in 5.7
 	if mail.storage.get_keys then
 		for _, k in ipairs(mail.storage:get_keys()) do
-			if string.sub(k,1,5) == "mail/" then
+			if string.sub(k, 1, 5) == "mail/" then
 				local p = string.sub(k, 6)
 				fix_player_duplicate_uuids(p)
 			end
@@ -213,7 +226,7 @@ function mail.migrate()
 	end
 
 	-- check for v1 storage
-	local v1_file = io.open(core.get_worldpath().."/mail.db", "r")
+	local v1_file = io.open(core.get_worldpath() .. "/mail.db", "r")
 	if v1_file then
 		-- v1 to v3
 		migrate_v1_to_v3()
@@ -221,7 +234,7 @@ function mail.migrate()
 	end
 
 	-- repair storage for uuid doublons
-	if version < CURRENT_VERSION  then
+	if version < CURRENT_VERSION then
 		repair_storage()
 		mail.storage:set_float(STORAGE_VERSION_KEY, CURRENT_VERSION)
 	end

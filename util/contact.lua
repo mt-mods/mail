@@ -9,16 +9,18 @@ function mail.compile_contact_list(name, selected, playernames)
 	if playernames == nil then
 		local length = 0
 		for k, contact, i, l in mail.pairs_by_keys(contacts) do
-			if i == 1 then length = l end
+			if i == 1 then
+				length = l
+			end
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = core.formspec_escape(contact.name)
 			formspec[#formspec + 1] = ","
 			local note = contact.note
 			-- display an ellipsis if the note spans multiple lines
-			local idx = string.find(note, '\n')
+			local idx = string.find(note, "\n")
 			if idx ~= nil then
-				note = string.sub(note, 1, idx-1) .. ' ...'
+				note = string.sub(note, 1, idx - 1) .. " ..."
 			end
 			formspec[#formspec + 1] = core.formspec_escape(note)
 			if type(selected) == "string" then
@@ -40,7 +42,7 @@ function mail.compile_contact_list(name, selected, playernames)
 		if type(playernames) == "string" then
 			playernames = mail.parse_player_list(playernames)
 		end
-		for i,c in ipairs(playernames) do
+		for i, c in ipairs(playernames) do
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = ","
 			formspec[#formspec + 1] = core.formspec_escape(c)
@@ -50,9 +52,9 @@ function mail.compile_contact_list(name, selected, playernames)
 			else
 				local note = contacts[string.lower(c)].note
 				-- display an ellipsis if the note spans multiple lines
-				local idx = string.find(note, '\n')
+				local idx = string.find(note, "\n")
 				if idx ~= nil then
-					note = string.sub(note, 1, idx-1) .. ' ...'
+					note = string.sub(note, 1, idx - 1) .. " ..."
 				end
 				formspec[#formspec + 1] = core.formspec_escape(note)
 			end
@@ -71,5 +73,4 @@ function mail.compile_contact_list(name, selected, playernames)
 		formspec[#formspec + 1] = "]"
 	end
 	return table.concat(formspec, "")
-
 end
