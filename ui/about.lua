@@ -46,6 +46,7 @@ local contributors = {
 function mail.show_about(name)
 	mail.selected_idxs.contributor_grouping[name] = tonumber(mail.selected_idxs.contributor_grouping[name]) or 1
 
+	-- luacheck: push ignore 631
 	local formspec = [[
 			size[10,6;]
 			tabheader[0,0;optionstab;]] .. S("Settings") .. "," .. S("About") .. [[;2;false;false]
@@ -75,6 +76,7 @@ function mail.show_about(name)
 
 			dropdown[4,0.75;6.4;contributor_grouping;]] .. S("Group by name") .. "," .. S("Group by contribution") .. ";" .. mail.selected_idxs.contributor_grouping[name] .. [[;true]
 			]]
+	-- luacheck: pop
 
 	local contributor_list, contributor_columns = {}
 
